@@ -1,7 +1,9 @@
 package org.tty.dioc.service
 
 import org.tty.dioc.core.declare.Inject
+import org.tty.dioc.core.declare.Service
 
+@Service
 class PrintServiceImpl: PrintService {
     @Inject
     lateinit var helloService: HelloService

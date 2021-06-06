@@ -1,9 +1,8 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.PackageOption
-import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.ServiceElement
-import org.tty.dioc.core.storage.ServiceDeclarations
+import org.tty.dioc.core.declare.ServiceDeclarations
 import org.tty.dioc.core.util.ClassScanner
 import org.tty.dioc.core.util.ServiceUtil
 
@@ -36,7 +35,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
     /**
      * get the declaration of the service.
      */
-    private fun getDeclarations(): ServiceDeclarations {
+    public fun getDeclarations(): ServiceDeclarations {
         val declarations = ArrayList<ServiceElement>()
         jsonFiles.forEach {
             declarations.addAll(getDeclarationsFromJsonFile(it))
@@ -44,7 +43,8 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
         scanPackages.forEach {
             declarations.addAll(getDeclarationsFromPackage(it))
         }
-        return ServiceDeclarations.
+        // constructor the serviceElements to serviceDeclarations
+        return ServiceDeclarations.fromServiceElements(declarations)
     }
 
     /**

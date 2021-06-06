@@ -1,10 +1,10 @@
 package org.tty.dioc.core.util
 
+import com.sun.javaws.jnl.PropertyDesc
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructorException
 import java.beans.PropertyDescriptor
 import java.lang.reflect.Constructor
-import kotlin.reflect.KType
 
 object ServiceUtil {
     /**
@@ -30,14 +30,18 @@ object ServiceUtil {
         }
     }
 
+    fun injectObjectProperty(objectProperty: ObjectProperty, toInject: Any) {
+        val descriptor = PropertyDescriptor(objectProperty.propertyComponent.name, objectProperty.value.javaClass)
+        descriptor.writeMethod.invoke(objectProperty.value, toInject)
+    }
+
     fun getComponents(type: Class<*>): List<PropertyComponent> {
         return getComponentsOfConstructor(type)
             .plus(getComponentsOfProperties(type))
     }
 
-    fun getComponentsOfConstructor(type: Class<*>): List<PropertyComponent> {
-        var constructor: Constructor<*>? = null
-        constructor = when {
+    fun getInjectConstructor(type: Class<*>): Constructor<*> {
+        return when {
             type.constructors.isEmpty() -> {
                 throw ServiceConstructorException("no public constructor.")
             }
@@ -47,15 +51,17 @@ object ServiceUtil {
             else -> {
                 type.constructors.singleOrNull { it2 -> it2.annotations.any { it is InjectConstructor } }
             }
-        }
-        if (constructor == null){
-            throw ServiceConstructorException("there are more than one constructors has @InjectConstructor.")
-        }
+        } ?: throw ServiceConstructorException("there are more than one constructors has @InjectConstructor.")
+    }
+
+    fun getComponentsOfConstructor(type: Class<*>): List<PropertyComponent> {
+        val constructor = getInjectConstructor(type)
 
         return constructor.parameters.map { parameter ->
             PropertyComponent(parameter.name, parameter.type, InjectPlace.Constructor)
         }
     }
+
     fun getComponentsOfProperties(type: Class<*>): List<PropertyComponent> {
         return type.declaredFields.map { it2 ->
             if (it2.annotations.any { it is Inject }) {

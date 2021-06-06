@@ -1,5 +1,7 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.core.lifecycle.LifeCycle
+
 /**
  * the real data for [Service]
  */

@@ -1,6 +1,6 @@
 package org.tty.dioc.core.declare
 
-import java.lang.annotation.RetentionPolicy
+import org.tty.dioc.core.lifecycle.LifeCycle
 
 /**
  * to declare this is a service, once the package is under scan region.

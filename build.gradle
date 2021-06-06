@@ -11,7 +11,7 @@ repositories {
 }
 
 ext {
-    junitVersion = '5.7.1'
+    junitVersion = '5.7.2'
 }
 
 sourceCompatibility = 1.8
@@ -33,7 +33,11 @@ dependencies {
     implementation('com.google.code.gson:gson:2.8.6')
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
+    testImplementation 'org.mockito:mockito-core:3.3.3'
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+
+
 }
 
 test {
