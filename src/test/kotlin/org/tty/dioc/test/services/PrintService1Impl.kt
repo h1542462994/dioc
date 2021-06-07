@@ -11,6 +11,7 @@ class PrintService1Impl: PrintService1 {
     @Inject
     lateinit var helloService2Print: HelloService2Print
 
+
     override fun print(): String {
         val printString = "print:${helloService1.hello()}"
         println(printString)

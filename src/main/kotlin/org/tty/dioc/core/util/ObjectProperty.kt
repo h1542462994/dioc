@@ -8,7 +8,16 @@ import org.tty.dioc.core.declare.ServiceElement
  * to represent the injection of the service on property
  */
 data class ObjectProperty(
-    val value: Any,
+    /**
+     * the service to be injected
+     */
+    val service: Any,
+    /**
+     * the declare of the property
+     */
     val propertyComponent: PropertyComponent,
+    /**
+     * the service declaration of the property
+     */
     val serviceDeclare: ServiceDeclare
 )

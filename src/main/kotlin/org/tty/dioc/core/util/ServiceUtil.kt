@@ -30,8 +30,8 @@ object ServiceUtil {
     }
 
     fun injectObjectProperty(objectProperty: ObjectProperty, toInject: Any) {
-        val descriptor = PropertyDescriptor(objectProperty.propertyComponent.name, objectProperty.value.javaClass)
-        descriptor.writeMethod.invoke(objectProperty.value, toInject)
+        val descriptor = PropertyDescriptor(objectProperty.propertyComponent.name, objectProperty.service.javaClass)
+        descriptor.writeMethod.invoke(objectProperty.service, toInject)
     }
 
     fun getComponents(type: Class<*>): List<PropertyComponent> {

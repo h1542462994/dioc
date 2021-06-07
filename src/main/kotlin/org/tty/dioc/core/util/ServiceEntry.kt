@@ -127,5 +127,7 @@ class ServiceEntry<T>(
         }
     }
 
-
+    fun isConstructed(): Boolean {
+        return ! readyToInjects.any { p -> p.service.javaClass == type.serviceElement.serviceType }
+    }
 }

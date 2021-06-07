@@ -20,8 +20,11 @@ class LocalApplicationContextTest {
     fun testOneSingleton() {
         // get the helloService1
         val helloService1: HelloService1 = context.getService()
+        val helloService2: HelloService1 = context.getService()
 
         assertEquals("hello", helloService1.hello())
+        // helloService1 和 helloService2 should be refer equal
+        assertSame(helloService1, helloService2)
     }
 
     /**
