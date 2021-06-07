@@ -11,7 +11,13 @@ class ServiceDeclare(
     val singletonComponents: List<PropertyComponent>,
     val transientComponents: List<PropertyComponent>,
     val scopedComponents: List<PropertyComponent>
+
+
 ) {
     val lifeCycle = serviceElement.serviceAnnotation.lifeCycle
     val lazy = serviceElement.serviceAnnotation.lazy
+    fun componentsOn(injectPlace: InjectPlace): List<PropertyComponent> {
+        return singletonComponents.plus(transientComponents).plus(scopedComponents)
+            .filter { it.injectPlace == injectPlace }
+    }
 }

@@ -1,9 +1,12 @@
 package org.tty.dioc.core.util
 
+import org.tty.dioc.core.declare.InjectPlace
 import org.tty.dioc.core.declare.ServiceDeclarations
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.lifecycle.LifeCycle
 import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.lifecycle.ScopeAware
+import org.tty.dioc.core.lifecycle.ServiceProxyFactory
 import org.tty.dioc.core.storage.ServiceStorage
 
 /**
@@ -13,12 +16,13 @@ class ServiceEntry<T>(
     private val storage: ServiceStorage,
     private val serviceDeclarations: ServiceDeclarations,
     private val type: ServiceDeclare,
-    private val scope: Scope? = null) {
+    private val scopeAware: ScopeAware
+) {
 
 
     // entry function for createService
     fun getOrCreateService(): T {
-        return getOrCreateService(type, scope) as T
+        return getOrCreateService(type, scopeAware.currentScope()) as T
     }
 
     // the object ready to injected
@@ -42,12 +46,19 @@ class ServiceEntry<T>(
         // if there are service not created, create it, it will produce new readyToInject
         while (readyToInjects.isNotEmpty()) {
             val current = readyToInjects.first()
-            // get the service by declaration
-            var service = this.getService(current.serviceDeclare, scope)
-            if (service == null) {
-                service = createStub(current.serviceDeclare, scope)
+            if (current.propertyComponent.injectLazy) {
+                val serviceProxy = ServiceProxyFactory(current.serviceDeclare, storage, serviceDeclarations, scopeAware).createProxy()
+                ServiceUtil.injectObjectProperty(current, serviceProxy)
+            } else {
+                // get the service by declaration
+                var service = this.getService(current.serviceDeclare, scope)
+                if (service == null) {
+                    service = createStub(current.serviceDeclare, scope)
+                }
+                ServiceUtil.injectObjectProperty(current, service)
             }
-            ServiceUtil.injectObjectProperty(current, service)
+
+
 
             readyToInjects.remove(current)
         }
@@ -86,9 +97,15 @@ class ServiceEntry<T>(
         // get the constructor
         val constructor = declare.constructor
         val args = constructor.parameters.map {
-            // get the declare of the type
-            val parameterDeclare = serviceDeclarations.findByDeclare(it.type)!!
-            this.createStub(parameterDeclare, scope)
+            // if is lazyInject then inject the proxy object.
+            if (ServiceUtil.isLazyInject(it)) {
+                return ServiceProxyFactory(declare, storage, serviceDeclarations, scopeAware).createProxy()
+            } else {
+                // get the declare of the type
+                val parameterDeclare = serviceDeclarations.findByDeclare(it.type)!!
+                this.createStub(parameterDeclare, scope)
+            }
+
         }
         val stub = constructor.create(args)
 
@@ -103,8 +120,7 @@ class ServiceEntry<T>(
     // extract stub to property read to injected
     private fun extractStubToInjects(value: Any): List<ObjectProperty> {
         val declare = serviceDeclarations.findByService(value.javaClass)!!
-        val components =
-            declare.scopedComponents.plus(declare.transientComponents).plus(declare.singletonComponents)
+        val components = declare.componentsOn(InjectPlace.InjectProperty)
         return components.map { component ->
             ObjectProperty(value, component, serviceDeclarations.findByDeclare(component.type)!!)
         }
@@ -126,6 +142,8 @@ class ServiceEntry<T>(
             }
         }
     }
+
+
 
     fun isConstructed(): Boolean {
         return ! readyToInjects.any { p -> p.service.javaClass == type.serviceElement.serviceType }

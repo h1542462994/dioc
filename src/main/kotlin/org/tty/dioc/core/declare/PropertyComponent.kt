@@ -15,5 +15,9 @@ data class PropertyComponent(
     /**
      * the place to inject.
      */
-    val injectPlace: InjectPlace
+    val injectPlace: InjectPlace,
+    /**
+     * the inject place is annotated [Lazy]
+     */
+    val injectLazy: Boolean
 )

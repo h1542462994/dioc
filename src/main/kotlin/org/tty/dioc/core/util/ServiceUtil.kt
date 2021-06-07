@@ -2,8 +2,12 @@ package org.tty.dioc.core.util
 
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructorException
+import org.tty.dioc.core.lifecycle.ProxyService
 import java.beans.PropertyDescriptor
+import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
+import java.lang.reflect.Field
+import java.lang.reflect.Parameter
 
 object ServiceUtil {
     /**
@@ -57,17 +61,34 @@ object ServiceUtil {
         val constructor = getInjectConstructor(type)
 
         return constructor.parameters.map { parameter ->
-            PropertyComponent(parameter.name, parameter.type, InjectPlace.Constructor)
+            PropertyComponent(parameter.name, parameter.type, InjectPlace.Constructor, isLazyInject(parameter))
         }
     }
 
     fun getComponentsOfProperties(type: Class<*>): List<PropertyComponent> {
         return type.declaredFields.map { it2 ->
             if (it2.annotations.any { it is Inject }) {
-                PropertyComponent(it2.name, it2.type, InjectPlace.InjectProperty)
+                PropertyComponent(it2.name, it2.type, InjectPlace.InjectProperty, isLazyInject(it2))
             } else {
-                PropertyComponent(it2.name, it2.type, InjectPlace.Property)
+                PropertyComponent(it2.name, it2.type, InjectPlace.Property, isLazyInject(it2))
             }
         }
     }
+
+    /**
+     * to judge whether the service is a proxy service.
+     */
+    fun isProxyService(any: Any):Boolean {
+        return ProxyService::class.java.isAssignableFrom(any.javaClass)
+    }
+
+    /**
+     * to judge whether the parameter is annotated [Lazy]
+     */
+    fun isLazyInject(element: AnnotatedElement): Boolean {
+        return element.annotations.any { it is Lazy }
+    }
+
+
+
 }

@@ -15,16 +15,12 @@ open class DefaultApplicationContext(private val _declarations: ServiceDeclarati
 
     override fun <T> getService(type: Class<T>): T {
         val declare = declarations.findByDeclare(type)!!
-        val creator = ServiceEntry<T>(storage, declarations, declare, null)
+        val creator = ServiceEntry<T>(storage, declarations, declare, this)
         return creator.getOrCreateService()
     }
 
-    override fun <T> getService(type: Class<T>, scope: Scope): T {
-        TODO("Not yet implemented")
-    }
-
     override fun currentScope(): Scope? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun beginScope(): Scope {

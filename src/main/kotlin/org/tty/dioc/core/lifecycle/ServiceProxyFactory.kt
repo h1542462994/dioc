@@ -19,7 +19,7 @@ class ServiceProxyFactory(
     fun createProxy(): Any {
         var finishCreate = false
         val creator = ServiceEntry<Any>(serviceStorage, serviceDeclarations, serviceDeclare, scopeAware.currentScope())
-        val interfaces = serviceDeclare.serviceElement.declarationTypes
+        val interfaces = serviceDeclare.serviceElement.declarationTypes.plus(ProxyService::class.java)
         var realObject: Any? = null
         val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces) { _, method, args ->
             if (!finishCreate) {
