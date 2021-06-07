@@ -1,6 +1,7 @@
 package org.tty.dioc.core.util
 
 import java.lang.reflect.Constructor
+import java.lang.reflect.Method
 
 fun Constructor<*>.create(args: List<Any>): Any {
     return when {

@@ -6,7 +6,9 @@ import org.tty.dioc.core.error.ServiceConstructorException
 import org.tty.dioc.core.storage.ServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.core.util.ServiceUtil.toClasses
+import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Proxy
+import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * service proxy. it means the service will only be created after invoke.
@@ -22,6 +24,7 @@ class ServiceProxyFactory(
         val creator = ServiceEntry<Any>(serviceStorage, serviceDeclarations, serviceDeclare, scopeAware)
         val interfaces = serviceDeclare.serviceElement.declarationTypes.plus(ProxyService::class)
         var realObject: Any? = null
+
         val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces.toClasses()) { _, method, args ->
             if (!finishCreate) {
                 throw ServiceConstructorException("you could n't call proxy object when proxy is creating.")
@@ -29,7 +32,12 @@ class ServiceProxyFactory(
             if (realObject == null) {
                 realObject = creator.getOrCreateService()
             }
-            method.invoke(realObject, args)
+
+            if (args == null) {
+                method.invoke(realObject)
+            } else {
+                method.invoke(realObject, *args)
+            }
         }
 
         finishCreate = true

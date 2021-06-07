@@ -1,11 +1,13 @@
 package org.tty.dioc.test.services
 
 import org.tty.dioc.core.declare.Inject
+import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.Service
 
 @Service
 class PrintService1Impl: PrintService1 {
     @Inject
+    @Lazy
     lateinit var helloService1: HelloService1
 
     @Inject

@@ -1,7 +1,9 @@
 package org.tty.dioc.core.util
 
+import com.sun.java.browser.net.ProxyService
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructorException
+import java.lang.reflect.Proxy
 import kotlin.reflect.*
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.jvmErasure
@@ -12,6 +14,10 @@ object ServiceUtil {
      */
     fun detectService(type: KClass<*>): Boolean {
         return hasAnnotation<Service>(type)
+    }
+
+    fun <T: Any> detectProxy(service: T): Boolean {
+        return service is Proxy
     }
 
     /**

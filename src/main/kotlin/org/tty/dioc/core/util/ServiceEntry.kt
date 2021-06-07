@@ -107,8 +107,8 @@ class ServiceEntry<T>(
                 this.createStub(parameterDeclare, scope)
             }
 
-        }
-        val stub = constructor.javaConstructor!!.create(args)
+        }.toTypedArray()
+        val stub: Any = constructor.javaConstructor!!.newInstance(*args)!!
 
         readyToInjects.addAll(extractStubToInjects(stub))
 

@@ -9,6 +9,7 @@ class PrintServiceImpl: PrintService {
     @Inject
     lateinit var helloService: HelloService
 
+
     override fun print() {
         println(helloService.hello())
     }
