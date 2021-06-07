@@ -9,6 +9,8 @@ import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.lifecycle.ServiceProxyFactory
 import org.tty.dioc.core.storage.ServiceStorage
+import kotlin.reflect.jvm.javaConstructor
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * the entry for create or get the service
@@ -101,12 +103,12 @@ class ServiceEntry<T>(
                 ServiceProxyFactory(declare, storage, serviceDeclarations, scopeAware).createProxy()
             } else {
                 // get the declare of the type
-                val parameterDeclare = serviceDeclarations.findByDeclare(it.type)!!
+                val parameterDeclare = serviceDeclarations.findByDeclare(it.type.jvmErasure)!!
                 this.createStub(parameterDeclare, scope)
             }
 
         }
-        val stub = constructor.create(args)
+        val stub = constructor.javaConstructor!!.create(args)
 
         readyToInjects.addAll(extractStubToInjects(stub))
 
@@ -118,7 +120,7 @@ class ServiceEntry<T>(
 
     // extract stub to property read to injected
     private fun extractStubToInjects(value: Any): List<ObjectProperty> {
-        val declare = serviceDeclarations.findByService(value.javaClass)!!
+        val declare = serviceDeclarations.findByService(value.javaClass.kotlin)!!
         val components = declare.componentsOn(InjectPlace.InjectProperty)
         return components.map { component ->
             ObjectProperty(value, component, serviceDeclarations.findByDeclare(component.type)!!)

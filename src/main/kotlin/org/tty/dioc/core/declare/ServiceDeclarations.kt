@@ -3,6 +3,7 @@ package org.tty.dioc.core.declare
 import org.tty.dioc.core.lifecycle.LifeCycle
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
+import kotlin.reflect.KClass
 
 /**
  * the declaration of the services
@@ -64,11 +65,11 @@ class ServiceDeclarations(): MutableCollection<ServiceDeclare> {
 
     }
 
-    fun findByDeclare(declareType: Class<*>): ServiceDeclare? {
+    fun findByDeclare(declareType: KClass<*>): ServiceDeclare? {
         return collection.find { it.serviceElement.declarationTypes.contains(declareType) }
     }
 
-    fun findByService(serviceType: Class<*>): ServiceDeclare? {
+    fun findByService(serviceType: KClass<*>): ServiceDeclare? {
         return collection.find { it.serviceElement.serviceType == serviceType }
     }
 

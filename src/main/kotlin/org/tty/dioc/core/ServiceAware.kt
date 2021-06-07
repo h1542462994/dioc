@@ -1,8 +1,10 @@
 package org.tty.dioc.core
 
+import kotlin.reflect.KClass
+
 interface ServiceAware {
     /**
      * to get the service
      */
-    fun <T> getService(type: Class<T>): T
+    fun <T: Any> getService(type: KClass<T>): T
 }

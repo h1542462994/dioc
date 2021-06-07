@@ -6,6 +6,7 @@ import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.storage.ServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
+import kotlin.reflect.KClass
 
 /**
  * the default implementation for applicationContext
@@ -13,7 +14,7 @@ import org.tty.dioc.core.util.ServiceEntry
  */
 open class DefaultApplicationContext(private val _declarations: ServiceDeclarations) : ApplicationContext, InitializeAware {
 
-    override fun <T> getService(type: Class<T>): T {
+    override fun <T : Any> getService(type: KClass<T>): T {
         val declare = declarations.findByDeclare(type)!!
         val creator = ServiceEntry<T>(storage, declarations, declare, this)
         return creator.getOrCreateService()

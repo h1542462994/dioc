@@ -1,5 +1,7 @@
 package org.tty.dioc.core.declare
 
+import kotlin.reflect.KClass
+
 /**
  * to declare the component of the service
  */
@@ -11,7 +13,7 @@ data class PropertyComponent(
     /**
      * type of the component
      */
-    val type: Class<*>,
+    val type: KClass<*>,
     /**
      * the place to inject.
      */

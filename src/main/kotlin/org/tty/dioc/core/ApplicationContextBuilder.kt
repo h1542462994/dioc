@@ -63,9 +63,9 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
         val classScanner = ClassScanner(name, inclusive, { true }, { true })
         val classes = classScanner.doScanAllClasses()
         return classes.filter {
-            ServiceUtil.detectService(it)
+            ServiceUtil.detectService(it.kotlin)
         }.map {
-            ServiceElement.fromClazz(it)
+            ServiceElement.fromType(it.kotlin)
         }
     }
 

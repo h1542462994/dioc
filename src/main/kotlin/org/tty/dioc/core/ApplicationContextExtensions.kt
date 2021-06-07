@@ -1,7 +1,9 @@
 package org.tty.dioc.core
 
+import kotlin.reflect.KClass
+
 @OptIn(ExperimentalStdlibApi::class)
-inline fun <reified T> ApplicationContext.getService(): T {
-    val type: Class<T> = T::class.java
+inline fun <reified T : Any> ApplicationContext.getService(): T {
+    val type: KClass<T> = T::class
     return this.getService(type)
 }

@@ -1,13 +1,13 @@
 package org.tty.dioc.core.declare
 
-import java.lang.reflect.Constructor
+import kotlin.reflect.KFunction
 
 /**
  * the declaration of the service
  */
 class ServiceDeclare(
     val serviceElement: ServiceElement,
-    val constructor: Constructor<*>,
+    val constructor: KFunction<*>,
     val singletonComponents: List<PropertyComponent>,
     val transientComponents: List<PropertyComponent>,
     val scopedComponents: List<PropertyComponent>

@@ -1,6 +1,7 @@
 package org.tty.dioc.core.declare
 
 import org.tty.dioc.core.util.ServiceUtil
+import kotlin.reflect.KClass
 
 /**
  * to represent service, to support the initialization of the instance.
@@ -9,11 +10,11 @@ class ServiceElement(
     /**
      * the real service type.
      */
-    val serviceType: Class<*>,
+    val serviceType: KClass<*>,
     /**
      * the declaration service types.
      */
-    val declarationTypes: Array<Class<*>>,
+    val declarationTypes: List<KClass<*>>,
     /**
      * the declaration of the service
      */
@@ -22,15 +23,15 @@ class ServiceElement(
 
 
     companion object {
-        fun fromClazz(clazz: Class<*>): ServiceElement {
-            require(ServiceUtil.detectService(clazz)) {
+        fun fromType(type: KClass<*>): ServiceElement {
+            require(ServiceUtil.detectService(type)) {
                 "clazz is not a service"
             }
-            val superTypes = ServiceUtil.superTypes(clazz)
+            val superTypes = ServiceUtil.superTypes(type)
             return ServiceElement(
-                clazz,
+                type,
                 superTypes,
-                ServiceAnnotation.fromClass(clazz)
+                ServiceAnnotation.fromType(type)
             )
         }
     }

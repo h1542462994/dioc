@@ -5,6 +5,7 @@ import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.lifecycle.LifeCycle
 import org.tty.dioc.core.lifecycle.Scope
 import java.lang.ref.WeakReference
+import kotlin.reflect.KClass
 
 /**
  * the service Storage
@@ -13,7 +14,7 @@ class ServiceStorage {
     /**
      * the singleton storage
      */
-    val singletonStorage = HashMap<Class<*>, Any>()
+    val singletonStorage = HashMap<KClass<*>, Any>()
 
     /**
      * the scoped storage
@@ -26,13 +27,13 @@ class ServiceStorage {
     val transientStorage = ArrayList<WeakReference<Any>>()
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> findSingleton(type: Class<T>): T? {
+    fun <T : Any> findSingleton(type: KClass<T>): T? {
         val instance = singletonStorage[type]
         return instance as T?
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> findScoped(type: Class<T>, scope: Scope): T? {
+    fun <T : Any> findScoped(type: KClass<T>, scope: Scope): T? {
         val instance = scopedStorage[ScopeIdentifier(type, scope)]
         return instance as T?
     }
