@@ -6,8 +6,9 @@ import org.tty.dioc.core.lifecycle.ProxyService
 import java.beans.PropertyDescriptor
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
-import java.lang.reflect.Field
-import java.lang.reflect.Parameter
+import kotlin.reflect.KAnnotatedElement
+import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty
 
 object ServiceUtil {
     /**
@@ -52,7 +53,7 @@ object ServiceUtil {
                 type.constructors.single()
             }
             else -> {
-                type.constructors.singleOrNull { it2 -> it2.annotations.any { it is InjectConstructor } }
+                type.constructors.singleOrNull { it2 -> hasAnnotation<InjectConstructor>(it2) }
             }
         } ?: throw ServiceConstructorException("there are more than one constructors has @InjectConstructor.")
     }
@@ -61,16 +62,26 @@ object ServiceUtil {
         val constructor = getInjectConstructor(type)
 
         return constructor.parameters.map { parameter ->
-            PropertyComponent(parameter.name, parameter.type, InjectPlace.Constructor, isLazyInject(parameter))
+            PropertyComponent(parameter.name, parameter.type, InjectPlace.Constructor, hasAnnotation<Lazy>(parameter))
         }
     }
 
     fun getComponentsOfProperties(type: Class<*>): List<PropertyComponent> {
-        return type.declaredFields.map { it2 ->
-            if (it2.annotations.any { it is Inject }) {
-                PropertyComponent(it2.name, it2.type, InjectPlace.InjectProperty, isLazyInject(it2))
+        val members = type.fields
+        var t: Any = type
+        try {
+            t = type.kotlin
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return members.map {
+            val isInject = hasAnnotationOn<Inject>(t, it.name)
+            val isLazyInject = hasAnnotationOn<Lazy>(t, it.name)
+            if (isInject) {
+                PropertyComponent(it.name, it.type, InjectPlace.InjectProperty, isLazyInject)
             } else {
-                PropertyComponent(it2.name, it2.type, InjectPlace.Property, isLazyInject(it2))
+                PropertyComponent(it.name, it.type, InjectPlace.Property, isLazyInject)
             }
         }
     }
@@ -82,13 +93,40 @@ object ServiceUtil {
         return ProxyService::class.java.isAssignableFrom(any.javaClass)
     }
 
-    /**
-     * to judge whether the parameter is annotated [Lazy]
-     */
-    fun isLazyInject(element: AnnotatedElement): Boolean {
-        return element.annotations.any { it is Lazy }
+
+    inline fun <reified T> hasAnnotationOn(type: Any, property: String): Boolean {
+        return when (type) {
+            is KClass<*> -> {
+                val field = type.java.getField(property)
+                val p = type.members.filterIsInstance<KMutableProperty<*>>().single { it.name == property }
+                hasAnnotation<T>(field) || hasAnnotation<T>(p) || hasAnnotation<T>(p.setter)
+            }
+            is Class<*> -> {
+                val propertyDescriptor = PropertyDescriptor(property, type)
+                val field = type.getField(property)
+                hasAnnotation<T>(field) || hasAnnotation<T>(propertyDescriptor.writeMethod)
+            }
+            else -> {
+                throw IllegalArgumentException("element should be Class<*> or KClass<*>")
+            }
+        }
     }
 
+    inline fun <reified T> hasAnnotation(element: Any): Boolean {
+        if (element is Class<*>) {
+            return hasAnnotation<T>(element)
+        } else if (element is KClass<*>) {
+            return hasAnnotation<T>(element)
+        }
+        throw IllegalArgumentException("element should be Class<*> or KClass<*>")
+    }
 
+    inline fun <reified T> hasAnnotation(element: AnnotatedElement): Boolean {
+        return element.annotations.any { it is T }
+    }
+
+    inline fun <reified T> hasAnnotation(element: KAnnotatedElement): Boolean {
+        return element.annotations.any { it is T }
+    }
 
 }

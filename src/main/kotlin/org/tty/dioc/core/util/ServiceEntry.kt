@@ -1,6 +1,7 @@
 package org.tty.dioc.core.util
 
 import org.tty.dioc.core.declare.InjectPlace
+import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.ServiceDeclarations
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.lifecycle.LifeCycle
@@ -58,8 +59,6 @@ class ServiceEntry<T>(
                 ServiceUtil.injectObjectProperty(current, service)
             }
 
-
-
             readyToInjects.remove(current)
         }
 
@@ -98,8 +97,8 @@ class ServiceEntry<T>(
         val constructor = declare.constructor
         val args = constructor.parameters.map {
             // if is lazyInject then inject the proxy object.
-            if (ServiceUtil.isLazyInject(it)) {
-                return ServiceProxyFactory(declare, storage, serviceDeclarations, scopeAware).createProxy()
+            if (ServiceUtil.hasAnnotation<Lazy>(it)) {
+                ServiceProxyFactory(declare, storage, serviceDeclarations, scopeAware).createProxy()
             } else {
                 // get the declare of the type
                 val parameterDeclare = serviceDeclarations.findByDeclare(it.type)!!

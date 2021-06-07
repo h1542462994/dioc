@@ -7,7 +7,6 @@ import org.tty.dioc.core.declare.Service
 @Service
 class PrintServiceImpl: PrintService {
     @Inject
-    @Lazy
     lateinit var helloService: HelloService
 
     override fun print() {
