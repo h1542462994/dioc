@@ -3,10 +3,9 @@ package org.tty.dioc.core
 import org.tty.dioc.core.declare.ServiceDeclarations
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.lifecycle.InitializeAware
-import org.tty.dioc.core.lifecycle.LifeCycle
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.storage.ServiceStorage
-import org.tty.dioc.core.util.ServiceCreator
+import org.tty.dioc.core.util.ServiceEntry
 
 /**
  * the default implementation for applicationContext
@@ -16,7 +15,7 @@ open class DefaultApplicationContext(private val _declarations: ServiceDeclarati
 
     override fun <T> getService(type: Class<T>): T {
         val declare = declarations.findByDeclare(type)!!
-        val creator = ServiceCreator<T>(storage, declarations, declare, null)
+        val creator = ServiceEntry<T>(storage, declarations, declare, null)
         return creator.getOrCreateService()
     }
 

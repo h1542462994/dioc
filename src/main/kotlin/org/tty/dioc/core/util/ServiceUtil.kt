@@ -1,6 +1,5 @@
 package org.tty.dioc.core.util
 
-import com.sun.javaws.jnl.PropertyDesc
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructorException
 import java.beans.PropertyDescriptor
