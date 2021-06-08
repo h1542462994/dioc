@@ -1,6 +1,5 @@
 package org.tty.dioc.core.util
 
-import com.sun.java.browser.net.ProxyService
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructorException
 import java.lang.reflect.Proxy
@@ -34,9 +33,9 @@ object ServiceUtil {
     /**
      * inject the service to the property
      */
-    fun injectObjectProperty(objectProperty: ObjectProperty, toInject: Any) {
-        val property = getProperty<KMutableProperty<*>>(objectProperty.service::class, objectProperty.propertyComponent.name)!!
-        property.setter.call(objectProperty.service, toInject)
+    fun injectObjectProperty(serviceProperty: ServiceProperty, toInject: Any) {
+        val property = getProperty<KMutableProperty<*>>(serviceProperty.service::class, serviceProperty.name)!!
+        property.setter.call(serviceProperty.service, toInject)
     }
 
     fun getComponents(type: KClass<*>): List<PropertyComponent> {

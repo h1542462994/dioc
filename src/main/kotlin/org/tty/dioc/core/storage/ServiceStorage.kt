@@ -1,8 +1,10 @@
 package org.tty.dioc.core.storage
 
-import org.tty.dioc.core.declare.ScopeIdentifier
-import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.lifecycle.LifeCycle
+import org.tty.dioc.core.declare.identifier.ScopeIdentifier
+import org.tty.dioc.core.declare.Lifecycle
+import org.tty.dioc.core.declare.identifier.ServiceIdentifier
+import org.tty.dioc.core.declare.identifier.SingletonIdentifier
+import org.tty.dioc.core.declare.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.Scope
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
@@ -14,7 +16,7 @@ class ServiceStorage {
     /**
      * the singleton storage
      */
-    val singletonStorage = HashMap<KClass<*>, Any>()
+    val singletonStorage = HashMap<SingletonIdentifier, Any>()
 
     /**
      * the scoped storage
@@ -26,25 +28,50 @@ class ServiceStorage {
      */
     val transientStorage = ArrayList<WeakReference<Any>>()
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> findSingleton(type: KClass<T>): T? {
-        val instance = singletonStorage[type]
-        return instance as T?
+    fun findTransientServicesByServiceType(serviceType: KClass<*>) {
+        TODO("not implemented yet.")
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> findScoped(type: KClass<T>, scope: Scope): T? {
-        val instance = scopedStorage[ScopeIdentifier(type, scope)]
-        return instance as T?
-    }
-
-    fun addService(type: ServiceDeclare, scope: Scope?, value: Any) {
-        if (type.lifeCycle == LifeCycle.Singleton) {
-            singletonStorage[type.serviceElement.serviceType] = value
-        } else if (type.lifeCycle == LifeCycle.Scoped) {
-            scopedStorage[ScopeIdentifier(type.serviceElement.serviceType, scope!!)] = value
-        } else {
-            transientStorage.add(WeakReference(value))
+    /**
+     * find the service if exists.
+     * the transient service could not be identified
+     * @throws IllegalArgumentException identifier not support or is [TransientIdentifier]
+     */
+    fun findService(identifier: ServiceIdentifier): Any? {
+        return when(identifier) {
+            is SingletonIdentifier -> {
+                singletonStorage[identifier]
+            }
+            is ScopeIdentifier -> {
+                scopedStorage[identifier]
+            }
+            is TransientIdentifier -> {
+                null
+            }
+            else -> {
+                throw IllegalArgumentException("identifier $identifier not supported")
+            }
         }
+    }
+
+    /**
+     * add the service by identifier
+     * @throws IllegalArgumentException identifier not support.
+     */
+    fun addService(identifier: ServiceIdentifier, value: Any) {
+       when(identifier) {
+           is SingletonIdentifier -> {
+               singletonStorage[identifier] = value
+           }
+           is ScopeIdentifier -> {
+               scopedStorage[identifier] = value
+           }
+           is TransientIdentifier -> {
+               transientStorage.add(WeakReference(value))
+           }
+           else -> {
+               throw IllegalArgumentException("identifier $identifier not supported")
+           }
+       }
     }
 }

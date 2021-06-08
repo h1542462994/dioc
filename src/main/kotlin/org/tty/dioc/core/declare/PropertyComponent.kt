@@ -11,9 +11,9 @@ data class PropertyComponent(
      */
     val name: String,
     /**
-     * type of the component
+     * type of the component (declare)
      */
-    val type: KClass<*>,
+    val declareType: KClass<*>,
     /**
      * the place to inject.
      */

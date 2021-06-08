@@ -7,6 +7,7 @@ package org.tty.dioc.core.declare
  * the scope service is must be lazy.
  * @see [org.tty.dioc.core.lifecycle.ServiceProxyFactory]
  */
+@MustBeDocumented
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Lazy()

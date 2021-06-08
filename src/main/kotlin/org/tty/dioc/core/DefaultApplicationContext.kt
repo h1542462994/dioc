@@ -1,7 +1,7 @@
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.ServiceDeclarations
 import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.storage.ServiceStorage
@@ -12,10 +12,10 @@ import kotlin.reflect.KClass
  * the default implementation for applicationContext
  * @see [ApplicationContext]
  */
-open class DefaultApplicationContext(private val _declarations: ServiceDeclarations) : ApplicationContext, InitializeAware {
+open class DefaultApplicationContext(private val _declarations: List<ServiceDeclare>) : ApplicationContext, InitializeAware {
 
     override fun <T : Any> getService(type: KClass<T>): T {
-        val declare = declarations.findByDeclare(type)!!
+        val declare = declarations.findByDeclare(type)
         val creator = ServiceEntry<T>(storage, declarations, declare, this)
         return creator.getOrCreateService()
     }
@@ -40,14 +40,10 @@ open class DefaultApplicationContext(private val _declarations: ServiceDeclarati
         TODO("Not yet implemented")
     }
 
-    private fun findDeclare(type: Class<*>): ServiceDeclare {
-        return declarations.single { it.serviceElement.declarationTypes.contains(type) }
-    }
-
     /**
      * the declaration of the services.
      */
-    val declarations: ServiceDeclarations
+    val declarations: List<ServiceDeclare>
     get() = _declarations
 
     /**

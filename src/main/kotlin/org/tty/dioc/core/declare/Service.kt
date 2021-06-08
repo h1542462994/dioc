@@ -1,11 +1,9 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.core.lifecycle.LifeCycle
-
 /**
  * to declare this is a service, once the package is under scan region.
  * the service will be auto detected.
- * @see [LifeCycle]
+ * @see [Lifecycle]
  * @see [org.tty.dioc.core.ApplicationContextBuilder.usePackage]
  */
 @Retention(AnnotationRetention.RUNTIME)
@@ -13,9 +11,9 @@ import org.tty.dioc.core.lifecycle.LifeCycle
 annotation class Service(
     /**
      * the lifecycle of the service.
-     * @see [LifeCycle]
+     * @see [Lifecycle]
      */
-    val lifecycle: LifeCycle = LifeCycle.Singleton,
+    val lifecycle: Lifecycle = Lifecycle.Singleton,
     /**
      * the the service is the lazy service.
      * the service is lazy by default.

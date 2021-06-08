@@ -1,8 +1,7 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.PackageOption
-import org.tty.dioc.core.declare.ServiceElement
-import org.tty.dioc.core.declare.ServiceDeclarations
+import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.util.ClassScanner
 import org.tty.dioc.core.util.ServiceUtil
 
@@ -35,8 +34,8 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
     /**
      * get the declaration of the service.
      */
-    public fun getDeclarations(): ServiceDeclarations {
-        val declarations = ArrayList<ServiceElement>()
+    public fun getDeclarations(): List<ServiceDeclare> {
+        val declarations = ArrayList<ServiceDeclare>()
         jsonFiles.forEach {
             declarations.addAll(getDeclarationsFromJsonFile(it))
         }
@@ -44,13 +43,13 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
             declarations.addAll(getDeclarationsFromPackage(it))
         }
         // constructor the serviceElements to serviceDeclarations
-        return ServiceDeclarations.fromServiceElements(declarations)
+        return declarations
     }
 
     /**
      * get the declaration of the service from the json file.
      */
-    private fun getDeclarationsFromJsonFile(fileName: String): List<ServiceElement> {
+    private fun getDeclarationsFromJsonFile(fileName: String): List<ServiceDeclare> {
         TODO("not implemented.")
     }
 
@@ -58,14 +57,14 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
     /**
      * get the declaration of the service from the json file.
      */
-    private fun getDeclarationsFromPackage(packageOption: PackageOption): List<ServiceElement> {
+    private fun getDeclarationsFromPackage(packageOption: PackageOption): List<ServiceDeclare> {
         val (name, inclusive) = packageOption
         val classScanner = ClassScanner(name, inclusive, { true }, { true })
         val classes = classScanner.doScanAllClasses()
         return classes.filter {
             ServiceUtil.detectService(it.kotlin)
         }.map {
-            ServiceElement.fromType(it.kotlin)
+            ServiceDeclare.fromType(it.kotlin)
         }
     }
 

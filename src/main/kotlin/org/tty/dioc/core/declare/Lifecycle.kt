@@ -1,4 +1,4 @@
-package org.tty.dioc.core.lifecycle
+package org.tty.dioc.core.declare
 
 /**
  * the lifecycle of the service.
@@ -7,7 +7,7 @@ package org.tty.dioc.core.lifecycle
  * if [Scoped], means the service will be equal in same scope, but not equal in different scope.
  * @see [Service]
  */
-enum class LifeCycle(var id: Int) {
+enum class Lifecycle(var id: Int) {
     Singleton(0),
     Transient(1),
     Scoped(2)
