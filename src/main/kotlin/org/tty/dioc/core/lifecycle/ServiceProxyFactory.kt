@@ -1,7 +1,7 @@
 package org.tty.dioc.core.lifecycle
 
 import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.error.ServiceConstructorException
+import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.storage.ServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.core.util.ServiceUtil.toClasses
@@ -24,7 +24,7 @@ class ServiceProxyFactory(
 
         val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces.toClasses()) { _, method, args ->
             if (!finishCreate) {
-                throw ServiceConstructorException("you could n't call proxy object when proxy is creating.")
+                throw ServiceConstructException("you could n't call proxy object when proxy is creating.")
             }
             if (realObject == null) {
                 realObject = creator.getOrCreateService()

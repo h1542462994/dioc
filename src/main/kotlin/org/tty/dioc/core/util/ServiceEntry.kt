@@ -4,6 +4,8 @@ import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
 import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByService
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
+import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.lifecycle.ServiceProxyFactory
@@ -30,6 +32,11 @@ class ServiceEntry<T>(
     // the object ready to injected
     private var readyToInjects = ArrayList<ServiceProperty>()
 
+    // the record of the transient service on creating.
+    // TODO: 2021/6/8 add transient service record to avoid the call cycle
+    private val readyTransients = readyToInjects.groupBy {
+        it.serviceDeclare
+    }.keys.filter { it.lifecycle == Lifecycle.Transient }
 
     /**
      * the implementation of the creation of the service.
@@ -56,6 +63,9 @@ class ServiceEntry<T>(
                 // get the service by declaration
                 var service = storage.findService(ServiceIdentifier.ofDeclare(currentDeclare, scope))
                 if (service == null) {
+                    if (currentDeclare.lifecycle == Lifecycle.Singleton && readyTransients.contains(currentDeclare)) {
+                        throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${currentDeclare.serviceType} -> ... -> ${currentDeclare.serviceType}")
+                    }
                     service = createStub(currentDeclare, scope)
                 }
                 ServiceUtil.injectObjectProperty(current, service)
@@ -71,9 +81,13 @@ class ServiceEntry<T>(
      * create the stub service, means the service on constructor has been injected.
      * @param stubs if not null, add the created stub to stubs, otherwise ignore the addition.
      */
-    private fun createStub(declare: ServiceDeclare, scope: Scope?): Any {
+    private fun createStub(declare: ServiceDeclare, scope: Scope?, declareRecord: ArrayList<ServiceDeclare> = arrayListOf()): Any {
         // get the constructor
         val constructor = declare.constructor
+
+        // to add the current declare to record
+        declareRecord.add(declare)
+
         val args = constructor.parameters.map {
             // if is lazyInject then inject the proxy object.
             if (ServiceUtil.hasAnnotation<Lazy>(it)) {
@@ -81,11 +95,18 @@ class ServiceEntry<T>(
             } else {
                 // get the declare of the type
                 val parameterDeclare = serviceDeclarations.findByDeclare(it.type.jvmErasure)
-                this.createStub(parameterDeclare, scope)
+                if (declareRecord.contains(parameterDeclare)) {
+                    throw ServiceConstructException("you want to inject a service in creating, it will cause dead lock, because dependency link ${declare.serviceType} -> ... -> ${declare.serviceType}")
+                }
+
+                this.createStub(parameterDeclare, scope, declareRecord)
             }
 
         }.toTypedArray()
         val stub: Any = constructor.javaConstructor!!.newInstance(*args)!!
+
+        // to remove the current declare from record
+        declareRecord.remove(declare)
 
         readyToInjects.addAll(extractStubToInjectProperties(stub))
 
@@ -98,7 +119,7 @@ class ServiceEntry<T>(
     // extract stub to property read to injected
     private fun extractStubToInjectProperties(value: Any): List<ServiceProperty> {
         val declare = serviceDeclarations.findByService(value.javaClass.kotlin)
-        return declare.toInjectServiceProperties(value)
+        return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
 

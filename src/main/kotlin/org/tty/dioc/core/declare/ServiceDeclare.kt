@@ -36,9 +36,9 @@ class ServiceDeclare(
     val components: List<PropertyComponent>
 
 ) {
-    fun toInjectServiceProperties(service: Any): List<ServiceProperty> {
-        return componentsOf(injectPlace = InjectPlace.InjectProperty).map {
-            ServiceProperty(serviceDeclare = this, service = service, it.name)
+    fun toServiceProperties(service: Any, injectPlace: InjectPlace): List<ServiceProperty> {
+        return componentsOf(injectPlace = injectPlace).map {
+            ServiceProperty(serviceDeclare = this, service = service, it.name, injectPlace = injectPlace)
         }
     }
 

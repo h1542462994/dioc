@@ -1,7 +1,7 @@
 package org.tty.dioc.core.error
 
 
-class ServiceConstructorException: ServiceDeclarationException {
+class ServiceConstructException: ServiceDeclarationException {
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

@@ -1,7 +1,7 @@
 package org.tty.dioc.core.util
 
 import org.tty.dioc.core.declare.*
-import org.tty.dioc.core.error.ServiceConstructorException
+import org.tty.dioc.core.error.ServiceConstructException
 import java.lang.reflect.Proxy
 import kotlin.reflect.*
 import kotlin.reflect.full.superclasses
@@ -46,7 +46,7 @@ object ServiceUtil {
     fun getInjectConstructor(type: KClass<*>): KFunction<*> {
         return when {
             type.constructors.isEmpty()  -> {
-                throw ServiceConstructorException("no public constructor.")
+                throw ServiceConstructException("no public constructor.")
             }
             type.constructors.singleOrNull() != null -> {
                 type.constructors.single()
@@ -54,7 +54,7 @@ object ServiceUtil {
             else -> {
                 type.constructors.singleOrNull { it2 -> hasAnnotation<InjectConstructor>(it2) }
             }
-        } ?: throw ServiceConstructorException("there are more than one constructors has @InjectConstructor.")
+        } ?: throw ServiceConstructException("there are more than one constructors has @InjectConstructor.")
     }
 
     fun getComponentsOfConstructor(type: KClass<*>): List<PropertyComponent> {
