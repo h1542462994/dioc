@@ -1,11 +1,10 @@
 package org.tty.dioc.core.storage
 
+import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.declare.identifier.ScopeIdentifier
-import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
-import org.tty.dioc.core.lifecycle.Scope
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
@@ -28,6 +27,10 @@ class ServiceStorage {
      */
     val transientStorage = ArrayList<WeakReference<Any>>()
 
+    /**
+     * find the available transient services by [serviceType]
+     * it is not necessary if the service declaration is not changed after the initialization of the [ApplicationContext]
+     */
     fun findTransientServicesByServiceType(serviceType: KClass<*>) {
         TODO("not implemented yet.")
     }

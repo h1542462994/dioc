@@ -17,19 +17,37 @@ class ServiceProxyFactory(
     private val scopeAware: ScopeAware
 ) {
     fun createProxy(): Any {
+        /**
+         * the proxy object could n't be called on creating.
+         */
         var finishCreate = false
         val creator = ServiceEntry<Any>(serviceStorage, serviceDeclarations, serviceDeclare, scopeAware)
+
+        /**
+         * make the proxy implements service declarationTypes
+         */
         val interfaces = serviceDeclare.declarationTypes.plus(ProxyService::class)
+
+        /**
+         * the realObject for proxy
+         */
         var realObject: Any? = null
 
         val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces.toClasses()) { _, method, args ->
             if (!finishCreate) {
                 throw ServiceConstructException("you could n't call proxy object when proxy is creating.")
             }
+
+            /**
+             * the proxy object will be created after the first call
+             */
             if (realObject == null) {
                 realObject = creator.getOrCreateService()
             }
 
+            /**
+             * proxy the functions
+             */
             if (args == null) {
                 method.invoke(realObject)
             } else {

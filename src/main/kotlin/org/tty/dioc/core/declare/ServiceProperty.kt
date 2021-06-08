@@ -4,7 +4,10 @@ import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
 import org.tty.dioc.core.error.ServiceDeclarationException
 
 /**
- * the element of the service
+ * the property of the service
+ * the [ServiceProperty] is the combination of the [ServiceDeclare] and the [PropertyComponent]
+ * @see [ServiceDeclare]
+ * @see [PropertyComponent]
  */
 class ServiceProperty(
     /**
@@ -30,13 +33,17 @@ class ServiceProperty(
     lateinit var propertyServiceDeclare: ServiceDeclare
 
     /**
-     * to fill the service property
+     * initialize the [propertyServiceDeclare] on by [serviceDeclares], then call [check] to check the structure
      */
     fun fill(serviceDeclares: List<ServiceDeclare>) {
-        propertyServiceDeclare = serviceDeclares.findByDeclare(injectComponent.declareType)
+
+        propertyServiceDeclare = serviceDeclares.findByDeclare(propertyComponent.declareType)
         check(serviceDeclares)
     }
 
+    /**
+     * to check the structure of the service on the current [serviceDeclare]
+     */
     fun check(serviceDeclares: List<ServiceDeclare>) {
         if (propertyServiceDeclare.lifecycle == Lifecycle.Transient && !propertyServiceDeclare.isLazyService) {
             throw ServiceDeclarationException("the transient service must is a lazy service.")
@@ -51,9 +58,9 @@ class ServiceProperty(
     }
 
     /**
-     * the inject Component
+     * the current property component.
      */
-    val injectComponent: PropertyComponent
+    val propertyComponent: PropertyComponent
     get() {
         return serviceDeclare.components.find { it.name == name && it.injectPlace == injectPlace }!!
     }

@@ -5,7 +5,6 @@ import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
 import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByService
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
@@ -67,7 +66,7 @@ class ServiceEntry<T>(
             current.fill(serviceDeclarations)
 
             //val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
-            if (current.injectComponent.injectLazy) {
+            if (current.propertyComponent.injectLazy) {
                 val serviceProxy = ServiceProxyFactory(current.propertyServiceDeclare, storage, serviceDeclarations, scopeAware).createProxy()
                 ServiceUtil.injectObjectProperty(current, serviceProxy)
             } else {
@@ -142,6 +141,9 @@ class ServiceEntry<T>(
         return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
+    /**
+     * to notify the service if the service implements [InitializeAware]
+     */
     private fun notifyServiceOnInit(service: Any) {
         if (service is InitializeAware) {
             service.onInit()

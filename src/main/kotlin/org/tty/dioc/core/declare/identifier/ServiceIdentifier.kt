@@ -6,6 +6,7 @@ import org.tty.dioc.core.lifecycle.Scope
 
 /**
  * the identifier to store the service
+ * @see [Lifecycle]
  */
 interface ServiceIdentifier {
     companion object {

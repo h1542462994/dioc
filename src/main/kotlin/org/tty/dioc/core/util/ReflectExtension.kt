@@ -1,8 +1,8 @@
 package org.tty.dioc.core.util
 
 import java.lang.reflect.Constructor
-import java.lang.reflect.Method
 
+@Deprecated("you should call constructor.create(*args) instead.")
 fun Constructor<*>.create(args: List<Any>): Any {
     return when {
         args.isEmpty() -> {

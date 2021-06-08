@@ -11,10 +11,13 @@ object ServiceUtil {
     /**
      * to detect whether a class is a service
      */
-    fun detectService(type: KClass<*>): Boolean {
-        return hasAnnotation<Service>(type)
+    fun detectService(serviceType: KClass<*>): Boolean {
+        return hasAnnotation<Service>(serviceType)
     }
 
+    /**
+     * to detect whether a service is a proxy service
+     */
     fun <T: Any> detectProxy(service: T): Boolean {
         return service is Proxy
     }
@@ -22,51 +25,65 @@ object ServiceUtil {
     /**
      * returns the interfaces and superclass(not any) directly implemented by the class.
      * if there's no interfaces and superclass, return itself
+     * @param toExcept the expected interfaces on scan.
      */
-    fun superTypes(type: KClass<*>, toExcept: List<KClass<*>> = listOf()): List<KClass<*>> {
-        val list = type.superclasses.filter { ! (it == Any::class || toExcept.contains(it)) }
+    fun declareTypes(serviceType: KClass<*>, toExcept: List<KClass<*>> = listOf()): List<KClass<*>> {
+        val list = serviceType.superclasses.filter { ! (it == Any::class || toExcept.contains(it)) }
         return list.ifEmpty {
-            listOf(type)
+            listOf(serviceType)
         }
     }
 
     /**
-     * inject the service to the property
+     * inject the component [component] to [ServiceProperty.service]
      */
-    fun injectObjectProperty(serviceProperty: ServiceProperty, toInject: Any) {
+    fun injectObjectProperty(serviceProperty: ServiceProperty, component: Any) {
         val property = getProperty<KMutableProperty<*>>(serviceProperty.service::class, serviceProperty.name)!!
-        property.setter.call(serviceProperty.service, toInject)
+        property.setter.call(serviceProperty.service, component)
     }
 
-    fun getComponents(type: KClass<*>): List<PropertyComponent> {
-        return getComponentsOfConstructor(type)
-            .plus(getComponentsOfProperties(type))
+    /**
+     * get the components of the [serviceType]
+     */
+    fun getComponents(serviceType: KClass<*>): List<PropertyComponent> {
+        return getComponentsOfConstructor(serviceType)
+            .plus(getComponentsOfProperties(serviceType))
     }
 
-    fun getInjectConstructor(type: KClass<*>): KFunction<*> {
+    /**
+     * get the inject constructor of the [serviceType]
+     * @see [InjectConstructor]
+     */
+    fun getInjectConstructor(serviceType: KClass<*>): KFunction<*> {
         return when {
-            type.constructors.isEmpty()  -> {
+            serviceType.constructors.isEmpty()  -> {
                 throw ServiceConstructException("no public constructor.")
             }
-            type.constructors.singleOrNull() != null -> {
-                type.constructors.single()
+            serviceType.constructors.singleOrNull() != null -> {
+                serviceType.constructors.single()
             }
             else -> {
-                type.constructors.singleOrNull { it2 -> hasAnnotation<InjectConstructor>(it2) }
+                serviceType.constructors.singleOrNull { it2 -> hasAnnotation<InjectConstructor>(it2) }
             }
         } ?: throw ServiceConstructException("there are more than one constructors has @InjectConstructor.")
     }
 
-    fun getComponentsOfConstructor(type: KClass<*>): List<PropertyComponent> {
-        val constructor = getInjectConstructor(type)
+    /**
+     * get the components on the constructor
+     */
+    fun getComponentsOfConstructor(serviceType: KClass<*>): List<PropertyComponent> {
+        val constructor = getInjectConstructor(serviceType)
 
         return constructor.parameters.map { parameter ->
             PropertyComponent(parameter.name!!, parameter.type.jvmErasure, InjectPlace.Constructor, hasAnnotation<Lazy>(parameter))
         }
     }
 
-    fun getComponentsOfProperties(type: KClass<*>): List<PropertyComponent> {
-        val properties = type.properties
+    /**
+     * get the components on the properties
+     */
+    fun getComponentsOfProperties(serviceType: KClass<*>): List<PropertyComponent> {
+        val properties = serviceType.properties
         return properties.map {
             val isLazy = hasAnnotationOnPropertyOrSetter<Lazy>(it)
             val isInject = hasAnnotationOnPropertyOrSetter<Inject>(it)
@@ -78,12 +95,14 @@ object ServiceUtil {
         }
     }
 
-
-    inline fun <reified T> hasAnnotationOnPropertyOrSetter(property: KProperty<*>): Boolean {
-        if (property is KMutableProperty<*>) {
-            return hasAnnotation<T>(property) || hasAnnotation<T>(property.setter)
+    /**
+     * to detect whether property has the annotation [T]
+     */
+    inline fun <reified T: Annotation> hasAnnotationOnPropertyOrSetter(property: KProperty<*>): Boolean {
+        return if (property is KMutableProperty<*>) {
+            hasAnnotation<T>(property) || hasAnnotation<T>(property.setter)
         } else {
-            return hasAnnotation<T>(property)
+            hasAnnotation<T>(property)
         }
     }
 

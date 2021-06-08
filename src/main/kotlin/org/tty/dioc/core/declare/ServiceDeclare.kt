@@ -10,6 +10,7 @@ import kotlin.reflect.KFunction
 
 /**
  * the declare of the service
+ * @see [Service]
  */
 class ServiceDeclare(
     /**
@@ -40,12 +41,18 @@ class ServiceDeclare(
     val components: List<PropertyComponent>
 
 ) {
+    /**
+     * get the serviceProperties which the injectPlace is equal to [injectPlace]
+     */
     fun toServiceProperties(service: Any, injectPlace: InjectPlace): List<ServiceProperty> {
         return componentsOf(injectPlace = injectPlace).map {
             ServiceProperty(serviceDeclare = this, service = service, it.name, injectPlace = injectPlace)
         }
     }
 
+    /**
+     * get the propertyComponent
+     */
     fun componentsOf(injectPlace: InjectPlace): List<PropertyComponent> {
         return components.filter { it.injectPlace == injectPlace }
     }
@@ -53,12 +60,12 @@ class ServiceDeclare(
     companion object {
         fun fromType(serviceType: KClass<*>): ServiceDeclare {
             require(ServiceUtil.detectService(serviceType)) {
-                "clazz is not a service"
+                "serviceType $serviceType is not a service"
             }
             val expectInterfaces = listOf(
                 InitializeAware::class, ProxyService::class, Scope::class, ScopeAware::class
             )
-            val declarationTypes = ServiceUtil.superTypes(serviceType)
+            val declarationTypes = ServiceUtil.declareTypes(serviceType)
             val serviceAnnotation = ServiceUtil.findAnnotation<Service>(serviceType)!!
             val constructor = ServiceUtil.getInjectConstructor(serviceType)
             val components = ServiceUtil.getComponents(serviceType)

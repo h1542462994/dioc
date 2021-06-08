@@ -1,5 +1,6 @@
 package org.tty.dioc.core
 
+import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.util.ClassScanner
@@ -26,6 +27,9 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
         return this
     }
 
+    /**
+     * use package to define the services which annotated [Service].
+     */
     fun usePackage(packageName: String, inclusive: Boolean = false): ApplicationContextBuilder {
         scanPackages.add(PackageOption(packageName, inclusive))
         return this;
