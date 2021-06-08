@@ -17,6 +17,11 @@ interface ScopeAware {
     fun beginScope(): Scope
 
     /**
+     * to begin a Scope
+     */
+    fun beginScope(scope: Scope)
+
+    /**
      * to end the currentScope
      */
     fun endScope()

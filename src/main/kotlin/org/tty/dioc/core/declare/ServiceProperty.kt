@@ -34,12 +34,19 @@ class ServiceProperty(
      */
     fun fill(serviceDeclares: List<ServiceDeclare>) {
         propertyServiceDeclare = serviceDeclares.findByDeclare(injectComponent.declareType)
-
+        check(serviceDeclares)
     }
 
-    fun check() {
-        if (propertyServiceDeclare.lifecycle == Lifecycle.Scoped && !propertyServiceDeclare.isLazyService) {
-            throw ServiceDeclarationException("the place to inject the scoped service must be declared as @Lazy")
+    fun check(serviceDeclares: List<ServiceDeclare>) {
+        if (propertyServiceDeclare.lifecycle == Lifecycle.Transient && !propertyServiceDeclare.isLazyService) {
+            throw ServiceDeclarationException("the transient service must is a lazy service.")
+        } else {
+            serviceDeclare.components.forEach {
+                val aDeclare = serviceDeclares.findByDeclare(it.declareType)
+                if (aDeclare.lifecycle == Lifecycle.Scoped && !it.injectLazy) {
+                    throw ServiceDeclarationException("you must inject a scoped service by @Lazy")
+                }
+            }
         }
     }
 

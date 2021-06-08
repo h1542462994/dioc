@@ -6,5 +6,5 @@ interface ServiceAware {
     /**
      * to get the service
      */
-    fun <T: Any> getService(type: KClass<T>): T
+    fun <T: Any> getService(declareType: KClass<T>): T
 }

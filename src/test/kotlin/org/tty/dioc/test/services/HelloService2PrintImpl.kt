@@ -2,6 +2,7 @@ package org.tty.dioc.test.services
 
 import org.tty.dioc.core.declare.Inject
 import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.lifecycle.InitializeAware
 
 @Service
 class HelloService2PrintImpl: HelloService2Print {
@@ -14,4 +15,6 @@ class HelloService2PrintImpl: HelloService2Print {
         println(s)
         return s
     }
+
+
 }

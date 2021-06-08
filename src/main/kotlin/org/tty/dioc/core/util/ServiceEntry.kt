@@ -6,6 +6,7 @@ import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByService
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.error.ServiceDeclarationException
+import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.lifecycle.ServiceProxyFactory
@@ -38,6 +39,10 @@ class ServiceEntry<T>(
         it.serviceDeclare
     }.keys.filter { it.lifecycle == Lifecycle.Transient }
 
+    private fun isReady(service: Any): Boolean {
+        return ! readyToInjects.any { it.service == service }
+    }
+
     /**
      * the implementation of the creation of the service.
      */
@@ -48,6 +53,10 @@ class ServiceEntry<T>(
             return s
         }
 
+        if (scope == null && serviceDeclare.lifecycle == Lifecycle.Scoped) {
+            throw ServiceConstructException("you couldn't get a scoped service out a scope.")
+        }
+
         // then create the stub
         val stub = createStub(serviceDeclare, scope)
 
@@ -55,23 +64,29 @@ class ServiceEntry<T>(
         // if there are service not created, create it, it will produce new readyToInject
         while (readyToInjects.isNotEmpty()) {
             val current = readyToInjects.first()
-            val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
+            current.fill(serviceDeclarations)
+
+            //val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
             if (current.injectComponent.injectLazy) {
-                val serviceProxy = ServiceProxyFactory(currentDeclare, storage, serviceDeclarations, scopeAware).createProxy()
+                val serviceProxy = ServiceProxyFactory(current.propertyServiceDeclare, storage, serviceDeclarations, scopeAware).createProxy()
                 ServiceUtil.injectObjectProperty(current, serviceProxy)
             } else {
                 // get the service by declaration
-                var service = storage.findService(ServiceIdentifier.ofDeclare(currentDeclare, scope))
+                var service = storage.findService(ServiceIdentifier.ofDeclare(current.propertyServiceDeclare, scope))
                 if (service == null) {
-                    if (currentDeclare.lifecycle == Lifecycle.Singleton && readyTransients.contains(currentDeclare)) {
-                        throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${currentDeclare.serviceType} -> ... -> ${currentDeclare.serviceType}")
+                    if (current.propertyServiceDeclare.lifecycle == Lifecycle.Singleton && readyTransients.contains(current.propertyServiceDeclare)) {
+                        throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${current.propertyServiceDeclare.serviceType} -> ... -> ${current.propertyServiceDeclare.serviceType}")
                     }
-                    service = createStub(currentDeclare, scope)
+                    service = createStub(current.propertyServiceDeclare, scope)
                 }
                 ServiceUtil.injectObjectProperty(current, service)
             }
 
             readyToInjects.remove(current)
+
+            if (isReady(current)) {
+                notifyServiceOnInit(stub)
+            }
         }
 
         return stub
@@ -108,7 +123,12 @@ class ServiceEntry<T>(
         // to remove the current declare from record
         declareRecord.remove(declare)
 
-        readyToInjects.addAll(extractStubToInjectProperties(stub))
+        val injects = extractStubToInjectProperties(stub)
+        if (injects.isEmpty()) {
+            notifyServiceOnInit(stub)
+        }
+
+        readyToInjects.addAll(injects)
 
         // to add the service into the storage
         storage.addService(ServiceIdentifier.ofDeclare(declare, scope), stub)
@@ -122,5 +142,10 @@ class ServiceEntry<T>(
         return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
+    private fun notifyServiceOnInit(service: Any) {
+        if (service is InitializeAware) {
+            service.onInit()
+        }
+    }
 
 }

@@ -5,4 +5,8 @@ package org.tty.dioc.core
  */
 class LocalApplicationContext(packageName: String) : DefaultApplicationContext(
     ApplicationContextBuilder().usePackage(packageName, true).getDeclarations()
-)
+) {
+    init {
+        super.onInit()
+    }
+}

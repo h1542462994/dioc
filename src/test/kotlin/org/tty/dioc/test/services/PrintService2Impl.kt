@@ -3,9 +3,10 @@ package org.tty.dioc.test.services
 import org.tty.dioc.core.declare.Inject
 import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.lifecycle.InitializeAware
 
 @Service
-class PrintService2Impl: PrintService2 {
+class PrintService2Impl: PrintService2, InitializeAware {
     @Inject
     @Lazy
     lateinit var helloService1: HelloService1
@@ -14,6 +15,10 @@ class PrintService2Impl: PrintService2 {
         val s = "print2:${helloService1.hello()}"
         println(s)
         return s
+    }
+
+    override fun onInit() {
+        println("=== PrintService2Impl is created.")
     }
 
 }

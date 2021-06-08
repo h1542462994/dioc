@@ -2,6 +2,7 @@ package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
+import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.storage.ServiceStorage
@@ -14,31 +15,49 @@ import kotlin.reflect.KClass
  */
 open class DefaultApplicationContext(private val _declarations: List<ServiceDeclare>) : ApplicationContext, InitializeAware {
 
-    override fun <T : Any> getService(type: KClass<T>): T {
-        val declare = declarations.findByDeclare(type)
+    override fun <T : Any> getService(declareType: KClass<T>): T {
+        val declare = declarations.findByDeclare(declareType)
         val creator = ServiceEntry<T>(storage, declarations, declare, this)
         return creator.getOrCreateService()
     }
 
     override fun currentScope(): Scope? {
-        return null
+        return threadLocalScope.get()
     }
 
     override fun beginScope(): Scope {
-        TODO("Not yet implemented")
+        val scope = scopeFactory.create()
+        records.get().add(scope)
+        threadLocalScope.set(scope)
+        return scope
+    }
+
+    override fun beginScope(scope: Scope) {
+        records.get().add(scope)
+        threadLocalScope.set(scope)
     }
 
     override fun endScope() {
-        TODO("Not yet implemented")
+        val scope = threadLocalScope.get() ?: throw IllegalStateException("there are not scope")
+        records.get().remove(scope)
+        threadLocalScope.set(null)
+
     }
 
     override fun endScope(scope: Scope) {
-        TODO("Not yet implemented")
+        val exists = records.get().contains(scope)
+        if (!exists) {
+            throw IllegalStateException("there are not scope like $scope")
+        }
+        records.get().remove(scope)
     }
 
     override fun withScope(action: (Scope) -> Unit) {
-        TODO("Not yet implemented")
+        val scope = beginScope()
+        action(scope)
+        endScope()
     }
+
 
     /**
      * the declaration of the services.
@@ -46,13 +65,23 @@ open class DefaultApplicationContext(private val _declarations: List<ServiceDecl
     val declarations: List<ServiceDeclare>
     get() = _declarations
 
+    private val threadLocalScope: ThreadLocal<Scope?> = ThreadLocal()
+    private val records: ThreadLocal<ArrayList<Scope>> = ThreadLocal<ArrayList<Scope>>().also {
+        it.set(arrayListOf())
+    }
+    private val scopeFactory: Builder<Scope> = DefaultScopeFactory()
+
     /**
      * the storage of the services.
      */
     protected val storage: ServiceStorage = ServiceStorage()
 
     override fun onInit() {
-
+        declarations.forEach {
+            if (!it.isLazyService) {
+                getService(it.declarationTypes[0])
+            }
+        }
     }
 
 }

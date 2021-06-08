@@ -1,5 +1,9 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.core.lifecycle.ProxyService
+import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.util.ServiceUtil
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -51,6 +55,9 @@ class ServiceDeclare(
             require(ServiceUtil.detectService(serviceType)) {
                 "clazz is not a service"
             }
+            val expectInterfaces = listOf(
+                InitializeAware::class, ProxyService::class, Scope::class, ScopeAware::class
+            )
             val declarationTypes = ServiceUtil.superTypes(serviceType)
             val serviceAnnotation = ServiceUtil.findAnnotation<Service>(serviceType)!!
             val constructor = ServiceUtil.getInjectConstructor(serviceType)
