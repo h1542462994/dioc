@@ -1,5 +1,10 @@
 # dynamic ion container
 
+## 模块
+
+1. [核心模块](./core/README.md)
+2. [通用模块](./util/README.md)
+
 ## 需求分析
 
 1. 支持从json文件导入IoC容器配置。(可配置)
