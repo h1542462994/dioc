@@ -1,10 +1,10 @@
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.declare.PackageOption
+import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.util.ClassScanner
 import org.tty.dioc.core.util.ServiceUtil
+import org.tty.dioc.util.ClassScanner
 
 /**
  * the builder for applicationContext

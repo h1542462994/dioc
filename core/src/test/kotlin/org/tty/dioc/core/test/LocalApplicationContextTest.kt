@@ -1,12 +1,12 @@
-package org.tty.dioc.test
+package org.tty.dioc.core.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.core.getService
+import org.tty.dioc.core.test.services.*
 import org.tty.dioc.core.util.ServiceUtil
-import org.tty.dioc.test.services.*
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextTest {
@@ -76,7 +76,7 @@ class LocalApplicationContextTest {
         @BeforeAll
         @JvmStatic
         fun initialize() {
-            context = LocalApplicationContext("org.tty.dioc.test.services")
+            context = LocalApplicationContext("org.tty.dioc.core.test.services")
         }
     }
 }

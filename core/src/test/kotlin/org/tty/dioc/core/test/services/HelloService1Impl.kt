@@ -1,4 +1,4 @@
-package org.tty.dioc.test.services
+package org.tty.dioc.core.test.services
 
 import org.tty.dioc.core.declare.Service
 

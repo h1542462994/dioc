@@ -1,4 +1,4 @@
-package org.tty.dioc.core.util;
+package org.tty.dioc.util;
 
 import java.io.File;
 import java.io.FileFilter;

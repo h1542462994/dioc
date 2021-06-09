@@ -1,11 +1,7 @@
-archivesBaseName = 'core'
+archivesBaseName = 'util'
 
 repositories {
     maven { url 'https://maven.aliyun.com/repository/google' }
     maven { url 'https://maven.aliyun.com/repository/public' }
     mavenCentral()
-}
-
-dependencies {
-    implementation project(':util')
 }
