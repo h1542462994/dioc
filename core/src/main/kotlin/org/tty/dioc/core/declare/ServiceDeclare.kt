@@ -5,8 +5,10 @@ import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.util.ServiceUtil
+import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.findAnnotation
 
 /**
  * the declare of the service
@@ -58,15 +60,18 @@ class ServiceDeclare(
     }
 
     companion object {
+        /**
+         * to get the [ServiceDeclare] from [serviceType]
+         */
         fun fromType(serviceType: KClass<*>): ServiceDeclare {
-            require(ServiceUtil.detectService(serviceType)) {
+            require(serviceType.hasServiceAnnotation) {
                 "serviceType $serviceType is not a service"
             }
-            val expectInterfaces = listOf(
+            val exceptInterfaces = listOf(
                 InitializeAware::class, ProxyService::class, Scope::class, ScopeAware::class
             )
-            val declarationTypes = ServiceUtil.declareTypes(serviceType)
-            val serviceAnnotation = ServiceUtil.findAnnotation<Service>(serviceType)!!
+            val declarationTypes = ServiceUtil.declareTypes(serviceType, exceptInterfaces)
+            val serviceAnnotation = serviceType.findAnnotation<Service>()!!
             val constructor = ServiceUtil.getInjectConstructor(serviceType)
             val components = ServiceUtil.getComponents(serviceType)
 
@@ -80,12 +85,7 @@ class ServiceDeclare(
             )
         }
 
-        fun List<ServiceDeclare>.findByDeclare(declareType: KClass<*>): ServiceDeclare {
-            return this.single { it.declarationTypes.contains(declareType) }
-        }
 
-        fun List<ServiceDeclare>.findByService(serviceType: KClass<*>): ServiceDeclare {
-            return this.single { it.serviceType == serviceType }
-        }
+
     }
 }

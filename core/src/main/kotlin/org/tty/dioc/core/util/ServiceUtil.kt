@@ -2,8 +2,10 @@ package org.tty.dioc.core.util
 
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.util.*
 import java.lang.reflect.Proxy
 import kotlin.reflect.*
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.jvmErasure
 
@@ -11,9 +13,8 @@ object ServiceUtil {
     /**
      * to detect whether a class is a service
      */
-    fun detectService(serviceType: KClass<*>): Boolean {
-        return hasAnnotation<Service>(serviceType)
-    }
+    val KClass<*>.hasServiceAnnotation: Boolean
+    get() = this.hasAnnotation<Service>()
 
     /**
      * to detect whether a service is a proxy service
@@ -37,8 +38,8 @@ object ServiceUtil {
     /**
      * inject the component [component] to [ServiceProperty.service]
      */
-    fun injectObjectProperty(serviceProperty: ServiceProperty, component: Any) {
-        val property = getProperty<KMutableProperty<*>>(serviceProperty.service::class, serviceProperty.name)!!
+    fun injectComponentToService(serviceProperty: ServiceProperty, component: Any) {
+        val property = serviceProperty.service::class.getProperty<KMutableProperty<*>>(serviceProperty.name)!!
         property.setter.call(serviceProperty.service, component)
     }
 
@@ -63,7 +64,7 @@ object ServiceUtil {
                 serviceType.constructors.single()
             }
             else -> {
-                serviceType.constructors.singleOrNull { it2 -> hasAnnotation<InjectConstructor>(it2) }
+                serviceType.constructors.singleOrNull { it2 -> it2.hasAnnotation<InjectConstructor>() }
             }
         } ?: throw ServiceConstructException("there are more than one constructors has @InjectConstructor.")
     }
@@ -75,7 +76,7 @@ object ServiceUtil {
         val constructor = getInjectConstructor(serviceType)
 
         return constructor.parameters.map { parameter ->
-            PropertyComponent(parameter.name!!, parameter.type.jvmErasure, InjectPlace.Constructor, hasAnnotation<Lazy>(parameter))
+            PropertyComponent(parameter.name!!, parameter.kotlin, InjectPlace.Constructor, parameter.hasAnnotation<Lazy>())
         }
     }
 
@@ -85,49 +86,15 @@ object ServiceUtil {
     fun getComponentsOfProperties(serviceType: KClass<*>): List<PropertyComponent> {
         val properties = serviceType.properties
         return properties.map {
-            val isLazy = hasAnnotationOnPropertyOrSetter<Lazy>(it)
-            val isInject = hasAnnotationOnPropertyOrSetter<Inject>(it)
+            val isLazy = it.hasAnnotationOnPropertyOrSetter<Lazy>()
+            val isInject = it.hasAnnotationOnPropertyOrSetter<Inject>()
             if (isInject) {
-                PropertyComponent(it.name, it.returnType.jvmErasure, injectPlace = InjectPlace.InjectProperty, isLazy)
+                PropertyComponent(it.name, it.returnTypeKotlin, injectPlace = InjectPlace.InjectProperty, isLazy)
             } else {
-                PropertyComponent(it.name, it.returnType.jvmErasure, injectPlace = InjectPlace.Property, isLazy)
+                PropertyComponent(it.name, it.returnTypeKotlin, injectPlace = InjectPlace.Property, isLazy)
             }
         }
     }
 
-    /**
-     * to detect whether property has the annotation [T]
-     */
-    inline fun <reified T: Annotation> hasAnnotationOnPropertyOrSetter(property: KProperty<*>): Boolean {
-        return if (property is KMutableProperty<*>) {
-            hasAnnotation<T>(property) || hasAnnotation<T>(property.setter)
-        } else {
-            hasAnnotation<T>(property)
-        }
-    }
 
-    inline fun <reified T> hasAnnotation(element: KAnnotatedElement): Boolean {
-        return element.annotations.any { it is T }
-    }
-
-    inline fun <reified T: Annotation> findAnnotation(element: KAnnotatedElement): T? {
-        return element.annotations.filterIsInstance<T>().singleOrNull()
-    }
-
-    inline fun <reified T, reified TP: KCallable<*>> getProperty(name: String): TP? {
-        return getProperty(T::class, name)
-    }
-
-    inline fun <reified TP: KCallable<*>> getProperty(type: KClass<*>, name: String): TP? {
-        return type.members.filterIsInstance<TP>().singleOrNull { it.name == name }
-    }
-
-    val KClass<*>.properties: List<KProperty<*>>
-    get() {
-        return this.members.filterIsInstance<KProperty<*>>()
-    }
-
-    fun List<KClass<*>>.toClasses(): Array<out Class<*>> {
-        return this.map { it.java }.toTypedArray()
-    }
 }

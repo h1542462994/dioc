@@ -4,7 +4,8 @@ import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.storage.ServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
-import org.tty.dioc.core.util.ServiceUtil.toClasses
+import org.tty.dioc.core.declare.Lazy
+import org.tty.dioc.util.toClasses
 import java.lang.reflect.Proxy
 
 /**
@@ -16,6 +17,9 @@ class ServiceProxyFactory(
     private val serviceDeclarations: List<ServiceDeclare>,
     private val scopeAware: ScopeAware
 ) {
+    /**
+     * create the proxy for service inject with [Lazy]
+     */
     fun createProxy(): Any {
         /**
          * the proxy object could n't be called on creating.

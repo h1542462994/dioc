@@ -1,6 +1,5 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
 import org.tty.dioc.core.error.ServiceDeclarationException
 
 /**

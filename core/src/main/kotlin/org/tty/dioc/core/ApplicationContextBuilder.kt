@@ -3,8 +3,9 @@ package org.tty.dioc.core
 import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.util.ServiceUtil
-import org.tty.dioc.util.ClassScanner
+import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
+import org.tty.dioc.util.Builder
+import org.tty.dioc.util.KClassScanner
 
 /**
  * the builder for applicationContext
@@ -32,13 +33,13 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
      */
     fun usePackage(packageName: String, inclusive: Boolean = false): ApplicationContextBuilder {
         scanPackages.add(PackageOption(packageName, inclusive))
-        return this;
+        return this
     }
 
     /**
      * get the declaration of the service.
      */
-    public fun getDeclarations(): List<ServiceDeclare> {
+    fun getDeclarations(): List<ServiceDeclare> {
         val declarations = ArrayList<ServiceDeclare>()
         jsonFiles.forEach {
             declarations.addAll(getDeclarationsFromJsonFile(it))
@@ -63,14 +64,12 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
      */
     private fun getDeclarationsFromPackage(packageOption: PackageOption): List<ServiceDeclare> {
         val (name, inclusive) = packageOption
-        val classScanner = ClassScanner(name, inclusive, { true }, { true })
-        val classes = classScanner.doScanAllClasses()
-        return classes.filter {
-            ServiceUtil.detectService(it.kotlin)
+        val kClassScanner = KClassScanner(name, inclusive, { true }, { true })
+        val kClasses = kClassScanner.doScanAllClasses()
+        return kClasses.filter {
+            it.hasServiceAnnotation
         }.map {
-            ServiceDeclare.fromType(it.kotlin)
+            ServiceDeclare.fromType(it)
         }
     }
-
-
 }

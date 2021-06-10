@@ -1,12 +1,13 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.declare.ServiceDeclare.Companion.findByDeclare
+import org.tty.dioc.core.declare.findByDeclare
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.storage.ServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
+import org.tty.dioc.util.Builder
 import kotlin.reflect.KClass
 
 /**

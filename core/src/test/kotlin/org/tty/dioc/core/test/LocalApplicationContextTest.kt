@@ -10,10 +10,17 @@ import org.tty.dioc.core.util.ServiceUtil
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextTest {
+    @Order(0)
+    @Test
+    fun testJavaService() {
+        val helloJava: HelloJava = context.getService()
+        assertEquals("helloJava", helloJava.helloJava())
+    }
+
     /**
      * lazy [HelloService1], [PrintService2]
      */
-    @Order(0)
+    @Order(1)
     @Test
     @DisplayName("测试@Lazy(inject)的正确性")
     fun testLazyInject() {
@@ -26,7 +33,7 @@ class LocalApplicationContextTest {
     /**
      * singleton [HelloService1]
      */
-    @Order(1)
+    @Order(2)
     @Test
     @DisplayName("测试singleton服务的正确性")
     fun testOneSingleton() {
@@ -42,7 +49,7 @@ class LocalApplicationContextTest {
     /**
      * 2 * singleton [HelloService1],[PrintService1]
      */
-    @Order(2)
+    @Order(3)
     @Test
     @DisplayName("测试singleton->singleton服务的正确性")
     fun testSingletonToSingleton() {
@@ -55,7 +62,7 @@ class LocalApplicationContextTest {
     /**
      * 2 * singleton [HelloService2Print],[PrintService1]
      */
-    @Order(3)
+    @Order(4)
     @Test
     @DisplayName("测试两个singleton通过属性互相注入的正确性")
     fun testCircleDependencySingletonByProperty() {
@@ -68,10 +75,14 @@ class LocalApplicationContextTest {
         assertEquals("2:print:hello", printService1.print2())
     }
 
-
+    @Test
+    fun testScanUtil() {
+        context2 = LocalApplicationContext("org.tty.dioc.util.test")
+    }
 
     companion object {
         private lateinit var context: ApplicationContext
+        private lateinit var context2: ApplicationContext
 
         @BeforeAll
         @JvmStatic
