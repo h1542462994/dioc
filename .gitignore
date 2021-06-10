@@ -2,8 +2,11 @@
 /.idea/
 /build/
 /out/
+/util/build/
+/util/out/
 /core/build/
 /core/out/
+*.class
 
 # Ignore Gradle GUI config
 gradle-app.setting
