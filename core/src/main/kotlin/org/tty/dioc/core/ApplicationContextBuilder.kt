@@ -33,13 +33,13 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
      */
     fun usePackage(packageName: String, inclusive: Boolean = false): ApplicationContextBuilder {
         scanPackages.add(PackageOption(packageName, inclusive))
-        return this
+        return this;
     }
 
     /**
      * get the declaration of the service.
      */
-    fun getDeclarations(): List<ServiceDeclare> {
+    public fun getDeclarations(): List<ServiceDeclare> {
         val declarations = ArrayList<ServiceDeclare>()
         jsonFiles.forEach {
             declarations.addAll(getDeclarationsFromJsonFile(it))

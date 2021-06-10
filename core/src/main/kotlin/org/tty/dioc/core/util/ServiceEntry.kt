@@ -24,7 +24,6 @@ class ServiceEntry<T>(
 
 
     // entry function for createService
-    @Suppress("UNCHECKED_CAST")
     fun getOrCreateService(): T {
         return getOrCreateService(type, scopeAware.currentScope()) as T
     }
@@ -93,7 +92,7 @@ class ServiceEntry<T>(
 
     /**
      * create the stub service, means the service on constructor has been injected.
-     * @param declareRecord the record declares
+     * @param stubs if not null, add the created stub to stubs, otherwise ignore the addition.
      */
     private fun createStub(declare: ServiceDeclare, scope: Scope?, declareRecord: ArrayList<ServiceDeclare> = arrayListOf()): Any {
         // get the constructor

@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.jvmErasure
 fun Constructor<*>.create(args: List<Any>): Any {
     return when {
         args.isEmpty() -> {
-            this.newInstance()
+            this.newInstance();
         }
         args.size == 1 -> {
             this.newInstance(args[0])
