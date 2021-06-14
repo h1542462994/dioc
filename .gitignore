@@ -1,5 +1,7 @@
 .gradle
 /.idea/
+/build/
+/out/
 /util/build/
 /util/out/
 /core/build/
