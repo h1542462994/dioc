@@ -15,6 +15,7 @@ import kotlin.reflect.jvm.jvmErasure
 /**
  * the entry for create or get the service
  */
+
 class ServiceEntry<T>(
     private val storage: ServiceStorage,
     private val serviceDeclarations: List<ServiceDeclare>,
@@ -24,6 +25,7 @@ class ServiceEntry<T>(
 
 
     // entry function for createService
+    @Suppress("UNCHECKED_CAST")
     fun getOrCreateService(): T {
         return getOrCreateService(type, scopeAware.currentScope()) as T
     }
