@@ -2,8 +2,11 @@ package org.tty.dioc.core.test.services;
 
 import org.tty.dioc.core.declare.Service;
 
+/**
+ * the implementation for the [TestJava]
+ */
 @Service
-public class HelloJavaImpl implements HelloJava {
+public class TestJavaImpl implements TestJava {
 
     @Override
     public String helloJava() {

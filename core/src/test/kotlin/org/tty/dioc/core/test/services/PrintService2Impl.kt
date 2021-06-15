@@ -9,10 +9,10 @@ import org.tty.dioc.core.lifecycle.InitializeAware
 class PrintService2Impl: PrintService2, InitializeAware {
     @Inject
     @Lazy
-    lateinit var helloService1: HelloService1
+    lateinit var helloService: HelloService
 
     override fun print(): String {
-        val s = "print2:${helloService1.hello()}"
+        val s = "print2:${helloService.hello()}"
         println(s)
         return s
     }

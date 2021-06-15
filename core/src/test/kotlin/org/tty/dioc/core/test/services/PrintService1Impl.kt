@@ -8,19 +8,19 @@ import org.tty.dioc.core.declare.Service
 class PrintService1Impl: PrintService1 {
     @Inject
     @Lazy
-    lateinit var helloService1: HelloService1
+    lateinit var helloService: HelloService
 
     @Inject
-    lateinit var helloService2Print: HelloService2Print
+    lateinit var helloServiceNotLazy: HelloServiceNotLazy
 
 
     override fun print(): String {
-        val printString = "print:${helloService1.hello()}"
+        val printString = "print:${helloService.hello()}"
         println(printString)
         return printString
     }
 
     override fun print2(): String {
-        return helloService2Print.printHello()
+        return helloServiceNotLazy.hello()
     }
 }
