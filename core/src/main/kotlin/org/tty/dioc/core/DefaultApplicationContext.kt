@@ -75,7 +75,7 @@ open class DefaultApplicationContext(private val _declarations: List<ServiceDecl
     /**
      * the storage of the services.
      */
-    protected val storage: ServiceStorage = ServiceStorage()
+    private val storage: ServiceStorage = ServiceStorage()
 
     override fun onInit() {
         declarations.forEach {
