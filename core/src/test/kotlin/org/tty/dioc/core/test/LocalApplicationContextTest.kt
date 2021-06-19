@@ -2,6 +2,7 @@ package org.tty.dioc.core.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.function.ThrowingSupplier
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.core.getService
@@ -9,6 +10,7 @@ import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
 import org.tty.dioc.core.test.services.*
+import org.tty.dioc.core.test.services.circle.HelloServiceToPrint
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextTest {
@@ -128,13 +130,10 @@ class LocalApplicationContextTest {
     @Test
     @DisplayName("测试两个singleton通过属性互相注入的正确性")
     fun testCircleDependencySingletonByProperty() {
-        val helloServiceNotLazy: HelloServiceNotLazy = context.getService()
-
-        assertEquals("2:print:hello", helloServiceNotLazy.hello())
-
-        val printService1: PrintService1 = context.getService()
-
-        assertEquals("2:print:hello", printService1.print2())
+        assertDoesNotThrow {
+            val helloServiceToPrint: HelloServiceToPrint = context.getService()
+            assertEquals("print:hello", helloServiceToPrint.print())
+        }
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.lifecycle.ServiceProxyFactory
 import org.tty.dioc.core.storage.ServiceStorage
+import org.tty.dioc.util.kotlin
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.jvmErasure
@@ -74,7 +75,7 @@ class ServiceEntry<T>(
                 // get the service by declaration
                 var service = storage.findService(ServiceIdentifier.ofDeclare(current.propertyServiceDeclare, scope))
                 if (service == null) {
-                    if (current.propertyServiceDeclare.lifecycle == Lifecycle.Singleton && readyTransients.contains(current.propertyServiceDeclare)) {
+                    if (current.propertyServiceDeclare.lifecycle == Lifecycle.Transient && readyTransients.contains(current.propertyServiceDeclare)) {
                         throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${current.propertyServiceDeclare.serviceType} -> ... -> ${current.propertyServiceDeclare.serviceType}")
                     }
                     service = createStub(current.propertyServiceDeclare, scope)
@@ -109,7 +110,7 @@ class ServiceEntry<T>(
                 ServiceProxyFactory(declare, storage, serviceDeclarations, scopeAware).createProxy()
             } else {
                 // get the declare of the type
-                val parameterDeclare = serviceDeclarations.findByDeclare(it.type.jvmErasure)
+                val parameterDeclare = serviceDeclarations.findByDeclare(it.kotlin)
                 if (declareRecord.contains(parameterDeclare)) {
                     throw ServiceConstructException("you want to inject a service in creating, it will cause dead lock, because dependency link ${declare.serviceType} -> ... -> ${declare.serviceType}")
                 }
