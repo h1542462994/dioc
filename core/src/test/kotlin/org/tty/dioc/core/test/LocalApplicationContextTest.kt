@@ -109,32 +109,42 @@ class LocalApplicationContextTest {
 
 
     /**
-     * 2 * singleton [HelloService],[PrintService1]
+     * 2 * singleton [HelloService],[PrintService]
      */
     @Order(9)
     @Test
     @DisplayName("测试singleton->singleton服务的正确性")
     fun testSingletonToSingleton() {
         // get the printService1
-        val printService1: PrintService1 = context.getService()
+        val printService: PrintService = context.getService()
 
-        assertEquals("print:hello",printService1.print())
+        assertEquals("print:hello",printService.print())
     }
 
     /**
-     * 2 * singleton [HelloServiceNotLazy],[PrintService1]
+     * 2 * singleton [HelloServiceNotLazy],[PrintService]
      */
     @Order(10)
     @Test
     @DisplayName("测试两个singleton通过属性互相注入的正确性")
     fun testCircleDependencySingletonByProperty() {
-        val helloServiceNotLazy: HelloServiceNotLazy = context.getService()
+        val helloServiceToPrint: HelloServiceToPrint = context.getService()
+        val printService: PrintService = context.getService()
+        if (helloServiceToPrint is HelloServiceToPrintImpl && printService is PrintServiceImpl) {
+            assertSame(helloServiceToPrint.printService, printService)
+            assertSame(printService.helloServiceToPrint, helloServiceToPrint)
+            assertEquals( "print:hello", helloServiceToPrint.print())
+        } else {
+            throw AssertionError("not real class")
+        }
+    }
 
-        assertEquals("2:print:hello", helloServiceNotLazy.hello())
+    @Order(11)
+    @Test
+    @DisplayName("测试两个transient通过属性互相注入导致的错误")
+    fun testCircleDependencyTransientByProperty() {
+        val printServiceTransient: PrintServiceTransient = context.getService()
 
-        val printService1: PrintService1 = context.getService()
-
-        assertEquals("2:print:hello", printService1.print2())
     }
 
     @Test

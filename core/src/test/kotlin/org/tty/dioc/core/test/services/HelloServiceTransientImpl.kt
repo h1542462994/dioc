@@ -1,12 +1,13 @@
 package org.tty.dioc.core.test.services
 
 import org.tty.dioc.core.declare.Inject
+import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.Service
 
-@Service
-class HelloServiceToPrintImpl: HelloServiceToPrint {
+@Service(lifecycle = Lifecycle.Transient)
+class HelloServiceTransientImpl: HelloServiceTransient {
     @Inject
-    lateinit var printService: PrintService
+    lateinit var printService: PrintServiceTransient
 
     override fun hello(): String {
         return "hello"

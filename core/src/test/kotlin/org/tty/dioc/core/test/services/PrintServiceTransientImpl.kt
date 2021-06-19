@@ -1,18 +1,17 @@
 package org.tty.dioc.core.test.services
 
 import org.tty.dioc.core.declare.Inject
-import org.tty.dioc.core.declare.Lazy
+import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.lifecycle.InitializeAware
 
-@Service
-class PrintService2Impl: PrintService2, InitializeAware {
+@Service(lifecycle = Lifecycle.Transient)
+class PrintServiceTransientImpl: PrintServiceTransient, InitializeAware {
     @Inject
-    @Lazy
-    lateinit var helloService: HelloService
+    lateinit var helloService: HelloServiceTransient
 
     override fun print(): String {
-        val s = "print2:${helloService.hello()}"
+        val s = "print:${helloService.hello()}"
         println(s)
         return s
     }

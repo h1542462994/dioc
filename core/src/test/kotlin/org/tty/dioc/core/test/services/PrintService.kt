@@ -1,5 +1,5 @@
 package org.tty.dioc.core.test.services
 
-interface PrintService2 {
+interface PrintService {
     fun print(): String
 }
