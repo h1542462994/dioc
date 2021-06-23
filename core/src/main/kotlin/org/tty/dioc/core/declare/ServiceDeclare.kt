@@ -1,5 +1,7 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.core.advice.InterfaceAdvice
+import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
@@ -15,6 +17,10 @@ import kotlin.reflect.full.findAnnotation
  * @see [Service]
  */
 class ServiceDeclare(
+    /**
+     * the service declare is from [InterfaceAdvice]
+     */
+    val isInterfaceAdvice: Boolean,
     /**
      * the real service type.
      */
@@ -59,6 +65,10 @@ class ServiceDeclare(
         return components.filter { it.injectPlace == injectPlace }
     }
 
+    override fun toString(): String {
+        return "${serviceType},${lifecycle},${if (isLazyService) "lazy" else "not lazy"}"
+    }
+
     companion object {
         /**
          * to get the [ServiceDeclare] from [serviceType]
@@ -76,6 +86,7 @@ class ServiceDeclare(
             val components = ServiceUtil.getComponents(serviceType)
 
             return ServiceDeclare(
+                isInterfaceAdvice = false,
                 serviceType = serviceType,
                 declarationTypes = declarationTypes,
                 lifecycle = serviceAnnotation.lifecycle,
@@ -84,7 +95,25 @@ class ServiceDeclare(
                 components = components
             )
         }
+        fun fromDeclareAdvice(declarationType: KClass<*>): ServiceDeclare {
+            val service = declarationType.findAnnotation<Service>()
+                ?: throw ServiceDeclarationException("interface advice should be mark as @Service")
+            val interfaceAdvice = declarationType.findAnnotation<InterfaceAdvice>()!!
+            val serviceType = interfaceAdvice.serviceType
+            val constructor = ServiceUtil.getInjectConstructor(serviceType)
+            val components = ServiceUtil.getComponents(serviceType)
+            return ServiceDeclare(
+                isInterfaceAdvice = true,
+                serviceType = serviceType,
+                declarationTypes = listOf(declarationType),
+                lifecycle = service.lifecycle,
+                isLazyService = service.lazy,
+                constructor = constructor,
+                components = components
+            )
 
+
+        }
 
     }
 }

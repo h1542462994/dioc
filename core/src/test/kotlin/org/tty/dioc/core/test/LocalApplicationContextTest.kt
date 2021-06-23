@@ -2,16 +2,19 @@ package org.tty.dioc.core.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.function.ThrowingSupplier
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.core.getService
 import org.tty.dioc.core.declare.Lazy
+import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
 import org.tty.dioc.core.test.services.*
-import org.tty.dioc.core.test.services.circle.HelloServiceToPrint
+import org.tty.dioc.core.test.services.circle.*
 
+/**
+ * to test one implementation [LocalApplicationContext] for [ApplicationContext]
+ */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextTest {
 
@@ -68,6 +71,7 @@ class LocalApplicationContextTest {
         val logger: Logger = context.getService()
         /**
          * 在创建[LazyInjectHelloService]，由于[HelloService]被标记为[Lazy]，所以[HelloService]应当没有被初始化。
+         * 因此在logger的顶部应当没有包含[HelloService]创建的信息。
          */
         assertNotEquals(helloServiceLog, logger.top())
         assertEquals("hello", lazyInjectHelloService.lazyHello())
@@ -87,12 +91,12 @@ class LocalApplicationContextTest {
         val helloService2: HelloService = context.getService()
 
         assertEquals("hello", helloService1.hello())
-        // helloService1 和 helloService2 should be refer equal
+        // helloService1 and helloService2 should be refer equal
         assertSame(helloService1, helloService2)
     }
 
     /**
-     * transient [HelloService]
+     * transient [TransientAddService]
      */
     @Order(5)
     @Test
@@ -101,6 +105,9 @@ class LocalApplicationContextTest {
         val transientAddService1: TransientAddService = context.getService()
         val transientAddService2: TransientAddService = context.getService()
 
+        /**
+         * the 1 and 2 should be two different instance.
+         */
         transientAddService1.add()
         assertEquals(1, transientAddService1.current())
         assertEquals(0, transientAddService2.current())
@@ -111,29 +118,56 @@ class LocalApplicationContextTest {
 
 
     /**
-     * 2 * singleton [HelloService],[PrintService1]
+     * singleton [HelloService] <-- singleton [PrintService]
      */
     @Order(9)
     @Test
     @DisplayName("测试singleton->singleton服务的正确性")
     fun testSingletonToSingleton() {
         // get the printService1
-        val printService1: PrintService1 = context.getService()
+        val printService: PrintService = context.getService()
 
-        assertEquals("print:hello",printService1.print())
+        assertEquals("print:hello",printService.print())
     }
 
     /**
-     * 2 * singleton [HelloServiceNotLazy],[PrintService1]
+     * singleton [HelloServiceToPrint] <-> singleton [PrintService]
      */
     @Order(10)
     @Test
     @DisplayName("测试两个singleton通过属性互相注入的正确性")
     fun testCircleDependencySingletonByProperty() {
-        assertDoesNotThrow {
-            val helloServiceToPrint: HelloServiceToPrint = context.getService()
-            assertEquals("print:hello", helloServiceToPrint.print())
+        val helloServiceToPrint: HelloServiceToPrint = context.getService()
+        val printService: PrintService = context.getService()
+        if (helloServiceToPrint is HelloServiceToPrintImpl && printService is PrintServiceImpl) {
+            assertSame(helloServiceToPrint.printService, printService)
+            assertSame(printService.helloServiceToPrint, helloServiceToPrint)
+            assertEquals( "print:hello", helloServiceToPrint.print())
+        } else {
+            throw AssertionError("not real class")
         }
+    }
+
+    /**
+     * transient [PrintServiceTransient] <-> transient [HelloServiceTransient]
+     */
+    @Order(11)
+    @Test
+    @DisplayName("测试两个transient通过属性互相注入导致的错误")
+    fun testCircleDependencyTransientByProperty() {
+        val exception = assertThrows<ServiceConstructException> {
+            context.getService<PrintServiceTransient>()
+        }
+        assertEquals(circleDependencyTransientMessage, exception.message)
+    }
+
+    @Order(12)
+    @Test
+    @DisplayName("测试transient和singleton属性互相注入")
+    fun testCircleDependencyTransientAndSingletonByProperty() {
+        // if transient <-> singleton
+        // once you get the transient service, you will find a error.
+        //
     }
 
     @Test
@@ -146,6 +180,7 @@ class LocalApplicationContextTest {
         private lateinit var context2: ApplicationContext
         val helloServiceLog = LogToken(LogLevel.Info, "HelloService", "helloService is created.")
         val helloServiceNotLazyLog = LogToken(LogLevel.Info, "HelloServiceNotLazy", "helloServiceNotLazy is created.")
+        const val circleDependencyTransientMessage = "find a cycle dependency link on transient service, it will cause a dead lock, because dependency link class org.tty.dioc.core.test.services.circle.PrintServiceTransientImpl -> ... -> class org.tty.dioc.core.test.services.circle.PrintServiceTransientImpl"
 
         @BeforeAll
         @JvmStatic

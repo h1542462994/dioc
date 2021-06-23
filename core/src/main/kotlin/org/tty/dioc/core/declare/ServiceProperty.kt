@@ -34,7 +34,7 @@ class ServiceProperty(
     /**
      * initialize the [propertyServiceDeclare] on by [serviceDeclares], then call [check] to check the structure
      */
-    fun fill(serviceDeclares: List<ServiceDeclare>) {
+    fun fill(serviceDeclares: ServiceDeclares) {
 
         propertyServiceDeclare = serviceDeclares.findByDeclare(propertyComponent.declareType)
         check(serviceDeclares)
@@ -43,7 +43,7 @@ class ServiceProperty(
     /**
      * to check the structure of the service on the current [serviceDeclare]
      */
-    fun check(serviceDeclares: List<ServiceDeclare>) {
+    fun check(serviceDeclares: ServiceDeclares) {
         if (propertyServiceDeclare.lifecycle == Lifecycle.Transient && !propertyServiceDeclare.isLazyService) {
             throw ServiceDeclarationException("the transient service must is a lazy service.")
         } else {

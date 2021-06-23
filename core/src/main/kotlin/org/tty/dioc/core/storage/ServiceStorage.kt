@@ -1,6 +1,8 @@
 package org.tty.dioc.core.storage
 
 import org.tty.dioc.core.ApplicationContext
+import org.tty.dioc.core.declare.ServiceCreating
+import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.identifier.ScopeIdentifier
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
@@ -26,6 +28,10 @@ class ServiceStorage {
      * the transient storage, use weak reference means the storage has linked them weakly.
      */
     val transientStorage = ArrayList<WeakReference<Any>>()
+
+    val storage: List<Any> = singletonStorage.values
+        .plus(scopedStorage.values)
+        .plus(transientStorage)
 
     /**
      * find the available transient services by [serviceType]

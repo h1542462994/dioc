@@ -1,10 +1,13 @@
 package org.tty.dioc.core
 
+import org.tty.dioc.core.declare.PackageOption
+import org.tty.dioc.core.declare.ServiceDeclareResolver
+
 /**
  * to get applicationContext of the package
  */
 class LocalApplicationContext(packageName: String) : DefaultApplicationContext(
-    ApplicationContextBuilder().usePackage(packageName, true).getDeclarations()
+    ServiceDeclareResolver(scanPackages = arrayListOf(PackageOption(packageName, inclusive = true))).getDeclarations()
 ) {
     init {
         super.onInit()

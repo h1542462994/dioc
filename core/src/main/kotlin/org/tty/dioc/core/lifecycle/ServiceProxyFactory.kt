@@ -13,9 +13,7 @@ import java.lang.reflect.Proxy
  */
 class ServiceProxyFactory(
     private val serviceDeclare: ServiceDeclare,
-    private val serviceStorage: ServiceStorage,
-    private val serviceDeclarations: List<ServiceDeclare>,
-    private val scopeAware: ScopeAware
+    private val serviceEntry: ServiceEntry
 ) {
     /**
      * create the proxy for service inject with [Lazy]
@@ -25,7 +23,6 @@ class ServiceProxyFactory(
          * the proxy object could n't be called on creating.
          */
         var finishCreate = false
-        val creator = ServiceEntry<Any>(serviceStorage, serviceDeclarations, serviceDeclare, scopeAware)
 
         /**
          * make the proxy implements service declarationTypes
@@ -46,7 +43,7 @@ class ServiceProxyFactory(
              * the proxy object will be created after the first call
              */
             if (realObject == null) {
-                realObject = creator.getOrCreateService()
+                realObject = serviceEntry.getOrCreateService(serviceDeclare)
             }
 
             /**
