@@ -1,6 +1,7 @@
 
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.core.error.ServiceDeclarationException
 import kotlin.reflect.KClass
 
 class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : Iterable<ServiceDeclare> {
@@ -15,6 +16,10 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : Iterable<ServiceD
         return container.iterator()
     }
 
+    fun findByDeclareOrNull(declareType: KClass<*>): ServiceDeclare? {
+        return this.singleOrNull { it.declarationTypes.contains(declareType) }
+    }
+
     fun findByDeclare(declareType: KClass<*>): ServiceDeclare {
         return this.single { it.declarationTypes.contains(declareType) }
     }
@@ -23,7 +28,21 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : Iterable<ServiceD
         return this.single { it.serviceType == serviceType }
     }
 
-
+    /**
+     * to check the structure of the service on the current [serviceDeclare]
+     */
+    fun check(serviceDeclare: ServiceDeclare) {
+        if (serviceDeclare.lifecycle == Lifecycle.Transient && !serviceDeclare.isLazyService) {
+            throw ServiceDeclarationException("the transient service must be a lazy service.")
+        } else {
+            serviceDeclare.components.forEach {
+                val aDeclare = this.findByDeclareOrNull(it.declareType)
+                if (aDeclare != null && aDeclare.lifecycle == Lifecycle.Scoped && !it.injectLazy) {
+                    throw ServiceDeclarationException("you must inject a scoped service by @Lazy")
+                }
+            }
+        }
+    }
 
 }
 

@@ -32,6 +32,9 @@ class ServiceEntry(
      * the implementation of the creation of the service.
      */
     private fun getOrCreateService(serviceDeclare: ServiceDeclare, scope: Scope?): Any  {
+        // check.
+        serviceDeclarations.check(serviceDeclare)
+
         // return the provided service if exists.
         val s = storage.findService(ServiceIdentifier.ofDeclare(serviceDeclare, scope))
         if (s != null) {
@@ -85,13 +88,18 @@ class ServiceEntry(
     /**
      * create the stub service, means the service on constructor has been injected.
      */
+    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
     private fun createStub(declare: ServiceDeclare, scope: Scope?): Any {
+        // check.
+        serviceDeclarations.check(declare)
+
         // get the constructor
         val constructor = declare.constructor
         val serviceIdentifier = ServiceIdentifier.ofDeclare(declare, scope)
 
         // create the stub recursively
         val args = constructor.parameters.map {
+
             // if is lazyInject then inject the proxy object.
             if (it.hasAnnotation<Lazy>()) {
                 ServiceProxyFactory(declare, this).createProxy()
@@ -130,13 +138,5 @@ class ServiceEntry(
         return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
-    /**
-     * to notify the service if the service implements [InitializeAware]
-     */
-    private fun notifyServiceOnInit(service: Any) {
-        if (service is InitializeAware) {
-            service.onInit()
-        }
-    }
 
 }
