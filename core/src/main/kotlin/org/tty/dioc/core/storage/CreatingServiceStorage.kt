@@ -5,6 +5,7 @@ import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
 
+@Deprecated("use CombinedServiceStorage instead.")
 class CreatingServiceStorage {
     private val container = HashMap<ServiceIdentifier, ServiceCreating>()
 

@@ -1,10 +1,9 @@
 package org.tty.dioc.core.lifecycle
 
+import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.core.storage.ServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
-import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.util.toClasses
 import java.lang.reflect.Proxy
 
@@ -19,10 +18,6 @@ class ServiceProxyFactory(
      * create the proxy for service inject with [Lazy]
      */
     fun createProxy(): Any {
-        /**
-         * the proxy object could n't be called on creating.
-         */
-        var finishCreate = false
 
         /**
          * make the proxy implements service declarationTypes
@@ -35,7 +30,8 @@ class ServiceProxyFactory(
         var realObject: Any? = null
 
         val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces.toClasses()) { _, method, args ->
-            if (!finishCreate) {
+            // if the service is creating, then throw a exception
+            if (serviceEntry.storage.isCreatingService) {
                 throw ServiceConstructException("you could n't call proxy object when proxy is creating.")
             }
 
@@ -56,7 +52,6 @@ class ServiceProxyFactory(
             }
         }
 
-        finishCreate = true
         return proxy
     }
 }

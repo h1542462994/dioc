@@ -13,6 +13,7 @@ import kotlin.reflect.KClass
 /**
  * the service Storage
  */
+@Deprecated("use CombinedServiceStorage instead.")
 class ServiceStorage {
     /**
      * the singleton storage
@@ -62,6 +63,8 @@ class ServiceStorage {
             }
         }
     }
+
+
 
     /**
      * add the service by identifier
