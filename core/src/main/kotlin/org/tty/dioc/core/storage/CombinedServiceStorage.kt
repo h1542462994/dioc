@@ -84,6 +84,13 @@ class CombinedServiceStorage {
     }
 
     /**
+     * add [serviceDeclare] to [marking]
+     */
+    fun addEmpty(serviceDeclare: ServiceDeclare) {
+        marking[serviceDeclare] = Any()
+    }
+
+    /**
      * move the service from [partStorage] to [fullStorage]
      */
     fun moveToFull(serviceIdentifier: ServiceIdentifier) {
@@ -115,6 +122,13 @@ class CombinedServiceStorage {
     fun transientNotReady(serviceDeclare: ServiceDeclare): Boolean {
         return serviceDeclare.lifecycle == Lifecycle.Transient &&
                 marking.containsKey(serviceDeclare)
+    }
+
+    /**
+     * whether the service is created.
+     */
+    fun notReady(serviceDeclare: ServiceDeclare): Boolean {
+        return marking.containsKey(serviceDeclare)
     }
 
     fun begin() {

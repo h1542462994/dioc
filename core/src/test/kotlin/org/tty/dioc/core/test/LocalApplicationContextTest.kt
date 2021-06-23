@@ -11,6 +11,9 @@ import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
 import org.tty.dioc.core.test.services.*
 import org.tty.dioc.core.test.services.circle.*
+import org.tty.dioc.core.util.ServiceUtil
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.UndeclaredThrowableException
 
 /**
  * to test one implementation [LocalApplicationContext] for [ApplicationContext]
@@ -60,7 +63,7 @@ class LocalApplicationContextTest {
     }
 
     fun testNotLazyTransient() {
-
+        // because it will cause the fail on initializing container, so it could not be tested.
     }
 
     /**
@@ -69,7 +72,7 @@ class LocalApplicationContextTest {
      */
     @Order(6)
     @Test
-    @DisplayName("测试@Lazy(inject)的正确性")
+    @DisplayName("测试@Lazy(inject) by setter. 的正确性")
     fun testLazyInject() {
         val lazyInjectHelloService: LazyInjectHelloService = context.getService()
         val logger: Logger = context.getService()
@@ -82,11 +85,34 @@ class LocalApplicationContextTest {
         assertEquals(helloServiceLog, logger.top())
     }
 
+    @Order(7)
+    @Test
+    @DisplayName("测试@Lazy(inject) by constructor. 的正确性")
+    fun testLazyInjectByConstructor() {
+        val lazyInjectHelloService: LazyInjectHelloServiceByConstructor = context.getService()
+        assertTrue(ServiceUtil.detectProxy(lazyInjectHelloService.helloService))
+        assertEquals("hello", lazyInjectHelloService.lazyHello())
+    }
+
+    @Order(8)
+    @Test
+    @DisplayName("(e)测试@Lazy(inject) by constructor. 同时在初始化阶段访问时产生的错误")
+    fun testLazyInjectByConstructor2() {
+        // invocation target 会返回嵌套两层的错误.
+        // InvocationTargetException -> UndeclaredException -> ServiceConstructorException
+        val e = assertThrows<InvocationTargetException> {
+            context.getService<LazyInjectHelloServiceByConstructor2>()
+        }
+        assertNotNull(e.cause)
+        val real = e.cause!!.cause!!
+        assert(real is ServiceConstructException)
+
+    }
 
     /**
      * singleton [HelloService]
      */
-    @Order(7)
+    @Order(11)
     @Test
     @DisplayName("测试singleton服务的正确性")
     fun testOneSingleton() {
@@ -102,7 +128,7 @@ class LocalApplicationContextTest {
     /**
      * transient [TransientAddService]
      */
-    @Order(8)
+    @Order(14)
     @Test
     @DisplayName("测试transient服务的正确性")
     fun testOneTransient() {
@@ -124,7 +150,7 @@ class LocalApplicationContextTest {
     /**
      * singleton [HelloService] <-- singleton [PrintService]
      */
-    @Order(9)
+    @Order(21)
     @Test
     @DisplayName("测试singleton->singleton服务的正确性")
     fun testSingletonToSingleton() {
@@ -137,7 +163,7 @@ class LocalApplicationContextTest {
     /**
      * singleton [HelloServiceToPrint] <-> singleton [PrintService]
      */
-    @Order(10)
+    @Order(23)
     @Test
     @DisplayName("测试两个singleton通过属性互相注入的正确性")
     fun testCircleDependencySingletonByProperty() {
@@ -155,37 +181,72 @@ class LocalApplicationContextTest {
     /**
      * transient [PrintServiceTransient] <-> transient [HelloServiceTransient]
      */
-    @Order(11)
+    @Order(24)
     @Test
     @DisplayName("(e)测试两个transient通过属性互相注入导致的错误")
     fun testCircleDependencyTransientByProperty() {
-        val exception = assertThrows<ServiceConstructException> {
+        val e = assertThrows<ServiceConstructException> {
             context.getService<PrintServiceTransient>()
         }
-        assertEquals(circleDependencyTransientMessage, exception.message)
+        assertEquals(circleDependencyTransientMessage, e.message)
     }
 
-    @Order(12)
+    /**
+     * transient [HelloServiceTS] <-> singleton [PrintServiceTS]
+     */
+    @Order(25)
     @Test
-    @DisplayName("(e)测试transient和singleton通过属性互相注入")
+    @DisplayName("(e)测试transient和singleton通过属性互相注入的正确性")
     fun testCircleDependencyTransientAndSingletonByProperty() {
         // 当访问transient服务时，由于singleton会依赖自己所以会创建失败
-        val exception = assertThrows<ServiceConstructException> {
+        val e = assertThrows<ServiceConstructException> {
             context.getService<HelloServiceTS>()
         }
-        assertEquals(circleDependencyTSMessage, exception.message)
+        assertEquals(circleDependencyTSMessage, e.message)
         // 当访问singleton服务时，不会发生错误
         val printService = context.getService<PrintServiceTS>()
         assertEquals("print:hello", printService.print())
 
     }
 
+    /**
+     * singleton [H1] <-> singleton [P1] by constructor.
+     */
+    @Order(26)
+    @Test
+    @DisplayName("(e)测试两个singleton通过构造器循环依赖导致的错误.")
+    fun testCircleDependencySingletonByConstructor() {
+        val e = assertThrows<ServiceConstructException> {
+            context.getService<P1>()
+        }
+        //e.printStackTrace()
+        assertEquals(circleDependency1Message, e.message)
+    }
+
+    /**
+     * singleton [H2] <->(lazy) singleton [P2] by constructor.
+     */
+    @Order(30)
+    @Test
+    @DisplayName("测试两个singleton通过构造器循环依赖，但是其中有@Lazy的正确性.")
+    fun testCircleDependencySingletonByConstructorLazy() {
+        val logger: Logger = context.getService()
+        val p2 = context.getService<P2>()
+
+        assertNotEquals(h2Log, logger.top())
+        val s = p2.print()
+        assertEquals(h2Log, logger.top())
+        assertEquals("print:hello", s)
+    }
+
     companion object {
         private lateinit var context: ApplicationContext
         val helloServiceLog = LogToken(LogLevel.Info, "HelloService", "helloService is created.")
         val helloServiceNotLazyLog = LogToken(LogLevel.Info, "HelloServiceNotLazy", "helloServiceNotLazy is created.")
+        val h2Log = LogToken(LogLevel.Info, "H2", "==H2Impl is created.")
         const val circleDependencyTransientMessage = "find a cycle dependency link on transient service, it will cause a dead lock, because dependency link class org.tty.dioc.core.test.services.circle.PrintServiceTransientImpl -> ... -> class org.tty.dioc.core.test.services.circle.PrintServiceTransientImpl"
         const val circleDependencyTSMessage = "find a cycle dependency link on transient service, it will cause a dead lock, because dependency link class org.tty.dioc.core.test.services.circle.HelloServiceTSImpl -> ... -> class org.tty.dioc.core.test.services.circle.HelloServiceTSImpl"
+        const val circleDependency1Message = "you want to inject a service not created, it will cause dead lock, because dependency link class org.tty.dioc.core.test.services.circle.P1 -> ... -> class org.tty.dioc.core.test.services.circle.P1"
 
         @BeforeAll
         @JvmStatic

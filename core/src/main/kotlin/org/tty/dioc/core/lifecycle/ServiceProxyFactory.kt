@@ -5,6 +5,7 @@ import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.util.toClasses
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Proxy
 
 /**

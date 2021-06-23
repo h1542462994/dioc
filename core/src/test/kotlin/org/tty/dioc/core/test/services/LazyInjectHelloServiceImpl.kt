@@ -6,7 +6,6 @@ import org.tty.dioc.core.declare.Service
 
 @Service
 class LazyInjectHelloServiceImpl: LazyInjectHelloService {
-
     @Inject
     @Lazy
     lateinit var helloService: HelloService

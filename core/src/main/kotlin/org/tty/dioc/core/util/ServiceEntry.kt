@@ -3,7 +3,6 @@ package org.tty.dioc.core.util
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAware
 import org.tty.dioc.core.lifecycle.ServiceProxyFactory
@@ -46,11 +45,13 @@ class ServiceEntry(
             throw ServiceConstructException("you couldn't get a scoped service out a scope.")
         }
 
+        // to begin a transaction for creating a service.
+        storage.begin()
         // then create the stub
         val stub = createStub(serviceDeclare, scope)
 
         try {
-            storage.begin()
+
             // to fill the service not full (ready to inject components.)
             while (!storage.isPartEmpty) {
                 // get the created service
@@ -77,11 +78,10 @@ class ServiceEntry(
                 storage.moveToFull(identifier)
             }
             storage.commit()
-        } catch (e: ServiceConstructException) {
+        }  catch (e: Throwable) {
             storage.rollback()
             throw e
         }
-
         return stub
     }
 
@@ -97,22 +97,24 @@ class ServiceEntry(
         val constructor = declare.constructor
         val serviceIdentifier = ServiceIdentifier.ofDeclare(declare, scope)
 
+        // add the not created to marking
+        storage.addEmpty(declare)
         // create the stub recursively
         val args = constructor.parameters.map {
-
+            // get the declare of the type
+            val parameterDeclare = serviceDeclarations.findByDeclare(it.kotlin)
             // if is lazyInject then inject the proxy object.
             if (it.hasAnnotation<Lazy>()) {
-                ServiceProxyFactory(declare, this).createProxy()
+                ServiceProxyFactory(parameterDeclare, this).createProxy()
             } else {
-                // get the declare of the type
-                val parameterDeclare = serviceDeclarations.findByDeclare(it.kotlin)
-
                 // the circle link check.
                 if (
-                    storage.findPart(ServiceIdentifier.ofDeclare(parameterDeclare, scope)) != null) {
-                    throw ServiceConstructException("you want to inject a service in creating, it will cause dead lock, because dependency link ${declare.serviceType} -> ... -> ${declare.serviceType}")
+                // if the parameter is not created. then throw a exception
+                    storage.notReady(parameterDeclare)) {
+                    throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.serviceType} -> ... -> ${parameterDeclare.serviceType}")
                 }
-
+                // if the service is in the fullStorage, then return it.
+                storage.findService(ServiceIdentifier.ofDeclare(parameterDeclare, scope)) ?:
                 this.createStub(parameterDeclare, scope)
             }
 
