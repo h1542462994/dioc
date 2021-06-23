@@ -65,6 +65,10 @@ class ServiceDeclare(
         return components.filter { it.injectPlace == injectPlace }
     }
 
+    override fun toString(): String {
+        return "${serviceType},${lifecycle},${if (isLazyService) "lazy" else "not lazy"}"
+    }
+
     companion object {
         /**
          * to get the [ServiceDeclare] from [serviceType]

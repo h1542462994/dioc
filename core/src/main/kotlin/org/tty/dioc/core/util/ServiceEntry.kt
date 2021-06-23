@@ -19,8 +19,17 @@ import kotlin.reflect.jvm.javaConstructor
  */
 
 class ServiceEntry(
+    /**
+     * cache level 1, to store the declarations
+     */
     private val serviceDeclarations: ServiceDeclares,
+    /**
+     * cache level 2, to store the not full service
+     */
     private val partStorage: CreatingServiceStorage,
+    /**
+     * cache level 3, to store the full service
+     */
     private val fullStorage: ServiceStorage,
     private val scopeAware: ScopeAware
 ) {
@@ -35,24 +44,31 @@ class ServiceEntry(
      * the implementation of the creation of the service.
      */
     private fun getOrCreateService(serviceDeclare: ServiceDeclare, scope: Scope?): Any  {
-        // first return the provided service if exists.
+        // return the provided service if exists.
         val s = fullStorage.findService(ServiceIdentifier.ofDeclare(serviceDeclare, scope))
         if (s != null) {
             return s
         }
 
+        // check the creating of scoped service.
         if (scope == null && serviceDeclare.lifecycle == Lifecycle.Scoped) {
             throw ServiceConstructException("you couldn't get a scoped service out a scope.")
         }
 
         // then create the stub
         val stub = createStub(serviceDeclare, scope)
+        // the ready transient service
+        // if you want to create a transient service in readyTransient, it will throw a exception.
+        val readyTransients = ArrayList<ServiceCreating>(
+            partStorage.readyTransients
+        )
 
-        // then to inject the service
-        // if there are service not created, create it, it will produce new readyToInject
+
+
+        // to fill the service not full (ready to inject components.)
         while (!partStorage.isEmpty()) {
-            // is creating
-            val current = partStorage.first() as ServiceCreating
+            // get the created service
+            val (identifier, current) = partStorage.first()
             current.notInjectedComponents.forEach {
                 it.fill(serviceDeclarations)
                 //val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
@@ -63,15 +79,18 @@ class ServiceEntry(
                     // get the service by declaration
                     var service = fullStorage.findService(ServiceIdentifier.ofDeclare(it.propertyServiceDeclare, scope))
                     if (service == null) {
-                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
-                            throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${current.propertyServiceDeclare.serviceType} -> ... -> ${current.propertyServiceDeclare.serviceType}")
+                        if (readyTransients.any { serviceCreating ->  serviceCreating.serviceDeclare == it.propertyServiceDeclare }) {
+//                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
+                            throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyServiceDeclare.serviceType} -> ... -> ${it.propertyServiceDeclare.serviceType}")
                         }
                         service = createStub(it.propertyServiceDeclare, scope)
                     }
                     ServiceUtil.injectComponentToService(it, service)
                 }
             }
-
+            // to get the full service to ready area.
+            removePart(identifier)
+            addFull(identifier, current.service)
         }
 
         return stub
@@ -79,7 +98,6 @@ class ServiceEntry(
 
     /**
      * create the stub service, means the service on constructor has been injected.
-     * @param stubs if not null, add the created stub to stubs, otherwise ignore the addition.
      */
     private fun createStub(declare: ServiceDeclare, scope: Scope?): Any {
         // get the constructor
@@ -111,6 +129,7 @@ class ServiceEntry(
             addFull(serviceIdentifier, stub)
         } else {
             addPart(
+                serviceIdentifier,
                 ServiceCreating(stub, declare, ArrayList(injects))
             )
         }
@@ -124,15 +143,23 @@ class ServiceEntry(
         return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
+    private val records = ArrayList<Pair<Int, Any>>()
 
+    private fun rollBack() {
+
+    }
 
     private fun addFull(identifier: ServiceIdentifier, service: Any){
         fullStorage.addService(identifier, service)
         notifyServiceOnInit(service)
     }
 
-    private fun addPart(serviceCreating: ServiceCreating) {
-        partStorage.add(serviceCreating)
+    private fun addPart(identifier: ServiceIdentifier, serviceCreating: ServiceCreating) {
+        partStorage.add(identifier, serviceCreating)
+    }
+
+    private fun removePart(identifier: ServiceIdentifier) {
+        partStorage.remove(identifier)
     }
 
     /**

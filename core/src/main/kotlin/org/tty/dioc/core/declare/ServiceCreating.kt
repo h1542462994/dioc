@@ -5,5 +5,6 @@ package org.tty.dioc.core.declare
  */
 data class ServiceCreating(
     val service: Any,
+    val serviceDeclare: ServiceDeclare,
     val notInjectedComponents: ArrayList<ServiceProperty>
 )

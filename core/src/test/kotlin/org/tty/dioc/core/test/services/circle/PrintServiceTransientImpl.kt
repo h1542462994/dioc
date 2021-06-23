@@ -1,4 +1,4 @@
-package org.tty.dioc.core.test.services
+package org.tty.dioc.core.test.services.circle
 
 import org.tty.dioc.core.declare.Inject
 import org.tty.dioc.core.declare.Lifecycle
@@ -17,7 +17,7 @@ class PrintServiceTransientImpl: PrintServiceTransient, InitializeAware {
     }
 
     override fun onInit() {
-        println("=== PrintService2Impl is created.")
+        println("=== PrintServiceTransient is created.")
     }
 
 }
