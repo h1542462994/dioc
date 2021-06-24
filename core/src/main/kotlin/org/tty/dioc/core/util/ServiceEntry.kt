@@ -101,10 +101,11 @@ class ServiceEntry(
         storage.addEmpty(declare)
         // create the stub recursively
         val args = constructor.parameters.map {
+            val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
             // get the declare of the type
-            val parameterDeclare = serviceDeclarations.findByDeclare(it.kotlin)
+            val parameterDeclare = serviceDeclarations.findByDeclare(parameter.declareType)
             // if is lazyInject then inject the proxy object.
-            if (it.hasAnnotation<Lazy>()) {
+            if (parameter.injectLazy) {
                 ServiceProxyFactory(parameterDeclare, this).createProxy()
             } else {
                 // the circle link check.
