@@ -47,11 +47,10 @@ class ServiceEntry(
 
         // to begin a transaction for creating a service.
         storage.begin()
-        // then create the stub
-        val stub = createStub(serviceDeclare, scope)
 
         try {
-
+            // then create the stub
+            val stub = createStub(serviceDeclare, scope)
             // to fill the service not full (ready to inject components.)
             while (!storage.isPartEmpty) {
                 // get the created service
@@ -78,11 +77,11 @@ class ServiceEntry(
                 storage.moveToFull(identifier)
             }
             storage.commit()
+            return stub
         }  catch (e: Throwable) {
             storage.rollback()
             throw e
         }
-        return stub
     }
 
     /**

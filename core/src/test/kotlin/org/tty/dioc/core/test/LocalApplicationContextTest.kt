@@ -13,7 +13,6 @@ import org.tty.dioc.core.test.services.*
 import org.tty.dioc.core.test.services.circle.*
 import org.tty.dioc.core.util.ServiceUtil
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.UndeclaredThrowableException
 
 /**
  * to test one implementation [LocalApplicationContext] for [ApplicationContext]

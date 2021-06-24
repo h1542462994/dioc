@@ -1,8 +1,14 @@
 package org.tty.dioc.core.test.services.circle
 
+import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.test.services.Logger
+
+interface H2 {
+    fun hello(): String
+    fun print(): String
+}
 
 @Service
 class H2Impl(
@@ -19,5 +25,16 @@ class H2Impl(
 
     override fun onInit() {
         logger.i("H2", "==H2Impl is created.")
+    }
+}
+
+@Service
+class P2(
+    @Lazy private val h2: H2
+) {
+    fun print(): String {
+        val s = "print:${h2.hello()}"
+        println(s)
+        return s
     }
 }
