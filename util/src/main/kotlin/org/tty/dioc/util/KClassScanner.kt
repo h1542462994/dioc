@@ -5,6 +5,7 @@ import java.io.IOException
 import java.net.JarURLConnection
 import java.net.URL
 import java.net.URLDecoder
+import kotlin.jvm.Throws
 import kotlin.reflect.KClass
 
 /**
@@ -28,7 +29,7 @@ class KClassScanner
      * @throws IOException      the io exception
      * @throws ClassNotFoundException the class not found exception
      */
-    @kotlin.jvm.Throws(IOException::class, ClassNotFoundException::class)
+    @Throws(IOException::class, ClassNotFoundException::class)
     fun doScanAllClasses(): Set<KClass<*>> {
         val kClassContainer: MutableSet<KClass<*>> = LinkedHashSet()
         var packageName = basePackageName

@@ -30,7 +30,9 @@ class ServiceProxyFactory(
          */
         var realObject: Any? = null
 
-        val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces.toClasses()) { _, method, args ->
+        val proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), interfaces.toClasses())
+        @kotlin.jvm.Throws(InvocationTargetException::class, ServiceConstructException::class)
+        { _, method, args ->
             // if the service is creating, then throw a exception
             if (serviceEntry.storage.isCreatingService) {
                 throw ServiceConstructException("you could n't call proxy object when proxy is creating.")
