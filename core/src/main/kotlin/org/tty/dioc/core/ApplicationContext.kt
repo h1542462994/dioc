@@ -1,12 +1,10 @@
 package org.tty.dioc.core
 
+import org.tty.dioc.core.declare.ServiceAware
 import org.tty.dioc.core.lifecycle.ScopeAware
 
 /**
- * the container for ioc.
+ * represents a container for ability of getting service.
  *
  */
-interface ApplicationContext : ServiceAware, ScopeAware {
-
-}
-
+interface ApplicationContext : ServiceAware, ScopeAware
