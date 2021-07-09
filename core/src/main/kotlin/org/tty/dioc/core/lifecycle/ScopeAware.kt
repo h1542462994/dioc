@@ -1,38 +1,21 @@
 package org.tty.dioc.core.lifecycle
 
-/**
- * ability to handle scoped services.
- * the scope between thread are never equal
- */
 interface ScopeAware {
-    /**
-     * current Scope
-     * @return null means not under scope
-     */
-    fun currentScope(): Scope?
+    fun scopeAbility(): ScopeAbility
 
-    /**
-     * to begin a Scope
-     */
-    fun beginScope(): Scope
+    fun currentScope(): Scope? {
+        return scopeAbility().currentScope()
+    }
 
-    /**
-     * to begin a Scope
-     */
-    fun beginScope(scope: Scope)
+    fun beginScope(): Scope {
+        return scopeAbility().beginScope()
+    }
 
-    /**
-     * to end the currentScope
-     */
-    fun endScope()
+    fun endScope() {
+        scopeAbility().endScope()
+    }
 
-    /**
-     * to end the scope
-     */
-    fun endScope(scope: Scope)
-
-    /**
-     * to run the scope and then end it.
-     */
-    fun withScope(action: (Scope) -> Unit)
+    fun withScope(action: (Scope) -> Unit) {
+        scopeAbility().withScope(action)
+    }
 }

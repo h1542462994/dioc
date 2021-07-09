@@ -4,11 +4,9 @@ import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.core.lifecycle.ScopeAware
+import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.lifecycle.ServiceProxyFactory
 import org.tty.dioc.core.storage.CombinedServiceStorage
-import org.tty.dioc.util.kotlin
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.javaConstructor
 
 /**
@@ -18,14 +16,14 @@ import kotlin.reflect.jvm.javaConstructor
 class ServiceEntry(
     private val serviceDeclarations: ServiceDeclares,
     val storage: CombinedServiceStorage,
-    private val scopeAware: ScopeAware
+    private val scopeAbility: ScopeAbility
 ) {
 
 
     // entry function for createService
     @Suppress("UNCHECKED_CAST")
     fun <T> getOrCreateService(type: ServiceDeclare): T {
-        return getOrCreateService(type, scopeAware.currentScope()) as T
+        return getOrCreateService(type, scopeAbility.currentScope()) as T
     }
     /**
      * the implementation of the creation of the service.

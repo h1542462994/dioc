@@ -5,7 +5,7 @@ import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.core.lifecycle.ScopeAware
+import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
 import kotlin.reflect.KClass
@@ -78,7 +78,7 @@ class ServiceDeclare(
                 "serviceType $serviceType is not a service"
             }
             val exceptInterfaces = listOf(
-                InitializeAware::class, ProxyService::class, Scope::class, ScopeAware::class
+                InitializeAware::class, ProxyService::class, Scope::class, ScopeAbility::class
             )
             val declarationTypes = ServiceUtil.declareTypes(serviceType, exceptInterfaces)
             val serviceAnnotation = serviceType.findAnnotation<Service>()!!
