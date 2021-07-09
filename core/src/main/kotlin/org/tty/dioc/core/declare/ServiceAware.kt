@@ -1,4 +1,4 @@
-package org.tty.dioc.core
+package org.tty.dioc.core.declare
 
 import kotlin.reflect.KClass
 
