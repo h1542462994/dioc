@@ -4,9 +4,11 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
-import org.tty.dioc.core.getService
 import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.core.getService
+import org.tty.dioc.core.local.LocalContext
+import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
 import org.tty.dioc.core.test.services.*
@@ -238,6 +240,17 @@ class LocalApplicationContextTest {
         assertEquals("print:hello", s)
     }
 
+    /**
+     * test [LocalContext]
+     */
+    @Order(34)
+    @Test
+    @DisplayName("测试LocalContext正确性")
+    fun testLocalContext() {
+        val helloService = resolve<HelloService>()
+        assertEquals("hello", helloService.hello())
+    }
+
     companion object {
         private lateinit var context: ApplicationContext
         val helloServiceLog = LogToken(LogLevel.Info, "HelloService", "helloService is created.")
@@ -251,6 +264,10 @@ class LocalApplicationContextTest {
         @JvmStatic
         fun initialize() {
             context = LocalApplicationContext("org.tty.dioc.core.test.services")
+            //LocalContext.provides(context)
+            LocalContext.provides(Companion) {
+                return@provides it.context
+            }
         }
     }
 }
