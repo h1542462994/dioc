@@ -3,7 +3,8 @@ package org.tty.dioc.core.lifecycle
 import org.tty.dioc.util.Builder
 
 /**
- * the trace of the [Scope]
+ * the trace of the [Scope],
+ * the scope is placed by stack.
  */
 class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
 
