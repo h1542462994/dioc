@@ -18,7 +18,7 @@ import org.tty.dioc.core.util.ServiceUtil
 import java.lang.reflect.InvocationTargetException
 
 /**
- * to test one implementation [LocalApplicationContext] for [ApplicationContext]
+ * to test one implementation [LocalApplicationContext] of [ApplicationContext]
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextTest {
@@ -266,6 +266,10 @@ class LocalApplicationContextTest {
         fun initialize() {
             context = LocalApplicationContext("org.tty.dioc.core.test.services")
             LocalContext provides context
+            // or you can write will this
+            LocalContext provides HolderCall(Companion) {
+                it.context
+            }
 
         }
     }

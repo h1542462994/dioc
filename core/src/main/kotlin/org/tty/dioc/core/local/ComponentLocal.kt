@@ -20,6 +20,9 @@ class ComponentLocal<T: Any> {
      */
     class CallerHolder(val holder: WeakReference<Any>, val call: (Any) -> Any): Holder
 
+    /**
+     * the records of the [Holder] by stack.
+     */
     private val records: ArrayList<Holder> = ArrayList()
 
     /**
@@ -38,6 +41,9 @@ class ComponentLocal<T: Any> {
         records.add(CallerHolder(WeakReference(holderCall.holder), call))
     }
 
+    /**
+     * to pop the current [Holder].
+     */
     fun pop() {
         records.removeLast()
     }
@@ -48,14 +54,21 @@ class ComponentLocal<T: Any> {
     fun current(): T {
         return when (val holder = records.last()) {
             is DirectHolder -> {
-                holder.component.get()!! as T
+                val c = holder.component.get()
+                require(c != null) {
+                    "the component couldn't be null."
+                }
+                c as T
             }
             is CallerHolder -> {
-                val h = holder.holder.get()!!
+                val h = holder.holder.get()
+                require(h != null) {
+                    "the holder couldn't be null."
+                }
                 holder.call.invoke(h) as T
             }
             else -> {
-                throw IllegalStateException("holder error.")
+                throw IllegalStateException("the holder is type error.")
             }
         }
     }
