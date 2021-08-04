@@ -2,6 +2,10 @@ package org.tty.dioc.core.local
 
 import java.lang.ref.WeakReference
 
+/**
+ * the local component, used on stack visitation.
+ * you should use the component local carefully, because it break the ooc.
+ */
 @Suppress("UNCHECKED_CAST")
 class ComponentLocal<T: Any> {
     interface Holder
@@ -38,6 +42,9 @@ class ComponentLocal<T: Any> {
         records.removeLast()
     }
 
+    /**
+     * get the current available component of [ComponentLocal]
+     */
     fun current(): T {
         return when (val holder = records.last()) {
             is DirectHolder -> {

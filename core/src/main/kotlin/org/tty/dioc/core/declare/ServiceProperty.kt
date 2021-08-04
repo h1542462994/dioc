@@ -1,7 +1,5 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.core.error.ServiceDeclarationException
-
 /**
  * the property of the service
  * the [ServiceProperty] is the combination of the [ServiceDeclare] and the [PropertyComponent]
