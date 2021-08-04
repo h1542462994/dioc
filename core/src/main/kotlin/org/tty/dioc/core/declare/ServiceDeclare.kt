@@ -19,6 +19,7 @@ import kotlin.reflect.full.findAnnotation
 class ServiceDeclare(
     /**
      * the service declare is from [InterfaceAdvice]
+     * TODO: ?not available?
      */
     val isInterfaceAdvice: Boolean,
     /**
@@ -30,7 +31,7 @@ class ServiceDeclare(
      */
     val declarationTypes: List<KClass<*>>,
     /**
-     * the declaration of the service
+     * the lifecycle of the service.
      * @see [Service.lifecycle]
      */
     val lifecycle: Lifecycle,
@@ -50,7 +51,7 @@ class ServiceDeclare(
 
 ) {
     /**
-     * get the serviceProperties which the injectPlace is equal to [injectPlace]
+     * get the serviceProperties which the injectPlace is equal to [injectPlace], relies on [componentsOf].
      */
     fun toServiceProperties(service: Any, injectPlace: InjectPlace): List<ServiceProperty> {
         return componentsOf(injectPlace = injectPlace).map {
@@ -59,12 +60,15 @@ class ServiceDeclare(
     }
 
     /**
-     * get the propertyComponent
+     * get the propertyComponents which the injectPlace is equal to [injectPlace]
      */
     fun componentsOf(injectPlace: InjectPlace): List<PropertyComponent> {
         return components.filter { it.injectPlace == injectPlace }
     }
 
+    /**
+     * a short description of the service.
+     */
     override fun toString(): String {
         return "${serviceType},${lifecycle},${if (isLazyService) "lazy" else "not lazy"}"
     }
@@ -74,6 +78,7 @@ class ServiceDeclare(
          * to get the [ServiceDeclare] from [serviceType]
          */
         fun fromType(serviceType: KClass<*>): ServiceDeclare {
+            // you must annotated [@Service] on serviceType.
             require(serviceType.hasServiceAnnotation) {
                 "serviceType $serviceType is not a service"
             }

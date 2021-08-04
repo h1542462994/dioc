@@ -3,7 +3,7 @@ package org.tty.dioc.core.declare
 import kotlin.reflect.KClass
 
 /**
- * to declare the component of the service
+ * to declare the metadata of the component of the service
  */
 data class PropertyComponent(
     /**

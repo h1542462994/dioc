@@ -1,7 +1,7 @@
 package org.tty.dioc.core.declare
 
 /**
- * a mark class for service is not created fully.
+ * the data class to mark a service which is creating.
  */
 data class ServiceCreating(
     val service: Any,

@@ -8,6 +8,7 @@ import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.util.Transaction
 import java.lang.ref.WeakReference
 
 /**
@@ -25,13 +26,34 @@ class CombinedServiceStorage {
     private val partStorage = HashMap<ServiceIdentifier, ServiceCreating>()
 
     /**
+     *
+     */
+    inner class StorageTransaction: Transaction {
+        override fun commit() {
+            TODO("Not yet implemented")
+        }
+
+        override fun rollback() {
+            TODO("Not yet implemented")
+        }
+    }
+
+    /**
      * the marking service, to mark the service in creating handle
      */
     private val marking = HashMap<ServiceDeclare, Any>()
 
+
+
+    /**
+     * if [isCreatingService] is true, means storage is in transaction
+     */
     var isCreatingService = false
     private set
 
+    /**
+     * find the service by [serviceIdentifier] in [CombinedServiceStorage]
+     */
     fun findService(serviceIdentifier: ServiceIdentifier): Any? {
         return when(serviceIdentifier) {
             is SingletonIdentifier -> {
@@ -57,6 +79,9 @@ class CombinedServiceStorage {
      * add the [service] to [fullStorage]
      */
     fun addFull(serviceIdentifier: ServiceIdentifier, serviceDeclare: ServiceDeclare, service: Any) {
+        require(isCreatingService) {
+            "you can only modify the storage in transaction."
+        }
         val entry: Any = when(serviceIdentifier) {
             is SingletonIdentifier -> {
                 service

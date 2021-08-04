@@ -4,6 +4,7 @@ import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.declare.Service
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.ServiceDeclareResolver
+import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
 import org.tty.dioc.util.Builder
 import org.tty.dioc.util.KClassScanner
@@ -17,6 +18,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
     private val jsonFiles: ArrayList<String> = ArrayList()
     private val scanPackages: ArrayList<PackageOption> = ArrayList()
     private val serviceDeclareResolver = ServiceDeclareResolver()
+
 
     override fun create(): ApplicationContext {
         return DefaultApplicationContext(serviceDeclareResolver.getDeclarations())
@@ -35,7 +37,9 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
      */
     fun usePackage(packageName: String, inclusive: Boolean = false): ApplicationContextBuilder {
         scanPackages.add(PackageOption(packageName, inclusive))
-        return this;
+        return this
     }
+
+
 
 }
