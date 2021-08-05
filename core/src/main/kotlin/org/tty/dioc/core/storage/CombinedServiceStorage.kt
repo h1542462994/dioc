@@ -1,6 +1,7 @@
 package org.tty.dioc.core.storage
 
 import org.tty.dioc.core.declare.Lifecycle
+import org.tty.dioc.core.declare.ServiceCreated
 import org.tty.dioc.core.declare.ServiceCreating
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.identifier.ScopeIdentifier
@@ -8,13 +9,17 @@ import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.transaction.TransactionClosedException
 import org.tty.dioc.util.Transaction
+import org.tty.dioc.util.Transactional
 import java.lang.ref.WeakReference
+import javax.transaction.TransactionRequiredException
+import kotlin.jvm.Throws
 
 /**
  * the storage for service
  */
-class CombinedServiceStorage {
+class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransaction> {
     /**
      * the full storage, also the first level cache.
      */
@@ -25,31 +30,139 @@ class CombinedServiceStorage {
      */
     private val partStorage = HashMap<ServiceIdentifier, ServiceCreating>()
 
+    private var transactionCount = 0
+
     /**
-     *
+     * the storage transaction for creating a service.
      */
-    inner class StorageTransaction: Transaction {
-        override fun commit() {
-            TODO("Not yet implemented")
+    inner class StorageTransaction: IStorageTransaction {
+        /**
+         * to record the resolved service in [StorageTransaction]
+         */
+        private val marking = HashMap<ServiceDeclare, Any>()
+
+        /**
+         * whether the transaction is closed
+         */
+        override var closed: Boolean = false
+
+        @Throws(TransactionClosedException::class)
+        private fun requireNotClosed() {
+            if (closed) {
+                throw TransactionClosedException()
+            }
         }
 
+        @Throws(TransactionClosedException::class)
+        /**
+         * add the [serviceCreated] to [fullStorage] and [marking]
+         */
+        override fun addFull(serviceIdentifier: ServiceIdentifier, serviceCreated: ServiceCreated) {
+            requireNotClosed()
+            val (service, serviceDeclare) = serviceCreated
+            val entry: Any = when(serviceIdentifier) {
+                is SingletonIdentifier -> {
+                    service
+                }
+                is ScopeIdentifier -> {
+                    service
+                }
+                is TransientIdentifier -> {
+                    WeakReference(service)
+                }
+                else -> {
+                    throw IllegalArgumentException("serviceIdentifier $serviceIdentifier not supported")
+                }
+            }
+            fullStorage[serviceIdentifier] = entry
+            marking[serviceDeclare] = entry
+        }
+
+        @Throws(TransactionClosedException::class)
+        /**
+         * add the [serviceCreating] to [partStorage] and [marking]
+         */
+        override fun addPart(serviceIdentifier: ServiceIdentifier, serviceCreating: ServiceCreating) {
+            requireNotClosed()
+            partStorage[serviceIdentifier] = serviceCreating
+            marking[serviceCreating.serviceDeclare] = serviceCreating
+        }
+
+        @Throws(TransactionClosedException::class)
+        /**
+         * add [serviceDeclare] to [marking]
+         */
+        override fun addEmpty(serviceDeclare: ServiceDeclare) {
+            requireNotClosed()
+            marking[serviceDeclare] = Any()
+        }
+
+        @Throws(TransactionClosedException::class)
+        /**
+         * move the service from [partStorage] to [fullStorage]
+         */
+        override fun moveToFull(serviceIdentifier: ServiceIdentifier) {
+            requireNotClosed()
+            val creating = partStorage[serviceIdentifier]!!
+            partStorage.remove(serviceIdentifier)
+            fullStorage[serviceIdentifier] = creating.service
+            marking[creating.serviceDeclare] = creating.service
+        }
+
+        @Throws(TransactionClosedException::class)
+        /**
+         * whether the transient service is not ready.
+         */
+        override fun transientNotReady(serviceDeclare: ServiceDeclare): Boolean {
+            requireNotClosed()
+            return serviceDeclare.lifecycle == Lifecycle.Transient &&
+                    marking.containsKey(serviceDeclare)
+        }
+
+        @Throws(TransactionClosedException::class)
+        /**
+         * whether the service is created.
+         */
+        override fun notReady(serviceDeclare: ServiceDeclare): Boolean {
+            requireNotClosed()
+            return marking.containsKey(serviceDeclare)
+        }
+
+        @Throws(TransactionClosedException::class)
+        /**
+         * commit the changes
+         */
+        override fun commit() {
+            requireNotClosed()
+            closed = true
+            transactionCount--
+            marking.values.forEach {
+                var entry: Any? = it
+                if (it is WeakReference<*>) {
+                    entry = it.get()
+                }
+
+                if (entry != null && entry is InitializeAware) {
+                    entry.onInit()
+                }
+            }
+        }
+
+        @Throws(TransactionClosedException::class)
         override fun rollback() {
-            TODO("Not yet implemented")
+            requireNotClosed()
+            closed = true
+            transactionCount--
+            marking.forEach { (_, v) ->
+                fullStorage.entries.removeIf {
+                    it.value === v
+                }
+                partStorage.entries.removeIf {
+                    it.value === v
+                }
+            }
         }
     }
-
-    /**
-     * the marking service, to mark the service in creating handle
-     */
-    private val marking = HashMap<ServiceDeclare, Any>()
-
-
-
-    /**
-     * if [isCreatingService] is true, means storage is in transaction
-     */
-    var isCreatingService = false
-    private set
 
     /**
      * find the service by [serviceIdentifier] in [CombinedServiceStorage]
@@ -76,56 +189,6 @@ class CombinedServiceStorage {
     }
 
     /**
-     * add the [service] to [fullStorage]
-     */
-    fun addFull(serviceIdentifier: ServiceIdentifier, serviceDeclare: ServiceDeclare, service: Any) {
-        require(isCreatingService) {
-            "you can only modify the storage in transaction."
-        }
-        val entry: Any = when(serviceIdentifier) {
-            is SingletonIdentifier -> {
-                service
-            }
-            is ScopeIdentifier -> {
-                service
-            }
-            is TransientIdentifier -> {
-                WeakReference(service)
-            }
-            else -> {
-                throw IllegalArgumentException("serviceIdentifier $serviceIdentifier not supported")
-            }
-        }
-        fullStorage[serviceIdentifier] = entry
-        marking[serviceDeclare] = entry
-    }
-
-    /**
-     * add the [serviceCreating] to [partStorage]
-     */
-    fun addPart(serviceIdentifier: ServiceIdentifier, serviceCreating: ServiceCreating) {
-        partStorage[serviceIdentifier] = serviceCreating
-        marking[serviceCreating.serviceDeclare] = serviceCreating
-    }
-
-    /**
-     * add [serviceDeclare] to [marking]
-     */
-    fun addEmpty(serviceDeclare: ServiceDeclare) {
-        marking[serviceDeclare] = Any()
-    }
-
-    /**
-     * move the service from [partStorage] to [fullStorage]
-     */
-    fun moveToFull(serviceIdentifier: ServiceIdentifier) {
-        val creating = partStorage[serviceIdentifier]!!
-        partStorage.remove(serviceIdentifier)
-        fullStorage[serviceIdentifier] = creating.service
-        marking[creating.serviceDeclare] = creating.service
-    }
-
-    /**
      * whether the [partStorage] is empty.
      */
     val isPartEmpty: Boolean
@@ -142,59 +205,18 @@ class CombinedServiceStorage {
     }
 
     /**
-     * whether the transient service is not ready.
+     * to begin a transaction
      */
-    fun transientNotReady(serviceDeclare: ServiceDeclare): Boolean {
-        return serviceDeclare.lifecycle == Lifecycle.Transient &&
-                marking.containsKey(serviceDeclare)
+    override fun beginTransaction(): StorageTransaction {
+        val transaction = StorageTransaction()
+        transactionCount++
+        return transaction
     }
 
     /**
-     * whether the service is created.
+     * whether exists any transaction.
      */
-    fun notReady(serviceDeclare: ServiceDeclare): Boolean {
-        return marking.containsKey(serviceDeclare)
+    fun anyTransaction(): Boolean {
+        return transactionCount != 0
     }
-
-    fun begin() {
-        isCreatingService = true
-    }
-
-
-    /**
-     * to clean the [marking]
-     */
-    fun commit() {
-        marking.values.forEach {
-            var entry: Any? = it
-            if (it is WeakReference<*>) {
-                entry = it.get()
-            }
-
-            if (entry != null && entry is InitializeAware) {
-                entry.onInit()
-            }
-        }
-        marking.clear()
-        isCreatingService = false
-    }
-
-
-
-    /**
-     * rollback the [marking]
-     */
-    fun rollback() {
-        marking.forEach { (_, v) ->
-            fullStorage.entries.removeIf {
-                it.value === v
-            }
-            partStorage.entries.removeIf {
-                it.value === v
-            }
-        }
-        marking.clear()
-        isCreatingService = false
-    }
-
 }

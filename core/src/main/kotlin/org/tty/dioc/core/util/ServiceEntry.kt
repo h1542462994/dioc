@@ -44,11 +44,11 @@ class ServiceEntry(
         }
 
         // to begin a transaction for creating a service.
-        storage.begin()
+        val transaction = storage.beginTransaction()
 
         try {
             // then create the stub
-            val stub = createStub(serviceDeclare, scope)
+            val stub = createStub(serviceDeclare, transaction, scope)
             // to fill the service not full (ready to inject components.)
             while (!storage.isPartEmpty) {
                 // get the created service
@@ -63,21 +63,21 @@ class ServiceEntry(
                         // get the service by declaration
                         var service = storage.findService(ServiceIdentifier.ofDeclare(it.propertyServiceDeclare, scope))
                         if (service == null) {
-                            if (storage.transientNotReady(it.propertyServiceDeclare)) {
+                            if (transaction.transientNotReady(it.propertyServiceDeclare)) {
 //                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
                                 throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyServiceDeclare.serviceType} -> ... -> ${it.propertyServiceDeclare.serviceType}")
                             }
-                            service = createStub(it.propertyServiceDeclare, scope)
+                            service = createStub(it.propertyServiceDeclare, transaction, scope)
                         }
                         ServiceUtil.injectComponentToService(it, service)
                     }
                 }
-                storage.moveToFull(identifier)
+                transaction.moveToFull(identifier)
             }
-            storage.commit()
+            transaction.commit()
             return stub
         }  catch (e: Throwable) {
-            storage.rollback()
+            transaction.rollback()
             throw e
         }
     }
@@ -86,7 +86,7 @@ class ServiceEntry(
      * create the stub service, means the service on constructor has been injected.
      */
     @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-    private fun createStub(declare: ServiceDeclare, scope: Scope?): Any {
+    private fun createStub(declare: ServiceDeclare, transaction: CombinedServiceStorage.StorageTransaction, scope: Scope?): Any {
         // check.
         serviceDeclarations.check(declare)
 
@@ -95,7 +95,7 @@ class ServiceEntry(
         val serviceIdentifier = ServiceIdentifier.ofDeclare(declare, scope)
 
         // add the not created to marking
-        storage.addEmpty(declare)
+        transaction.addEmpty(declare)
         // create the stub recursively
         val args = constructor.parameters.map {
             val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
@@ -108,12 +108,12 @@ class ServiceEntry(
                 // the circle link check.
                 if (
                 // if the parameter is not created. then throw a exception
-                    storage.notReady(parameterDeclare)) {
+                    transaction.notReady(parameterDeclare)) {
                     throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.serviceType} -> ... -> ${parameterDeclare.serviceType}")
                 }
                 // if the service is in the fullStorage, then return it.
                 storage.findService(ServiceIdentifier.ofDeclare(parameterDeclare, scope)) ?:
-                this.createStub(parameterDeclare, scope)
+                this.createStub(parameterDeclare, transaction, scope)
             }
 
         }.toTypedArray()
@@ -121,9 +121,12 @@ class ServiceEntry(
 
         val injects = extractStubToInjectProperties(stub)
         if (injects.isEmpty()) {
-            storage.addFull(serviceIdentifier, declare, stub)
+            transaction.addFull(
+                serviceIdentifier,
+                ServiceCreated(stub, declare)
+            )
         } else {
-            storage.addPart(
+            transaction.addPart(
                 serviceIdentifier,
                 ServiceCreating(stub, declare, ArrayList(injects))
             )

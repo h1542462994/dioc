@@ -8,3 +8,11 @@ data class ServiceCreating(
     val serviceDeclare: ServiceDeclare,
     val notInjectedComponents: ArrayList<ServiceProperty>
 )
+
+/**
+ * the data class to mark a service which is created.
+ */
+data class ServiceCreated(
+    val service: Any,
+    val serviceDeclare: ServiceDeclare
+)
