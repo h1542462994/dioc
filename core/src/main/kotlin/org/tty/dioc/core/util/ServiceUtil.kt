@@ -52,7 +52,7 @@ object ServiceUtil {
     }
 
     /**
-     * get the inject constructor of the [serviceType]
+     * get inject constructor of the [serviceType]
      * @see [InjectConstructor]
      */
     fun getInjectConstructor(serviceType: KClass<*>): KFunction<*> {

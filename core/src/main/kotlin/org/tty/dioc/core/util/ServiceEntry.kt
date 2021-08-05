@@ -14,7 +14,7 @@ import kotlin.reflect.jvm.javaConstructor
  */
 
 class ServiceEntry(
-    private val serviceDeclarations: ServiceDeclares,
+    private val serviceDeclarations: ReadonlyServiceDeclares,
     val storage: CombinedServiceStorage,
     private val scopeAbility: ScopeAbility
 ) {
