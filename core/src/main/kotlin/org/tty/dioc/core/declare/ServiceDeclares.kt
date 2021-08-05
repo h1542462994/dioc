@@ -8,8 +8,6 @@ import kotlin.reflect.KClass
  * a implementation of [MutableServiceDeclares] and [ReadonlyServiceDeclares]
  */
 class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDeclares, ReadonlyServiceDeclares {
-
-
     private val container = ArrayList<ServiceDeclare>()
     init {
         container.addAll(serviceDeclares)

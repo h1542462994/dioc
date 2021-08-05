@@ -4,10 +4,11 @@ import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.util.*
 import java.lang.reflect.Proxy
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.superclasses
-import kotlin.reflect.jvm.jvmErasure
 
 object ServiceUtil {
     /**

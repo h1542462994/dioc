@@ -1,10 +1,8 @@
 package org.tty.dioc.core.declare
 
 import org.tty.dioc.core.advice.InterfaceAdvice
-import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
 import org.tty.dioc.util.KClassScanner
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 class ServiceDeclareResolver(

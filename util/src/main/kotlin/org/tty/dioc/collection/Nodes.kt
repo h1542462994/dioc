@@ -1,7 +1,5 @@
 package org.tty.dioc.collection
 
-import java.util.*
-
 /**
  * the unified operations for [Node]
  */

@@ -19,7 +19,7 @@ data class PropertyComponent(
      */
     val injectPlace: InjectPlace,
     /**
-     * the inject place is annotated [Lazy]
+     * inject place is annotated [Lazy]
      */
     val injectLazy: Boolean
 )

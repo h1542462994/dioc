@@ -13,7 +13,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 /**
- * the declare of the service
+ * declaration of the service
  * @see [Service]
  */
 class ServiceDeclare(
@@ -116,8 +116,6 @@ class ServiceDeclare(
                 constructor = constructor,
                 components = components
             )
-
-
         }
 
     }

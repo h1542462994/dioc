@@ -7,4 +7,4 @@ package org.tty.dioc.core.declare
 @MustBeDocumented
 @Target(AnnotationTarget.CONSTRUCTOR)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class InjectConstructor()
+annotation class InjectConstructor

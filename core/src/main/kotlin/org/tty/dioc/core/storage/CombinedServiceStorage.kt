@@ -10,11 +10,8 @@ import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.transaction.TransactionClosedException
-import org.tty.dioc.util.Transaction
 import org.tty.dioc.util.Transactional
 import java.lang.ref.WeakReference
-import javax.transaction.TransactionRequiredException
-import kotlin.jvm.Throws
 
 /**
  * the storage for service

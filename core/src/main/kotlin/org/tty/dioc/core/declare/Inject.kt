@@ -7,4 +7,4 @@ package org.tty.dioc.core.declare
 @MustBeDocumented
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Inject()
+annotation class Inject

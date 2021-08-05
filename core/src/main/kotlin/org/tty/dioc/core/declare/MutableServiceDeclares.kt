@@ -4,5 +4,4 @@ package org.tty.dioc.core.declare
  * mutable service declares
  * @see [ServiceDeclares]
  */
-interface MutableServiceDeclares: ReadonlyServiceDeclares, ServiceDeclareAware {
-}
+interface MutableServiceDeclares: ReadonlyServiceDeclares, ServiceDeclareAware
