@@ -37,9 +37,18 @@ class ComponentLocal<T: Any> {
      * @see [HolderCall]
      */
     infix fun <TH: Any> provides(holderCall: HolderCall<TH, T>) {
-        val call = holderCall as (Any) -> Any
+        val call = holderCall.caller as (Any) -> Any
         records.add(CallerHolder(WeakReference(holderCall.holder), call))
     }
+
+    /**
+     * provides the [ComponentLocal] with [holder] and [call]
+     */
+    fun <TH: Any> provides(holder: TH, call: (TH) -> T) {
+        val c = call as (Any) -> Any
+        records.add(CallerHolder(WeakReference(holder), c))
+    }
+
 
     /**
      * to pop the current [Holder].
