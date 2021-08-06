@@ -11,5 +11,5 @@ annotation class InterfaceAdvice(
     /**
      * the real service type
      */
-    val serviceType: KClass<*>
+    val implementationType: KClass<*>
 )

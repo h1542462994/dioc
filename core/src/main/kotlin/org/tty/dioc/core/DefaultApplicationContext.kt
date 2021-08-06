@@ -22,8 +22,8 @@ open class DefaultApplicationContext(
      * root function to get the service by [declareType]
      */
     override fun <T : Any> getService(declareType: KClass<T>): T {
-        val declare = declarations.findByDeclare(declareType)
-        return entry.getOrCreateService(declare)
+        val serviceDeclare = declarations.findByDeclareType(declareType)
+        return entry.getOrCreateService(serviceDeclare)
     }
 
     /**
@@ -31,6 +31,17 @@ open class DefaultApplicationContext(
      */
     override fun scopeAbility(): ScopeAbility {
         return scopeTrace
+    }
+
+    override fun onInit() {
+        declarations = ServiceDeclares(_declarations)
+        entry = ServiceEntry(declarations, storage, scopeTrace)
+        // FIXME: handle scope initialization.
+        declarations.forEach {
+            if (!it.isLazyService) {
+                getService(it.declarationTypes[0])
+            }
+        }
     }
 
     /**
@@ -43,6 +54,9 @@ open class DefaultApplicationContext(
      */
     private lateinit var entry: ServiceEntry
 
+    /**
+     * the trace of the scope.
+     */
     private val scopeTrace: ScopeAbility = ScopeTrace(scopeFactory)
 
     /**
@@ -50,14 +64,6 @@ open class DefaultApplicationContext(
      */
     private val storage = CombinedServiceStorage()
 
-    override fun onInit() {
-        declarations = ServiceDeclares(_declarations)
-        entry = ServiceEntry(declarations, storage, scopeTrace)
-        declarations.forEach {
-            if (!it.isLazyService) {
-                getService(it.declarationTypes[0])
-            }
-        }
-    }
+
 
 }

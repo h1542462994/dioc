@@ -123,7 +123,7 @@ class LocalApplicationContextTest {
         val helloService2: HelloService = context.getService()
 
         assertEquals("hello", helloService1.hello())
-        // helloService1 and helloService2 should be refer equal
+        // helloService1 and helloService2 should be referred equal
         assertSame(helloService1, helloService2)
     }
 

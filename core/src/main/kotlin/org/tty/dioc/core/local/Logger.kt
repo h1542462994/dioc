@@ -3,7 +3,7 @@ package org.tty.dioc.core.local
 import org.tty.dioc.core.advice.InterfaceAdvice
 import org.tty.dioc.core.declare.Service
 
-@InterfaceAdvice(serviceType = SimpleConsoleLogger::class)
+@InterfaceAdvice(implementationType = SimpleConsoleLogger::class)
 @Service()
 interface Logger {
     fun v(tag: String, message: String)

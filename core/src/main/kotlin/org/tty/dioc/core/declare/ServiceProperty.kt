@@ -33,7 +33,7 @@ class ServiceProperty(
      * initialize the [propertyServiceDeclare] on by [serviceDeclares], then call [check] to check the structure
      */
     fun fill(serviceDeclares: ReadonlyServiceDeclares) {
-        propertyServiceDeclare = serviceDeclares.findByDeclare(propertyComponent.declareType)
+        propertyServiceDeclare = serviceDeclares.findByDeclareType(propertyComponent.declareType)
         //check(serviceDeclares)
     }
 

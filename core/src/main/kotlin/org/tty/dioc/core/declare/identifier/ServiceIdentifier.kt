@@ -13,10 +13,10 @@ interface ServiceIdentifier {
         fun ofDeclare(serviceDeclare: ServiceDeclare, scope: Scope?): ServiceIdentifier {
             return when (serviceDeclare.lifecycle) {
                 Lifecycle.Singleton -> {
-                    SingletonIdentifier(serviceDeclare.serviceType)
+                    SingletonIdentifier(serviceDeclare.implementationType)
                 }
                 Lifecycle.Scoped -> {
-                    ScopeIdentifier(serviceDeclare.serviceType, scope!!)
+                    ScopeIdentifier(serviceDeclare.implementationType, scope!!)
                 }
                 else -> {
                     TransientIdentifier()

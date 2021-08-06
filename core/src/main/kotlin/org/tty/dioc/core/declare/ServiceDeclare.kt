@@ -25,7 +25,7 @@ class ServiceDeclare(
     /**
      * the real service type.
      */
-    val serviceType: KClass<*>,
+    val implementationType: KClass<*>,
     /**
      * the declaration service types.
      */
@@ -70,29 +70,29 @@ class ServiceDeclare(
      * a short description of the service.
      */
     override fun toString(): String {
-        return "${serviceType},${lifecycle},${if (isLazyService) "lazy" else "not lazy"}"
+        return "${implementationType},${lifecycle},${if (isLazyService) "lazy" else "not lazy"}"
     }
 
     companion object {
         /**
-         * to get the [ServiceDeclare] from [serviceType]
+         * to get the [ServiceDeclare] from [implementationType]
          */
-        fun fromType(serviceType: KClass<*>): ServiceDeclare {
+        fun fromType(implementationType: KClass<*>): ServiceDeclare {
             // you must annotated [@Service] on serviceType.
-            require(serviceType.hasServiceAnnotation) {
-                "serviceType $serviceType is not a service"
+            require(implementationType.hasServiceAnnotation) {
+                "serviceType $implementationType is not a service"
             }
             val exceptInterfaces = listOf(
                 InitializeAware::class, ProxyService::class, Scope::class, ScopeAbility::class
             )
-            val declarationTypes = ServiceUtil.declareTypes(serviceType, exceptInterfaces)
-            val serviceAnnotation = serviceType.findAnnotation<Service>()!!
-            val constructor = ServiceUtil.getInjectConstructor(serviceType)
-            val components = ServiceUtil.getComponents(serviceType)
+            val declarationTypes = ServiceUtil.declareTypes(implementationType, exceptInterfaces)
+            val serviceAnnotation = implementationType.findAnnotation<Service>()!!
+            val constructor = ServiceUtil.getInjectConstructor(implementationType)
+            val components = ServiceUtil.getComponents(implementationType)
 
             return ServiceDeclare(
                 isInterfaceAdvice = false,
-                serviceType = serviceType,
+                implementationType = implementationType,
                 declarationTypes = declarationTypes,
                 lifecycle = serviceAnnotation.lifecycle,
                 isLazyService = serviceAnnotation.lazy,
@@ -104,12 +104,12 @@ class ServiceDeclare(
             val service = declarationType.findAnnotation<Service>()
                 ?: throw ServiceDeclarationException("interface advice should be mark as @Service")
             val interfaceAdvice = declarationType.findAnnotation<InterfaceAdvice>()!!
-            val serviceType = interfaceAdvice.serviceType
-            val constructor = ServiceUtil.getInjectConstructor(serviceType)
-            val components = ServiceUtil.getComponents(serviceType)
+            val implementationType = interfaceAdvice.implementationType
+            val constructor = ServiceUtil.getInjectConstructor(implementationType)
+            val components = ServiceUtil.getComponents(implementationType)
             return ServiceDeclare(
                 isInterfaceAdvice = true,
-                serviceType = serviceType,
+                implementationType = implementationType,
                 declarationTypes = listOf(declarationType),
                 lifecycle = service.lifecycle,
                 isLazyService = service.lazy,

@@ -65,7 +65,7 @@ class ServiceEntry(
                         if (service == null) {
                             if (transaction.transientNotReady(it.propertyServiceDeclare)) {
 //                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
-                                throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyServiceDeclare.serviceType} -> ... -> ${it.propertyServiceDeclare.serviceType}")
+                                throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyServiceDeclare.implementationType} -> ... -> ${it.propertyServiceDeclare.implementationType}")
                             }
                             service = createStub(it.propertyServiceDeclare, transaction, scope)
                         }
@@ -100,7 +100,7 @@ class ServiceEntry(
         val args = constructor.parameters.map {
             val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
             // get the declare of the type
-            val parameterDeclare = serviceDeclarations.findByDeclare(parameter.declareType)
+            val parameterDeclare = serviceDeclarations.findByDeclareType(parameter.declareType)
             // if is lazyInject then inject the proxy object.
             if (parameter.injectLazy) {
                 ServiceProxyFactory(parameterDeclare, this).createProxy()
@@ -109,7 +109,7 @@ class ServiceEntry(
                 if (
                 // if the parameter is not created. then throw a exception
                     transaction.notReady(parameterDeclare)) {
-                    throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.serviceType} -> ... -> ${parameterDeclare.serviceType}")
+                    throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.implementationType} -> ... -> ${parameterDeclare.implementationType}")
                 }
                 // if the service is in the fullStorage, then return it.
                 storage.findService(ServiceIdentifier.ofDeclare(parameterDeclare, scope)) ?:
@@ -137,7 +137,7 @@ class ServiceEntry(
 
     // extract stub to property read to injected
     private fun extractStubToInjectProperties(value: Any): List<ServiceProperty> {
-        val declare = serviceDeclarations.findByService(value::class)
+        val declare = serviceDeclarations.findByServiceType(value::class)
         return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
