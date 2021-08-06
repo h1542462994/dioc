@@ -2,7 +2,7 @@ package org.tty.dioc.core.declare
 
 /**
  * to declare this is a service, once the package is under scan region.
- * the service will be auto detected.
+ * the service will be auto-detected.
  * @see [Lifecycle]
  * @see [org.tty.dioc.core.ApplicationContextBuilder.usePackage]
  */

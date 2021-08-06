@@ -67,9 +67,8 @@ class DefaultDynamicApplicationContext(
     override fun onInit() {
         declarations = ServiceDeclares(_declarations)
         entry = ServiceEntry(declarations, storage, scopeTrace)
-        // FIXME: handle scope initialization.
         declarations.forEach {
-            if (!it.isLazyService) {
+            if (!it.isLazyService && it.lifecycle == Lifecycle.Singleton) {
                 getService(it.declarationTypes[0])
             }
         }

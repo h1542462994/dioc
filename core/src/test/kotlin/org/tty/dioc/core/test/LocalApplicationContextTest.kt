@@ -267,9 +267,9 @@ class LocalApplicationContextTest {
             context = LocalApplicationContext("org.tty.dioc.core.test.services")
             LocalContext provides context
             // or you can write will this
-            LocalContext provides HolderCall(Companion) {
-                it.context
-            }
+//            LocalContext provides HolderCall(Companion) {
+//                it.context
+//            }
 
         }
     }

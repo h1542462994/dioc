@@ -16,7 +16,10 @@ interface ServiceIdentifier {
                     SingletonIdentifier(serviceDeclare.implementationType)
                 }
                 Lifecycle.Scoped -> {
-                    ScopeIdentifier(serviceDeclare.implementationType, scope!!)
+                    requireNotNull(scope) {
+                        "you couldn't get a scoped service out of a scope."
+                    }
+                    ScopeIdentifier(serviceDeclare.implementationType, scope)
                 }
                 else -> {
                     TransientIdentifier()

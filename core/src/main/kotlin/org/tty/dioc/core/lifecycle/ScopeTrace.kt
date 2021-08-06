@@ -5,6 +5,7 @@ import org.tty.dioc.util.Builder
 /**
  * the trace of the [Scope],
  * the scope is placed by stack.
+ * TODO: add scope creation callback.
  */
 class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
 
