@@ -10,13 +10,20 @@ import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.util.Builder
 import kotlin.reflect.KClass
 
-class DefaultDynamicApplicationContext(
-    private val _declarations: List<ServiceDeclare>,
+/**
+ * the default implementation for dynamicApplication
+ * @see [DynamicApplicationContext]
+ */
+open class DefaultDynamicApplicationContext(
+    /**
+     * the declaration of the services.
+     */
+    private val declarations: MutableServiceDeclares,
     scopeFactory: Builder<Scope>
 ): DynamicApplicationContext, InitializeAware {
 
     override fun <T : Any> getService(declareType: KClass<T>): T {
-        val serviceDeclare = declarations.findByDeclareType(declareType)
+        val serviceDeclare = declarations.findByDeclarationType(declareType)
         return entry.getOrCreateService(serviceDeclare)
     }
 
@@ -56,16 +63,11 @@ class DefaultDynamicApplicationContext(
         declarations.addTransient(declarationType, implementationType)
     }
 
-    override fun <TD : Any, TI : Any> replaceImplementation(
-        declarationType: KClass<TD>,
-        implementationType: KClass<TI>,
-        lifecycle: Lifecycle?
-    ) {
-        declarations.replaceImplementation(declarationType, implementationType, lifecycle)
+    override fun forceReplace(action: (ServiceDeclareAware) -> Unit) {
+        TODO("Not yet implemented")
     }
 
     override fun onInit() {
-        declarations = ServiceDeclares(_declarations)
         entry = ServiceEntry(declarations, storage, scopeTrace)
         declarations.forEach {
             if (!it.isLazyService && it.lifecycle == Lifecycle.Singleton) {
@@ -74,10 +76,7 @@ class DefaultDynamicApplicationContext(
         }
     }
 
-    /**
-     * the declaration of the services.
-     */
-    private lateinit var declarations: MutableServiceDeclares
+
 
     /**
      * the entry to get the service.

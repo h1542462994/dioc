@@ -15,7 +15,10 @@ import kotlin.reflect.KClass
  * @see [ApplicationContext]
  */
 open class DefaultApplicationContext(
-    private val _declarations: List<ServiceDeclare>,
+    /**
+     * the declaration of the services.
+     */
+    private val declarations: ReadonlyServiceDeclares,
     scopeFactory: Builder<Scope>
     ) : ApplicationContext, InitializeAware {
 
@@ -23,7 +26,7 @@ open class DefaultApplicationContext(
      * root function to get the service by [declareType]
      */
     override fun <T : Any> getService(declareType: KClass<T>): T {
-        val serviceDeclare = declarations.findByDeclareType(declareType)
+        val serviceDeclare = declarations.findByDeclarationType(declareType)
         return entry.getOrCreateService(serviceDeclare)
     }
 
@@ -35,7 +38,6 @@ open class DefaultApplicationContext(
     }
 
     override fun onInit() {
-        declarations = ServiceDeclares(_declarations)
         entry = ServiceEntry(declarations, storage, scopeTrace)
         declarations.forEach {
             if (!it.isLazyService && it.lifecycle == Lifecycle.Singleton) {
@@ -44,10 +46,7 @@ open class DefaultApplicationContext(
         }
     }
 
-    /**
-     * the declaration of the services.
-     */
-    private lateinit var declarations: ReadonlyServiceDeclares
+
 
     /**
      * the entry to get the service.

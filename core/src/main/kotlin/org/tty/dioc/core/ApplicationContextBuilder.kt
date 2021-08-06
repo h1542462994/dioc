@@ -1,8 +1,6 @@
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.PackageOption
-import org.tty.dioc.core.declare.Service
-import org.tty.dioc.core.declare.ServiceDeclareResolver
+import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.util.Builder
@@ -24,7 +22,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
             jsonFiles, scanPackages
         )
         return DefaultApplicationContext(
-            serviceDeclareResolver.getDeclarations(),
+            ServiceDeclares(serviceDeclareResolver.getDeclarations()),
             scopeFactory
         )
     }

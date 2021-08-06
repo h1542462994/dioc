@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextScopeTest {
     /**
-     * test the declare of the scope
+     * test declaration of the scope
      */
     @Order(0)
     @DisplayName("测试Scope声明的正确性")
@@ -61,7 +61,7 @@ class LocalApplicationContextScopeTest {
     }
 
     /**
-     * the the scope is not equal in difference thread.
+     * scope is not equal in difference thread.
      */
     @Order(12)
     @DisplayName("测试Scope在不同线程中不共享")

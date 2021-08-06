@@ -9,7 +9,7 @@ interface ReadonlyServiceDeclares: Iterable<ServiceDeclare> {
     /**
      * find in collection where [ServiceDeclare.declarationTypes] contains [declareType]
      */
-    fun findByDeclareType(declareType: KClass<*>): ServiceDeclare
+    fun findByDeclarationType(declareType: KClass<*>): ServiceDeclare
 
     /**
      * find in collection where [ServiceDeclare.implementationType] == [implementationType]
@@ -19,6 +19,7 @@ interface ReadonlyServiceDeclares: Iterable<ServiceDeclare> {
      * to check the structure of the service on the current [serviceDeclare]
      */
     fun check(serviceDeclare: ServiceDeclare)
-    fun findByDeclareTypeOrNull(declareType: KClass<*>): ServiceDeclare?
+    fun findByDeclarationTypeOrNull(declarationType: KClass<*>): ServiceDeclare?
     fun findByServiceTypeOrNull(implementationType: KClass<*>): ServiceDeclare?
+    fun findAllByDeclarationType(declarationType: KClass<*>): List<ServiceDeclare>
 }

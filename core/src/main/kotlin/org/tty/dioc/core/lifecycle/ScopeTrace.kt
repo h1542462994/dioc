@@ -18,7 +18,7 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
         }
     }
 
-    private fun fetch(): ArrayList<Scope> {
+    private fun fetchRecords(): ArrayList<Scope> {
         ensureInitialized()
         return scopeRecords.get()!!
     }
@@ -29,13 +29,13 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
 
     override fun beginScope(): Scope {
         val scope = scopeFactory.create()
-        fetch().add(scope)
+        fetchRecords().add(scope)
         currentScope.set(scope)
         return scope
     }
 
     override fun beginScope(scope: Scope) {
-        val records = fetch()
+        val records = fetchRecords()
         if (!records.contains(scope)) {
             records.add(scope)
         }
@@ -43,13 +43,13 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
     }
 
     override fun endScope() {
-        val records = fetch()
+        val records = fetchRecords()
         records.removeLast()
         currentScope.set(records.lastOrNull())
     }
 
     override fun endScope(scope: Scope) {
-        val records = fetch()
+        val records = fetchRecords()
         records.remove(scope)
         currentScope.set(null)
     }

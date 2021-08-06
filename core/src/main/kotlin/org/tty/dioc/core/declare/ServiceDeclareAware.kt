@@ -14,5 +14,5 @@ interface ServiceDeclareAware {
     fun <TD: Any, TI: Any> addScoped(declarationType: KClass<TD>, implementationType: KClass<TI>, lazy: Boolean = true)
     fun <T: Any> addTransient(type: KClass<T>)
     fun <TD: Any, TI: Any> addTransient(declarationType: KClass<TD>, implementationType: KClass<TI>)
-    fun <TD: Any, TI: Any> replaceImplementation(declarationType: KClass<TD>, implementationType: KClass<TI>, lifecycle: Lifecycle? = null)
+    fun forceReplace(action: (ServiceDeclareAware) -> Unit)
 }

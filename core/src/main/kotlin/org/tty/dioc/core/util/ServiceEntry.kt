@@ -100,7 +100,7 @@ class ServiceEntry(
         val args = constructor.parameters.map {
             val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
             // get the declare of the type
-            val parameterDeclare = serviceDeclarations.findByDeclareType(parameter.declareType)
+            val parameterDeclare = serviceDeclarations.findByDeclarationType(parameter.declareType)
             // if is lazyInject then inject the proxy object.
             if (parameter.injectLazy) {
                 ServiceProxyFactory(parameterDeclare, this).createProxy()
