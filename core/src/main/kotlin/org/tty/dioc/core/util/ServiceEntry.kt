@@ -12,19 +12,18 @@ import kotlin.reflect.jvm.javaConstructor
 /**
  * the entry for create or get the service
  */
-
 class ServiceEntry(
     private val serviceDeclarations: ReadonlyServiceDeclares,
     val storage: CombinedServiceStorage,
     private val scopeAbility: ScopeAbility
 ) {
 
-
     // entry function for createService
     @Suppress("UNCHECKED_CAST")
     fun <T> getOrCreateService(type: ServiceDeclare): T {
         return getOrCreateService(type, scopeAbility.currentScope()) as T
     }
+
     /**
      * the implementation of the creation of the service.
      */
@@ -100,7 +99,7 @@ class ServiceEntry(
         val args = constructor.parameters.map {
             val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
             // get the declare of the type
-            val parameterDeclare = serviceDeclarations.findByDeclarationType(parameter.declareType)
+            val parameterDeclare = serviceDeclarations.singleDeclarationType(parameter.declareType)
             // if is lazyInject then inject the proxy object.
             if (parameter.injectLazy) {
                 ServiceProxyFactory(parameterDeclare, this).createProxy()
@@ -135,9 +134,11 @@ class ServiceEntry(
         return stub
     }
 
-    // extract stub to property read to injected
+    /**
+     * extract stub to property read to injected
+     */
     private fun extractStubToInjectProperties(value: Any): List<ServiceProperty> {
-        val declare = serviceDeclarations.findByServiceType(value::class)
+        val declare = serviceDeclarations.singleServiceType(value::class)
         return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 

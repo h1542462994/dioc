@@ -2,8 +2,6 @@ package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.ReadonlyServiceDeclares
-import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.declare.ServiceDeclares
 import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
@@ -26,7 +24,7 @@ open class DefaultApplicationContext(
      * root function to get the service by [declareType]
      */
     override fun <T : Any> getService(declareType: KClass<T>): T {
-        val serviceDeclare = declarations.findByDeclarationType(declareType)
+        val serviceDeclare = declarations.singleDeclarationType(declareType)
         return entry.getOrCreateService(serviceDeclare)
     }
 

@@ -14,6 +14,8 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
         container.addAll(serviceDeclares)
     }
 
+    private var forceReplaceEnabled = false
+
     override fun iterator(): Iterator<ServiceDeclare> {
         return container.iterator()
     }
@@ -43,59 +45,37 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
     }
 
     override fun <T : Any> addTransient(type: KClass<T>) {
-        // use delegate
+        // use delegate.
         addDeclareByType(type, type, lifecycle = Lifecycle.Transient, true)
     }
 
     override fun <TD : Any, TI : Any> addTransient(declarationType: KClass<TD>, implementationType: KClass<TI>) {
-        // use delegate
+        // use delegate.
         addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Transient, true)
     }
 
     override fun forceReplace(action: (ServiceDeclareAware) -> Unit) {
-        TODO("Not yet implemented")
+        forceReplaceEnabled = true
+        action.invoke(this)
+        forceReplaceEnabled = false
     }
 
-    override fun findByDeclarationTypeOrNull(declarationType: KClass<*>): ServiceDeclare? {
+    override fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ServiceDeclare? {
         return this.singleOrNull { it.declarationTypes.contains(declarationType) }
     }
 
-    override fun findByServiceTypeOrNull(implementationType: KClass<*>): ServiceDeclare? {
-        return this.singleOrNull { it.implementationType == implementationType }
-    }
-
-    override fun findAllByDeclarationType(declarationType: KClass<*>): List<ServiceDeclare> {
-        return this.filter { it.declarationTypes.contains(declarationType) }
-    }
-
     /**
-     * find in collection where [ServiceDeclare.declarationTypes] contains [declareType]
+     * find in collection where [ServiceDeclare.declarationTypes] contains [declarationType]
      */
-    override fun findByDeclarationType(declareType: KClass<*>): ServiceDeclare {
-        return this.single { it.declarationTypes.contains(declareType) }
+    override fun singleDeclarationType(declarationType: KClass<*>): ServiceDeclare {
+        return this.single { it.declarationTypes.contains(declarationType) }
     }
 
     /**
      * find in collection where [ServiceDeclare.implementationType] == [implementationType]
      */
-    override fun findByServiceType(implementationType: KClass<*>): ServiceDeclare {
+    override fun singleServiceType(implementationType: KClass<*>): ServiceDeclare {
         return this.single { it.implementationType == implementationType }
-    }
-
-    /**
-     * to check the structure of the service on the current [serviceDeclare]
-     */
-    override fun check(serviceDeclare: ServiceDeclare) {
-        if (serviceDeclare.lifecycle == Lifecycle.Transient && !serviceDeclare.isLazyService) {
-            throw ServiceDeclarationException("the transient service must be a lazy service.")
-        } else {
-            serviceDeclare.components.forEach {
-                val aDeclare = this.findByDeclarationTypeOrNull(it.declareType)
-                if (aDeclare != null && aDeclare.lifecycle == Lifecycle.Scoped && !it.injectLazy) {
-                    throw ServiceDeclarationException("you must inject a scoped service by @Lazy")
-                }
-            }
-        }
     }
 
     /**
@@ -103,8 +83,8 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
      * the structure is determined by [implementationType] itself.
      */
     private fun addDeclareByType(declarationType: KClass<*>, implementationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean) {
-        val l = findAllByDeclarationType(declarationType)
-        if (l.isEmpty()) {
+        val l = singleDeclarationTypeOrNull(declarationType)
+        if (l == null) {
             container.add(
                 ServiceDeclare(
                     isInterfaceAdvice = false,
@@ -116,9 +96,27 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
                     components = ServiceUtil.getComponents(implementationType)
                 )
             )
+        } else if (forceReplaceEnabled) {
+            // open forceReplace
+            TODO("not implemented yet.")
         } else {
             throw ServiceDeclarationException("the declaration of the type $declarationType is redundant.")
         }
     }
 
+    /**
+     * to check the structure of the service on the current [serviceDeclare]
+     */
+    override fun check(serviceDeclare: ServiceDeclare) {
+        if (serviceDeclare.lifecycle == Lifecycle.Transient && !serviceDeclare.isLazyService) {
+            throw ServiceDeclarationException("the transient service must be a lazy service.")
+        } else {
+            serviceDeclare.components.forEach {
+                val aDeclare = this.singleDeclarationTypeOrNull(it.declareType)
+                if (aDeclare != null && aDeclare.lifecycle == Lifecycle.Scoped && !it.injectLazy) {
+                    throw ServiceDeclarationException("you must inject a scoped service by @Lazy")
+                }
+            }
+        }
+    }
 }

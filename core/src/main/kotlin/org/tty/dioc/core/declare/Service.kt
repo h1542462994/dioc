@@ -15,8 +15,7 @@ annotation class Service(
      */
     val lifecycle: Lifecycle = Lifecycle.Singleton,
     /**
-     * the the service is the lazy service.
-     * the service is lazy by default.
+     * if true, the service will be created on boot.
      */
     val lazy: Boolean = true
 )

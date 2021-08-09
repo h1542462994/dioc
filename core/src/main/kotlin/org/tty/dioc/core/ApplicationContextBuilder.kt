@@ -43,6 +43,9 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
         return this
     }
 
+    /**
+     * use custom scope factory.
+     */
     fun setScopeFactory(scopeFactory: Builder<Scope>): ApplicationContextBuilder {
         this.scopeFactory = scopeFactory
         return this

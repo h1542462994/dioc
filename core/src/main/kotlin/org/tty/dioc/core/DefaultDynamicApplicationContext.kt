@@ -23,7 +23,7 @@ open class DefaultDynamicApplicationContext(
 ): DynamicApplicationContext, InitializeAware {
 
     override fun <T : Any> getService(declareType: KClass<T>): T {
-        val serviceDeclare = declarations.findByDeclarationType(declareType)
+        val serviceDeclare = declarations.singleDeclarationType(declareType)
         return entry.getOrCreateService(serviceDeclare)
     }
 

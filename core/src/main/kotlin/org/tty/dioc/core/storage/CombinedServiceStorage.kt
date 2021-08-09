@@ -50,10 +50,10 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
             }
         }
 
-        @Throws(TransactionClosedException::class)
         /**
-         * add the [serviceCreated] to [fullStorage] and [marking]
+         * add the [serviceCreated] to [partStorage] and [marking].
          */
+        @Throws(TransactionClosedException::class)
         override fun addFull(serviceIdentifier: ServiceIdentifier, serviceCreated: ServiceCreated) {
             requireNotClosed()
             val (service, serviceDeclare) = serviceCreated
@@ -75,29 +75,29 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
             marking[serviceDeclare] = entry
         }
 
-        @Throws(TransactionClosedException::class)
         /**
          * add the [serviceCreating] to [partStorage] and [marking]
          */
+        @Throws(TransactionClosedException::class)
         override fun addPart(serviceIdentifier: ServiceIdentifier, serviceCreating: ServiceCreating) {
             requireNotClosed()
             partStorage[serviceIdentifier] = serviceCreating
             marking[serviceCreating.serviceDeclare] = serviceCreating
         }
 
-        @Throws(TransactionClosedException::class)
         /**
          * add [serviceDeclare] to [marking]
          */
+        @Throws(TransactionClosedException::class)
         override fun addEmpty(serviceDeclare: ServiceDeclare) {
             requireNotClosed()
             marking[serviceDeclare] = Any()
         }
 
-        @Throws(TransactionClosedException::class)
         /**
          * move the service from [partStorage] to [fullStorage]
          */
+        @Throws(TransactionClosedException::class)
         override fun moveToFull(serviceIdentifier: ServiceIdentifier) {
             requireNotClosed()
             val creating = partStorage[serviceIdentifier]!!
@@ -106,29 +106,29 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
             marking[creating.serviceDeclare] = creating.service
         }
 
-        @Throws(TransactionClosedException::class)
         /**
          * whether the transient service is not ready.
          */
+        @Throws(TransactionClosedException::class)
         override fun transientNotReady(serviceDeclare: ServiceDeclare): Boolean {
             requireNotClosed()
             return serviceDeclare.lifecycle == Lifecycle.Transient &&
                     marking.containsKey(serviceDeclare)
         }
 
-        @Throws(TransactionClosedException::class)
         /**
          * whether the service is created.
          */
+        @Throws(TransactionClosedException::class)
         override fun notReady(serviceDeclare: ServiceDeclare): Boolean {
             requireNotClosed()
             return marking.containsKey(serviceDeclare)
         }
 
-        @Throws(TransactionClosedException::class)
         /**
          * commit the changes
          */
+        @Throws(TransactionClosedException::class)
         override fun commit() {
             requireNotClosed()
             closed = true
@@ -179,10 +179,6 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
                 throw IllegalArgumentException("serviceIdentifier $serviceIdentifier not supported")
             }
         }
-    }
-
-    fun findPart(identifier: ServiceIdentifier): Any? {
-        return partStorage[identifier]
     }
 
     /**
