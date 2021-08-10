@@ -1,5 +1,7 @@
 package org.tty.dioc.core.lifecycle
 
+import org.tty.dioc.observable.Channel
+
 /**
  * ability to handle scoped services.
  * the scope between thread are never equal
@@ -36,4 +38,14 @@ interface ScopeAbility {
      * to run the scope and then end it.
      */
     fun withScope(action: (Scope) -> Unit)
+
+    /**
+     * the channel for create the scope.
+     */
+    fun createChannel(): Channel<Scope>
+
+    /**
+     * the channel for remove the scope.
+     */
+    fun removeChannel(): Channel<Scope>
 }

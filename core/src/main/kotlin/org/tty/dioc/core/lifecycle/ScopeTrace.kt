@@ -1,5 +1,7 @@
 package org.tty.dioc.core.lifecycle
 
+import org.tty.dioc.observable.Channel
+import org.tty.dioc.observable.Channels
 import org.tty.dioc.util.Builder
 
 /**
@@ -11,6 +13,8 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
 
     private val currentScope: ThreadLocal<Scope?> = ThreadLocal()
     private val scopeRecords: ThreadLocal<ArrayList<Scope>?> = ThreadLocal<ArrayList<Scope>?>()
+    private val createChannel = Channels.create<Scope>()
+    private val removeChannel = Channels.create<Scope>()
 
     private fun ensureInitialized() {
         if (scopeRecords.get() == null) {
@@ -31,6 +35,10 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
         val scope = scopeFactory.create()
         fetchRecords().add(scope)
         currentScope.set(scope)
+
+        // send the create event
+        createChannel.emit(scope)
+
         return scope
     }
 
@@ -40,6 +48,9 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
             records.add(scope)
         }
         currentScope.set(scope)
+
+        // send the create event
+        createChannel.emit(scope)
     }
 
     override fun endScope() {
@@ -59,4 +70,14 @@ class ScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
         action.invoke(scope)
         endScope()
     }
+
+    override fun createChannel(): Channel<Scope> {
+        return createChannel.next()
+    }
+
+    override fun removeChannel(): Channel<Scope> {
+        return removeChannel.next()
+    }
+
+
 }

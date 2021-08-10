@@ -7,6 +7,7 @@ import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.lifecycle.ScopeTrace
 import org.tty.dioc.core.storage.CombinedServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
+import org.tty.dioc.observable.receive
 import org.tty.dioc.util.Builder
 import kotlin.reflect.KClass
 
@@ -73,6 +74,13 @@ open class DefaultDynamicApplicationContext(
             if (!it.isLazyService && it.lifecycle == Lifecycle.Singleton) {
                 getService(it.declarationTypes[0])
             }
+        }
+        scopeTrace.createChannel().receive { _, _ ->
+           declarations.forEach {
+               if (!it.isLazyService && it.lifecycle == Lifecycle.Scoped) {
+                   getService(it.declarationTypes[0])
+               }
+           }
         }
     }
 

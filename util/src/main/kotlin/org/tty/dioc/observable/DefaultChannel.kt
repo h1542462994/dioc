@@ -23,6 +23,7 @@ class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
             )
             nextAll.clear()
             createNextAll(0)
+
         }
     }
 
@@ -30,22 +31,34 @@ class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
      * get the next emit.
      */
     private fun createNextAll(index: Int): ChannelEmit<T> {
+        // if receivers is empty, return combinedChannelEmit directly.
+        if (receivers.isEmpty()) {
+            nextAll.add(combinedChannelEmit)
+            return combinedChannelEmit
+        }
+
+        // else to create receiver invoke chain.
         require(index in receivers.indices)
 
         val nextEmit: ChannelEmit<T> =
-        if (index in 0 until receivers.size - 1){
-            createNextAll(index + 1)
-        } else {
+
+        if (index == receivers.size - 1){
             combinedChannelEmit
+        } else {
+            createNextAll(index + 1)
         }
 
         val emit = object: ChannelEmit<T> {
             override fun emit(data: T) {
-                nextEmit.emit(data)
+                // fixed bug
+                // use should call the receiver.
+                receivers[index].receive(data, nextEmit)
             }
         }
 
-        nextAll.add(emit)
+        // fixed bug: the last is first created.
+        nextAll.add(0, emit)
+
         return emit
     }
 
@@ -60,6 +73,13 @@ class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
         )
         return next
     }
+
+    override fun next(): Channel<T> {
+        val channel = Channels.create<T>()
+        channels.add(channel)
+        return channel
+    }
+
     override fun next(channel: ChannelEmit<T>) {
         channels.add(channel)
     }
@@ -69,15 +89,25 @@ class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
         return this
     }
 
+    override fun removeReceiver(receiver: ChannelReceiver<T>): Channel<T> {
+        receivers.remove(receiver)
+        return this
+    }
+
     override fun emit(data: T) {
         ensurePrepared()
 
-        if (receivers.isNotEmpty()) {
-            receivers.first().receive(
-                data, nextAll.first()
-            )
-        } else {
-            combinedChannelEmit.emit(data)
-        }
+        nextAll.first().emit(data)
     }
+
+    override fun cleanReceivers(): Channel<T> {
+        receivers.clear()
+        return this
+    }
+
+    override fun cleanChannels(): Channel<T> {
+        channels.clear()
+        return this
+    }
+
 }
