@@ -10,7 +10,6 @@ interface Channel<T> {
      * to receive the channel
      */
     fun receive(receiver: ChannelReceiver<T>): Channel<T>
-
     /**
      * to next channel
      */

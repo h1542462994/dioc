@@ -45,7 +45,7 @@ class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
             }
         }
 
-        nextAll[index] = emit
+        nextAll.add(emit)
         return emit
     }
 
@@ -73,7 +73,7 @@ class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
         ensurePrepared()
 
         if (receivers.isNotEmpty()) {
-            receivers.first().onSuccess(
+            receivers.first().receive(
                 data, nextAll.first()
             )
         } else {
