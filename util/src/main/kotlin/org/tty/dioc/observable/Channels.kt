@@ -4,7 +4,7 @@ object Channels {
      /**
       * to create a channel
       */
-     fun <T> create(): DefaultChannel<T> {
+     fun <T> create(): ChannelFull<T> {
           return DefaultChannel()
      }
 
