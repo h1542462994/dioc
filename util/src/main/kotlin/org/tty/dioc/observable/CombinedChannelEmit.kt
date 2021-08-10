@@ -7,10 +7,4 @@ class CombinedChannelEmit<T>(private val channels: List<ChannelEmit<T>>): Channe
             it.emit(data)
         }
     }
-
-    override fun throws(throwable: Throwable) {
-        channels.forEach {
-            it.throws(throwable)
-        }
-    }
 }

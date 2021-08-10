@@ -3,39 +3,38 @@ package org.tty.dioc.observable
 /**
  * default channel implementation
  */
-class DefaultChannel<T>: ChannelReceive<T>, ChannelEmit<T> {
+class DefaultChannel<T>: Channel<T>, ChannelEmit<T> {
     private val channels: ArrayList<ChannelEmit<T>> = ArrayList()
-    private val receivers: ArrayList<ChannelReceiver1<T>> = ArrayList()
-    private var needCreateCombinedChannelEmit = true
+    private val receivers: ArrayList<ChannelReceiver<T>> = ArrayList()
+    private val mapping: ArrayList<ChannelMapping<T, *>> = ArrayList()
+    private var prepared = false
+
     private lateinit var combinedChannelEmit: CombinedChannelEmit<T>
+    private val nextAll: ArrayList<ChannelEmit<T>> = ArrayList()
 
     /**
-     * add the [receiver]
+     * ensure the [combinedChannelEmit] and [nextAll] is prepared.
      */
-    override fun receive(receiver: ChannelReceiver1<T>) {
-        receivers.add(receiver)
-    }
-
-    override fun <TE : Throwable> receive(receiver: ChannelReceiver2<T, TE>) {
-        receivers.add(receiver)
-    }
-
-    private fun ensureCombinedChannelEmitCreated() {
-        if (needCreateCombinedChannelEmit) {
-            needCreateCombinedChannelEmit = false
-            combinedChannelEmit = CombinedChannelEmit(channels)
+    private fun ensurePrepared() {
+        if (!prepared) {
+            prepared = true
+            combinedChannelEmit = CombinedChannelEmit(
+                channels.plus(mapping)
+            )
+            nextAll.clear()
+            createNextAll(0)
         }
     }
 
     /**
      * get the next emit.
      */
-    private fun nextEmit(index: Int): ChannelEmit<T> {
+    private fun createNextAll(index: Int): ChannelEmit<T> {
         require(index in receivers.indices)
 
         val nextEmit: ChannelEmit<T> =
-        if (index in 1 until receivers.size){
-            nextEmit(index - 1)
+        if (index in 0 until receivers.size - 1){
+            createNextAll(index + 1)
         } else {
             combinedChannelEmit
         }
@@ -44,28 +43,41 @@ class DefaultChannel<T>: ChannelReceive<T>, ChannelEmit<T> {
             override fun emit(data: T) {
                 nextEmit.emit(data)
             }
-
-            override fun throws(throwable: Throwable) {
-                throw IllegalStateException("throw unreachable.")
-            }
         }
 
+        nextAll[index] = emit
         return emit
     }
 
+
+    override fun <TR: Any> map(mapper: (T) -> TR): Channel<TR> {
+        val next = DefaultChannel<TR>()
+        this.mapping.add(
+            ChannelMapping(
+                mapper,
+                next
+            )
+        )
+        return next
+    }
+    override fun next(channel: ChannelEmit<T>) {
+        channels.add(channel)
+    }
+
+    override fun receive(receiver: ChannelReceiver<T>): Channel<T> {
+        receivers.add(receiver)
+        return this
+    }
+
     override fun emit(data: T) {
-        ensureCombinedChannelEmitCreated()
+        ensurePrepared()
 
         if (receivers.isNotEmpty()) {
             receivers.first().onSuccess(
-                data, nextEmit(receivers.size - 1)
+                data, nextAll.first()
             )
         } else {
             combinedChannelEmit.emit(data)
         }
-    }
-
-    override fun throws(throwable: Throwable) {
-        TODO("Not yet implemented")
     }
 }
