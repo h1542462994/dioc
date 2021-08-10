@@ -5,7 +5,7 @@ import org.tty.dioc.core.declare.ServiceCreating
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.transaction.TransactionClosedException
-import org.tty.dioc.util.Transaction
+import org.tty.dioc.transaction.Transaction
 import kotlin.jvm.Throws
 
 interface IStorageTransaction: Transaction {

@@ -84,7 +84,15 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
      */
     private fun addDeclareByType(declarationType: KClass<*>, implementationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean) {
         val l = singleDeclarationTypeOrNull(declarationType)
-        if (l == null) {
+        // remove the existed declaration
+        if (l != null && forceReplaceEnabled) {
+            container.removeIf {
+                it.declarationTypes.contains(declarationType)
+            }
+        }
+
+
+        if (l == null || forceReplaceEnabled) {
             container.add(
                 ServiceDeclare(
                     isInterfaceAdvice = false,
@@ -96,9 +104,6 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
                     components = ServiceUtil.getComponents(implementationType)
                 )
             )
-        } else if (forceReplaceEnabled) {
-            // open forceReplace
-            TODO("not implemented yet.")
         } else {
             throw ServiceDeclarationException("the declaration of the type $declarationType is redundant.")
         }

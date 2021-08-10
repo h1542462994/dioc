@@ -10,7 +10,7 @@ import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.transaction.TransactionClosedException
-import org.tty.dioc.util.Transactional
+import org.tty.dioc.transaction.Transactional
 import java.lang.ref.WeakReference
 
 /**

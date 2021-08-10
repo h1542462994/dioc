@@ -2,6 +2,7 @@ package org.tty.dioc.core.declare.identifier
 
 import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 
 /**
@@ -16,8 +17,8 @@ interface ServiceIdentifier {
                     SingletonIdentifier(serviceDeclare.implementationType)
                 }
                 Lifecycle.Scoped -> {
-                    requireNotNull(scope) {
-                        "you couldn't get a scoped service out of a scope."
+                    if (scope == null) {
+                        throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
                     }
                     ScopeIdentifier(serviceDeclare.implementationType, scope)
                 }

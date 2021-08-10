@@ -1,4 +1,4 @@
-package org.tty.dioc.util
+package org.tty.dioc.transaction
 
 import org.tty.dioc.transaction.TransactionClosedException
 import kotlin.jvm.Throws

@@ -64,7 +64,7 @@ open class DefaultDynamicApplicationContext(
     }
 
     override fun forceReplace(action: (ServiceDeclareAware) -> Unit) {
-        TODO("Not yet implemented")
+        declarations.forceReplace(action)
     }
 
     override fun onInit() {
