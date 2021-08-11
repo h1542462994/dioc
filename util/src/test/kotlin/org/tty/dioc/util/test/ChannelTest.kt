@@ -123,4 +123,21 @@ class ChannelTest {
         channel2.emit(1)
         assertEquals(7, d)
     }
+
+    @Order(6)
+    @Test
+    fun testChannelSync() {
+        var result1 = 0
+        var result2 = ""
+        var result3 = ""
+        val channel1 = Channels.create<Int>()
+        val channel2 = Channels.create<Int>()
+        val channel3 = Channels.create<String>()
+
+        Channels
+            .sync(channel1, channel2)
+            .map { it.sum() }
+
+
+    }
 }

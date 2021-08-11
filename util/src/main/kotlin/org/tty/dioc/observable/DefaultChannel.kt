@@ -78,7 +78,7 @@ class DefaultChannel<T>: ChannelFull<T> {
 
     override fun next(): Channel<T> {
         prepared = false
-        val channel = Channels.create<T>()
+        val channel = DefaultChannel<T>()
         channels.add(channel)
         return channel
     }
@@ -107,7 +107,7 @@ class DefaultChannel<T>: ChannelFull<T> {
     }
 
     override fun cleanChannels(): Channel<T> {
-        prepared
+        prepared = false
         channels.clear()
         return this
     }

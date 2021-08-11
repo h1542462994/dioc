@@ -1,5 +1,8 @@
 package org.tty.dioc.observable
 
+/**
+ * the receiver for the channel.
+ */
 interface ChannelReceiver<T> {
     /**
      * to receive the data.
