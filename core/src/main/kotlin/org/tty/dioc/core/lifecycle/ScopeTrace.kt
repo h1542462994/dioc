@@ -2,7 +2,7 @@ package org.tty.dioc.core.lifecycle
 
 import org.tty.dioc.observable.Channel
 import org.tty.dioc.observable.Channels
-import org.tty.dioc.util.Builder
+import org.tty.dioc.base.Builder
 
 /**
  * the trace of the [Scope],

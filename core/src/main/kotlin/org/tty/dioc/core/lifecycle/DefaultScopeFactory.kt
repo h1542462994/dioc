@@ -1,6 +1,6 @@
 package org.tty.dioc.core.lifecycle
 
-import org.tty.dioc.util.Builder
+import org.tty.dioc.base.Builder
 import java.util.*
 
 class DefaultScopeFactory: Builder<Scope> {

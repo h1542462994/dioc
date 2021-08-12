@@ -1,8 +1,8 @@
-package org.tty.dioc.util.test
+package org.tty.dioc.reflect.test
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.tty.dioc.util.KClassScanner
+import org.tty.dioc.reflect.KClassScanner
 
 class KClassScannerTest {
 

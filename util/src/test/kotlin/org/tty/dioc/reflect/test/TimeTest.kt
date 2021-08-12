@@ -1,4 +1,4 @@
-package org.tty.dioc.util.test
+package org.tty.dioc.reflect.test
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

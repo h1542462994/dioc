@@ -1,5 +1,7 @@
 package org.tty.dioc.observable
 
+import org.tty.dioc.base.*
+
 
 object Channels {
      /**
@@ -54,8 +56,33 @@ object Channels {
       * to synchronize all [channels].
       * @return the channel will be emitted only all channel receive the data.
       */
-     fun <T> sync(vararg channels: Channel<T>): Channel<ArrayList<T>> {
+     fun <T> sync(vararg channels: Channel<T>): Channel<List<T>> {
           return SyncChannel(channels = channels.toList())
      }
+
+     /**
+      * to record all [channels].
+      * @return the channel will be emitted by latest recorded data any channel receive the data.
+      */
+     fun <T> record(vararg channels: Channel<T>): InitVarargsR<T, Channel<List<T>>> {
+          TODO("not yet implemented.")
+     }
+
+     /**
+      * to record [channel1] and [channel2]
+      * @return the channel will be emitted by latest recorded data any channel receive the data.
+      */
+     fun <T1, T2> record(channel1: Channel<T1>, channel2: Channel<T2>): Init2R<T1, T2, Channel<Pair<T1, T2>>> {
+          TODO("not yet implemented.")
+     }
+
+     /**
+      * to record [channel1], [channel2] and [channel3]
+      * @return the channel will be emitted by latest recorded data any channel receive the data.
+      */
+     fun <T1, T2, T3> record(channel1: Channel<T1>, channel2: Channel<T2>, channel3: Channel<T3>): Init3R<T1, T2, T3, Channel<Triple<T1, T2, T3>>> {
+          TODO("not yet implemented.")
+     }
+
 
 }

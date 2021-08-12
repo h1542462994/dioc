@@ -1,6 +1,6 @@
 package org.tty.dioc.observable
 
-data class ChannelMapping<T, TR>(
+internal data class ChannelMapping<T, TR>(
     val mapping: (T) -> TR,
     val channel: ChannelEmit<TR>
 ): ChannelEmit<T> {

@@ -3,7 +3,7 @@ package org.tty.dioc.core
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.util.Builder
+import org.tty.dioc.base.Builder
 
 /**
  * the builder for applicationContext

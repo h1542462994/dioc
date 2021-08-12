@@ -3,7 +3,7 @@ package org.tty.dioc.observable
 /**
  * default channel implementation
  */
-class DefaultChannel<T>: ChannelFull<T> {
+internal class DefaultChannel<T>: ChannelFull<T> {
     private val channels: ArrayList<ChannelEmit<T>> = ArrayList()
     private val interceptors: ArrayList<ChannelInterceptor<T>> = ArrayList()
     private val mapping: ArrayList<ChannelMapping<T, *>> = ArrayList()

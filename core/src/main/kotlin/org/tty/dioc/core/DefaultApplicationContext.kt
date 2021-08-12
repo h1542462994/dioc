@@ -5,7 +5,7 @@ import org.tty.dioc.core.declare.ReadonlyServiceDeclares
 import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
-import org.tty.dioc.util.Builder
+import org.tty.dioc.base.Builder
 import kotlin.reflect.KClass
 
 /**

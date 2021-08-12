@@ -4,9 +4,9 @@ package org.tty.dioc.observable
  * the synchronized channel with [channels]
  * a descriptor for [Channel]
  */
-class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<T>> {
+internal class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<List<T>> {
     private val dataCollect = ArrayList<ArrayList<T>>()
-    private val channel = Channels.create<ArrayList<T>>()
+    private val channel = Channels.create<List<T>>()
 
     init {
         require(channels.isNotEmpty())
@@ -28,16 +28,16 @@ class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<
     }
 
     private fun checkAndEmitToChannel() {
-        var countMax = dataCollect.map { it.size }.minOrNull()
-        require(countMax != null)
-        while (countMax > 0) {
+        var countMin = dataCollect.map { it.size }.minOrNull()
+        require(countMin != null)
+        while (countMin > 0) {
             val data = extractData()
             channel.emit(data)
-            countMax -= 1
+            countMin -= 1
         }
     }
 
-    private fun extractData(): ArrayList<T> {
+    private fun extractData(): List<T> {
         val data = ArrayList<T>()
         dataCollect.forEach {
             data.add(it.first())
@@ -46,35 +46,35 @@ class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<
         return data
     }
 
-    override fun <TR : Any> map(mapper: (ArrayList<T>) -> TR): Channel<TR> {
+    override fun <TR : Any> map(mapper: (List<T>) -> TR): Channel<TR> {
         return channel.map(mapper)
     }
 
-    override fun intercept(interceptor: ChannelInterceptor<ArrayList<T>>): Channel<ArrayList<T>> {
+    override fun intercept(interceptor: ChannelInterceptor<List<T>>): Channel<List<T>> {
         return channel.intercept(interceptor)
     }
 
-    override fun next(): Channel<ArrayList<T>> {
+    override fun next(): Channel<List<T>> {
         return channel.next()
     }
 
-    override fun next(channel: ChannelEmit<ArrayList<T>>) {
+    override fun next(channel: ChannelEmit<List<T>>) {
         this.channel.next(channel)
     }
 
-    override fun removeInterceptor(interceptor: ChannelInterceptor<ArrayList<T>>): Channel<ArrayList<T>> {
+    override fun removeInterceptor(interceptor: ChannelInterceptor<List<T>>): Channel<List<T>> {
         return channel.removeInterceptor(interceptor)
     }
 
-    override fun removeChannelEmit(channelEmit: ChannelEmit<ArrayList<T>>): Channel<ArrayList<T>> {
+    override fun removeChannelEmit(channelEmit: ChannelEmit<List<T>>): Channel<List<T>> {
         return channel.removeChannelEmit(channelEmit)
     }
 
-    override fun cleanInterceptors(): Channel<ArrayList<T>> {
+    override fun cleanInterceptors(): Channel<List<T>> {
         return channel.cleanInterceptors()
     }
 
-    override fun cleanChannels(): Channel<ArrayList<T>> {
+    override fun cleanChannels(): Channel<List<T>> {
         return channel.cleanChannels()
     }
 

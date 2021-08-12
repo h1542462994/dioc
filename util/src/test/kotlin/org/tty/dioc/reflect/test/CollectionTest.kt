@@ -1,4 +1,4 @@
-package org.tty.dioc.util.test
+package org.tty.dioc.reflect.test
 
 import java.util.*
 import kotlin.collections.HashSet

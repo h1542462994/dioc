@@ -8,7 +8,7 @@ import org.tty.dioc.core.lifecycle.ScopeTrace
 import org.tty.dioc.core.storage.CombinedServiceStorage
 import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.observable.intercept
-import org.tty.dioc.util.Builder
+import org.tty.dioc.base.Builder
 import kotlin.reflect.KClass
 
 /**

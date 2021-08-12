@@ -1,4 +1,4 @@
-package org.tty.dioc.util
+package org.tty.dioc.reflect
 
 import kotlin.reflect.*
 import kotlin.reflect.full.findAnnotation

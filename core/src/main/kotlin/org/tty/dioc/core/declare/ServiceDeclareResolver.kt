@@ -2,7 +2,7 @@ package org.tty.dioc.core.declare
 
 import org.tty.dioc.core.advice.InterfaceAdvice
 import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
-import org.tty.dioc.util.KClassScanner
+import org.tty.dioc.reflect.KClassScanner
 import kotlin.reflect.full.hasAnnotation
 
 class ServiceDeclareResolver(

@@ -2,7 +2,7 @@ package org.tty.dioc.core.util
 
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.util.*
+import org.tty.dioc.reflect.*
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

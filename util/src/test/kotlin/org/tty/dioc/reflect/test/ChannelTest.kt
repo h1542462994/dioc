@@ -1,11 +1,8 @@
-package org.tty.dioc.util.test
+package org.tty.dioc.reflect.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.tty.dioc.observable.Channel
-import org.tty.dioc.observable.Channels
-import org.tty.dioc.observable.intercept
-import org.tty.dioc.observable.observe
+import org.tty.dioc.observable.*
 
 /**
  * test [Channel]
@@ -178,5 +175,35 @@ class ChannelTest {
         assertEquals(9, result1)
         assertEquals("4,X", result2)
         assertEquals("4,5,X", result3)
+    }
+
+    @Order(8)
+    @Test
+    fun testChannelRecord() {
+        var result1 = 0
+        var result2 = ""
+        var result3 = ""
+        val channel1 = Channels.create<Int>()
+        val channel2 = Channels.create<Int>()
+        val channel3 = Channels.create<String>()
+
+
+        Channels
+            .record(channel1, channel2)
+            .init(0, 0)
+            .map { it.sum() }
+            .observe { result1 = it }
+
+        Channels
+            .record(channel1, channel3)
+            .init(0, "")
+            .map { "${it.first},${it.second}" }
+            .observe { result2 = it }
+
+        Channels
+            .record(channel1, channel2, channel3)
+            .init(0, 0, "")
+            .map { "${it.first},${it.second},${it.third}" }
+            .observe { result3 = it }
     }
 }
