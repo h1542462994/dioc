@@ -28,11 +28,12 @@ class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<
     }
 
     private fun checkAndEmitToChannel() {
-        val countMax = dataCollect.map { it.size }.maxOrNull()
+        var countMax = dataCollect.map { it.size }.minOrNull()
         require(countMax != null)
         while (countMax > 0) {
             val data = extractData()
             channel.emit(data)
+            countMax -= 1
         }
     }
 
@@ -40,7 +41,7 @@ class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<
         val data = ArrayList<T>()
         dataCollect.forEach {
             data.add(it.first())
-            data.removeAt(0)
+            it.removeAt(0)
         }
         return data
     }
@@ -49,8 +50,8 @@ class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<
         return channel.map(mapper)
     }
 
-    override fun receive(receiver: ChannelReceiver<ArrayList<T>>): Channel<ArrayList<T>> {
-        return channel.receive(receiver)
+    override fun intercept(interceptor: ChannelInterceptor<ArrayList<T>>): Channel<ArrayList<T>> {
+        return channel.intercept(interceptor)
     }
 
     override fun next(): Channel<ArrayList<T>> {
@@ -61,16 +62,22 @@ class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<ArrayList<
         this.channel.next(channel)
     }
 
-    override fun removeReceiver(receiver: ChannelReceiver<ArrayList<T>>): Channel<ArrayList<T>> {
-        return channel.removeReceiver(receiver)
+    override fun removeInterceptor(interceptor: ChannelInterceptor<ArrayList<T>>): Channel<ArrayList<T>> {
+        return channel.removeInterceptor(interceptor)
     }
 
-    override fun cleanReceivers(): Channel<ArrayList<T>> {
-        return channel.cleanReceivers()
+    override fun removeChannelEmit(channelEmit: ChannelEmit<ArrayList<T>>): Channel<ArrayList<T>> {
+        return channel.removeChannelEmit(channelEmit)
+    }
+
+    override fun cleanInterceptors(): Channel<ArrayList<T>> {
+        return channel.cleanInterceptors()
     }
 
     override fun cleanChannels(): Channel<ArrayList<T>> {
         return channel.cleanChannels()
     }
+
+
 
 }

@@ -4,7 +4,8 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.observable.Channel
 import org.tty.dioc.observable.Channels
-import org.tty.dioc.observable.receive
+import org.tty.dioc.observable.intercept
+import org.tty.dioc.observable.observe
 
 /**
  * test [Channel]
@@ -14,13 +15,13 @@ class ChannelTest {
 
     @Order(0)
     @Test
-    fun testChannelReceive() {
+    fun testChannelIntercept() {
 
         var d = 0
         val channel = Channels
             .create<Int>()
 
-        channel.receive { data, _ ->
+        channel.intercept { data, _ ->
             d = data
         }
 
@@ -30,31 +31,49 @@ class ChannelTest {
 
     @Order(1)
     @Test
-    fun testChannelReceiveMany() {
+    fun testChannelObserve() {
+        var d = 0
+        val channel = Channels
+            .create<Int>()
+
+        channel.observe { data ->
+            d = data
+        }
+
+        channel.emit(1)
+        assertEquals(1, d)
+
+    }
+
+    @Order(2)
+    @Test
+    fun testChannelInterceptMany() {
         var d = 0
         val channel = Channels
             .create<Int>()
 
         channel
-            .receive { data, next ->  next(data) }
-            .receive { data, _ -> d = data }
+            .intercept { data, next ->  next(data) }
+            .intercept { data, next -> next(data) }
+            .intercept { data, _ -> d = data }
 
         channel.emit(2)
         assertEquals(2, d)
 
         d = 0
         channel
-            .cleanReceivers()
-            .receive { _, _ ->
+            .cleanInterceptors()
+            .intercept { _, _ ->
                 // intercept the data flow.
             }
-            .receive { data, _ -> d = data }
+            .intercept { data, next -> next(data) }
+            .intercept { data, _ -> d = data }
 
         channel.emit(2)
         assertEquals(0, d)
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     fun testChannelTransfer() {
         var d = 0
@@ -64,15 +83,13 @@ class ChannelTest {
         channel1
             .next(channel2)
 
-        channel2.receive { data, _ ->
-            d = data
-        }
+        channel2.observe { data -> d = data }
 
         channel1.emit(2)
         assertEquals(2, d)
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     fun testChannelMap() {
         var d = ""
@@ -80,15 +97,13 @@ class ChannelTest {
 
         channel
             .map { it.toString() }
-            .receive { data, _ ->
-                d = data
-            }
+            .observe { data -> d = data }
 
         channel.emit(4)
         assertEquals("4", d)
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     fun testChannelMapMany() {
         var d = ""
@@ -98,13 +113,13 @@ class ChannelTest {
             .map { it * it }
             .map { it + 2 }
             .map { it.toString() }
-            .receive { data, _ -> d = data }
+            .observe { data -> d = data }
 
         channel.emit(4)
         assertEquals("18", d)
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     fun testChannelCombine() {
         var d = 0
@@ -114,7 +129,7 @@ class ChannelTest {
         Channels.combine(
             channel1.map { it * it },
             channel2.map { it + 2 }
-        ).receive { data, _ -> d += data }
+        ).intercept { data, _ -> d += data }
 
 
 
@@ -124,7 +139,7 @@ class ChannelTest {
         assertEquals(7, d)
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     fun testChannelSync() {
         var result1 = 0
@@ -137,7 +152,31 @@ class ChannelTest {
         Channels
             .sync(channel1, channel2)
             .map { it.sum() }
+            .observe { result1 = it }
 
+        Channels
+            .sync(channel1, channel3)
+            .map { "${it.first},${it.second}" }
+            .observe { result2 = it }
 
+        Channels
+            .sync(channel1, channel2, channel3)
+            .map { "${it.first},${it.second},${it.third}" }
+            .observe { result3 = it }
+
+        channel1.emit(4)
+        assertEquals(0, result1)
+        assertEquals("", result2)
+        assertEquals("", result3)
+
+        channel2.emit(5)
+        assertEquals(9, result1)
+        assertEquals("", result2)
+        assertEquals("", result3)
+
+        channel3.emit("X")
+        assertEquals(9, result1)
+        assertEquals("4,X", result2)
+        assertEquals("4,5,X", result3)
     }
 }

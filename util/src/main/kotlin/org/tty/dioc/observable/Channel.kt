@@ -7,14 +7,14 @@ package org.tty.dioc.observable
  */
 interface Channel<T> {
     /**
-     * map the channel
+     * map the channel.
      */
     fun <TR: Any> map(mapper: (T) -> TR): Channel<TR>
 
     /**
-     * to receive the channel
+     * to intercept the channel.
      */
-    fun receive(receiver: ChannelReceiver<T>): Channel<T>
+    fun intercept(interceptor: ChannelInterceptor<T>): Channel<T>
 
     /**
      * to next channel
@@ -24,23 +24,29 @@ interface Channel<T> {
 
     /**
      * to next channel
-     * @param channel the next channel received
+     * @param channel the next channel received.
      */
     fun next(channel: ChannelEmit<T>)
 
     /**
-     * remove the receiver
-     * @param receiver the removed receiver
+     * remove the intercept
+     * @param interceptor the removed interceptor.
      */
-    fun removeReceiver(receiver: ChannelReceiver<T>): Channel<T>
+    fun removeInterceptor(interceptor: ChannelInterceptor<T>): Channel<T>
 
     /**
-     * to clean all receivers
+     * remove the channel emit
+     * @param channelEmit the removed channelEmit.
      */
-    fun cleanReceivers(): Channel<T>
+    fun removeChannelEmit(channelEmit: ChannelEmit<T>): Channel<T>
 
     /**
-     * clean all channels
+     * to clean all interceptors.
+     */
+    fun cleanInterceptors(): Channel<T>
+
+    /**
+     * clean all channels.
      */
     fun cleanChannels(): Channel<T>
 }

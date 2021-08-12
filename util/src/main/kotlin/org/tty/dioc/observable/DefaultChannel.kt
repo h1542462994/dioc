@@ -5,7 +5,7 @@ package org.tty.dioc.observable
  */
 class DefaultChannel<T>: ChannelFull<T> {
     private val channels: ArrayList<ChannelEmit<T>> = ArrayList()
-    private val receivers: ArrayList<ChannelReceiver<T>> = ArrayList()
+    private val interceptors: ArrayList<ChannelInterceptor<T>> = ArrayList()
     private val mapping: ArrayList<ChannelMapping<T, *>> = ArrayList()
     private var prepared = false
 
@@ -32,17 +32,17 @@ class DefaultChannel<T>: ChannelFull<T> {
      */
     private fun createNextAll(index: Int): ChannelEmit<T> {
         // if receivers is empty, return combinedChannelEmit directly.
-        if (receivers.isEmpty()) {
+        if (interceptors.isEmpty()) {
             chains.add(finalEmit)
             return finalEmit
         }
 
         // else to create receiver invoke chain.
-        require(index in receivers.indices)
+        require(index in interceptors.indices)
 
         val nextEmit: ChannelEmit<T> =
 
-        if (index == receivers.size - 1){
+        if (index == interceptors.size - 1){
             finalEmit
         } else {
             createNextAll(index + 1)
@@ -53,7 +53,7 @@ class DefaultChannel<T>: ChannelFull<T> {
             override fun emit(data: T) {
                 // fixed bug
                 // use should call the receiver.
-                receivers[index].receive(data, nextEmit)
+                interceptors[index].intercept(data, nextEmit)
             }
         }
 
@@ -88,21 +88,27 @@ class DefaultChannel<T>: ChannelFull<T> {
         channels.add(channel)
     }
 
-    override fun receive(receiver: ChannelReceiver<T>): Channel<T> {
+    override fun intercept(interceptor: ChannelInterceptor<T>): Channel<T> {
         prepared = false
-        receivers.add(receiver)
+        interceptors.add(interceptor)
         return this
     }
 
-    override fun removeReceiver(receiver: ChannelReceiver<T>): Channel<T> {
+    override fun removeInterceptor(interceptor: ChannelInterceptor<T>): Channel<T> {
         prepared = false
-        receivers.remove(receiver)
+        interceptors.remove(interceptor)
         return this
     }
 
-    override fun cleanReceivers(): Channel<T> {
+    override fun removeChannelEmit(channelEmit: ChannelEmit<T>): Channel<T> {
         prepared = false
-        receivers.clear()
+        channels.remove(channelEmit)
+        return this
+    }
+
+    override fun cleanInterceptors(): Channel<T> {
+        prepared = false
+        interceptors.clear()
         return this
     }
 

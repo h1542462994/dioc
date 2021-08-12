@@ -10,7 +10,8 @@ object Channels {
      }
 
      /**
-      * to group the channel to one channel
+      * group the [channels] to one channel.
+      * @return the channel will be emitted any channel receive the data.
       */
      fun <T> combine(vararg channels: Channel<T>): Channel<T> {
           val next = DefaultChannel<T>()
@@ -21,7 +22,7 @@ object Channels {
      }
 
      /**
-      * to sync [channel1] and [channel2]
+      * to synchronize [channel1] and [channel2]
       * @return the channel will be emitted only all channel receive the data.
       */
      @Suppress("UNCHECKED_CAST")
@@ -35,7 +36,7 @@ object Channels {
      }
 
      /**
-      * to sync [channel1], [channel2] and [channel3]
+      * to synchronize sync [channel1], [channel2] and [channel3]
       * @return the channel will be emitted only all channel receive the data.
       */
      @Suppress("UNCHECKED_CAST")
@@ -50,7 +51,7 @@ object Channels {
      }
 
      /**
-      * to sync all [channels].
+      * to synchronize all [channels].
       * @return the channel will be emitted only all channel receive the data.
       */
      fun <T> sync(vararg channels: Channel<T>): Channel<ArrayList<T>> {
