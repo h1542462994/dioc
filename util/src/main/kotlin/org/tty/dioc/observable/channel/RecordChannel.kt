@@ -23,37 +23,22 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
         }
     }
 
-    override fun <TR : Any> map(mapper: (List<T>) -> TR): Channel<TR> {
-        return channel.map(mapper)
-    }
+    //region copy functions
 
-    override fun intercept(interceptor: ChannelInterceptor<List<T>>): Channel<List<T>> {
-        return channel.intercept(interceptor)
-    }
+    override fun <TR : Any> map(mapper: (List<T>) -> TR): Channel<TR> = channel.map(mapper)
+    override fun intercept(interceptor: ChannelInterceptor<List<T>>): Channel<List<T>> = channel.intercept(interceptor)
+    override fun next(): Channel<List<T>> = channel.next()
+    override fun next(channel: ChannelEmit<List<T>>) = this.channel.next(channel)
+    override fun removeInterceptor(interceptor: ChannelInterceptor<List<T>>): Channel<List<T>> =
+        channel.removeInterceptor(interceptor)
 
-    override fun next(): Channel<List<T>> {
-        return channel.next()
-    }
+    override fun removeChannelEmit(channelEmit: ChannelEmit<List<T>>): Channel<List<T>> =
+        channel.removeChannelEmit(channelEmit)
 
-    override fun next(channel: ChannelEmit<List<T>>) {
-        return this.channel.next(channel)
-    }
+    override fun cleanInterceptors(): Channel<List<T>> = channel.cleanInterceptors()
+    override fun cleanChannels(): Channel<List<T>> = channel.cleanChannels()
 
-    override fun removeInterceptor(interceptor: ChannelInterceptor<List<T>>): Channel<List<T>> {
-        return channel.removeInterceptor(interceptor)
-    }
-
-    override fun removeChannelEmit(channelEmit: ChannelEmit<List<T>>): Channel<List<T>> {
-        return channel.removeChannelEmit(channelEmit)
-    }
-
-    override fun cleanInterceptors(): Channel<List<T>> {
-        return channel.cleanInterceptors()
-    }
-
-    override fun cleanChannels(): Channel<List<T>> {
-        return channel.cleanChannels()
-    }
+    //endregion
 
     override fun init(vararg args: T): Channel<List<T>> {
         if (args.size != channels.size) {
@@ -80,6 +65,9 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
                 return component1
             }
         }
+
+        //region copy functions
+
         return object : RecordChannel2<T1, T2> {
             override fun <TR : Any> map(mapper: (Pair<T1, T2>) -> TR): Channel<TR> = component1.map(mapper)
             override fun intercept(interceptor: ChannelInterceptor<Pair<T1, T2>>): Channel<Pair<T1, T2>> =
@@ -97,6 +85,8 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
             override fun cleanChannels(): Channel<Pair<T1, T2>> = component1.cleanChannels()
             override fun init(arg1: T1, arg2: T2): Channel<Pair<T1, T2>> = component2.init(arg1, arg2)
         }
+
+        //endregion
     }
 
     /**
@@ -114,6 +104,9 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
                 return component1
             }
         }
+
+        //region copy functions
+
         return object : RecordChannel3<T1, T2, T3> {
             override fun <TR : Any> map(mapper: (Triple<T1, T2, T3>) -> TR): Channel<TR> = component1.map(mapper)
             override fun intercept(interceptor: ChannelInterceptor<Triple<T1, T2, T3>>): Channel<Triple<T1, T2, T3>> =
@@ -132,6 +125,8 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
             override fun init(arg1: T1, arg2: T2, arg3: T3): Channel<Triple<T1, T2, T3>> =
                 component2.init(arg1, arg2, arg3)
         }
+
+        //endregion
     }
 
     /**
@@ -147,7 +142,9 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
             }
         }
 
-        if (!prepared) { return }
+        if (!prepared) {
+            return
+        }
         val data = channels.indices.map {
             recordMap[it]!!
         }
