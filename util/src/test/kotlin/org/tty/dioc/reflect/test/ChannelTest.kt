@@ -2,10 +2,13 @@ package org.tty.dioc.reflect.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.tty.dioc.observable.*
+import org.tty.dioc.observable.channel.Channels
+import org.tty.dioc.observable.channel.intercept
+import org.tty.dioc.observable.channel.observe
 
 /**
- * test [Channel]
+ * test [Channels]
+ * @see Channels
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class ChannelTest {
@@ -13,7 +16,6 @@ class ChannelTest {
     @Order(0)
     @Test
     fun testChannelIntercept() {
-
         var d = 0
         val channel = Channels
             .create<Int>()
@@ -175,11 +177,16 @@ class ChannelTest {
         assertEquals(9, result1)
         assertEquals("4,X", result2)
         assertEquals("4,5,X", result3)
+
+        channel3.emit("Y")
+        assertEquals(9, result1)
+        assertEquals("4,X", result2)
+        assertEquals("4,5,X", result3)
     }
 
     @Order(8)
     @Test
-    fun testChannelRecord() {
+    fun testChannelRecordInit() {
         var result1 = 0
         var result2 = ""
         var result3 = ""
@@ -205,5 +212,72 @@ class ChannelTest {
             .init(0, 0, "")
             .map { "${it.first},${it.second},${it.third}" }
             .observe { result3 = it }
+
+        channel1.emit(4)
+        assertEquals(4, result1)
+        assertEquals("4,", result2)
+        assertEquals("4,0,", result3)
+
+        channel2.emit(5)
+        assertEquals(9, result1)
+        assertEquals("4,", result2)
+        assertEquals("4,5,", result3)
+
+        channel3.emit("X")
+        assertEquals(9, result1)
+        assertEquals("4,X", result2)
+        assertEquals("4,5,X", result3)
+
+        channel3.emit("Y")
+        assertEquals(9, result1)
+        assertEquals("4,Y", result2)
+        assertEquals("4,5,Y", result3)
+    }
+
+    @Order(9)
+    @Test
+    fun testChannelRecordNoInit() {
+        var result1 = 0
+        var result2 = ""
+        var result3 = ""
+        val channel1 = Channels.create<Int>()
+        val channel2 = Channels.create<Int>()
+        val channel3 = Channels.create<String>()
+
+
+        Channels
+            .record(channel1, channel2)
+            .map { it.sum() }
+            .observe { result1 = it }
+
+        Channels
+            .record(channel1, channel3)
+            .map { "${it.first},${it.second}" }
+            .observe { result2 = it }
+
+        Channels
+            .record(channel1, channel2, channel3)
+            .map { "${it.first},${it.second},${it.third}" }
+            .observe { result3 = it }
+
+        channel1.emit(4)
+        assertEquals(0, result1)
+        assertEquals("", result2)
+        assertEquals("", result3)
+
+        channel2.emit(5)
+        assertEquals(9, result1)
+        assertEquals("", result2)
+        assertEquals("", result3)
+
+        channel3.emit("X")
+        assertEquals(9, result1)
+        assertEquals("4,X", result2)
+        assertEquals("4,5,X", result3)
+
+        channel3.emit("Y")
+        assertEquals(9, result1)
+        assertEquals("4,Y", result2)
+        assertEquals("4,5,Y", result3)
     }
 }

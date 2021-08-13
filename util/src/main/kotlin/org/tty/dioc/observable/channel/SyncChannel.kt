@@ -1,4 +1,8 @@
-package org.tty.dioc.observable
+package org.tty.dioc.observable.channel
+
+import org.tty.dioc.observable.channel.contract.Channel
+import org.tty.dioc.observable.channel.contract.ChannelEmit
+import org.tty.dioc.observable.channel.contract.ChannelInterceptor
 
 /**
  * the synchronized channel with [channels]
@@ -12,21 +16,25 @@ internal class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<L
         require(channels.isNotEmpty())
         ensurePrepared()
         channels.forEachIndexed { index, channel ->
-            channel.next(object: ChannelEmit<T> {
-                override fun emit(data: T) {
-                    dataCollect[index].add(data)
-                    checkAndEmitToChannel()
-                }
-            })
+            channel.observe { data ->
+                dataCollect[index].add(data)
+                checkAndEmitToChannel()
+            }
         }
     }
 
+    /**
+     * to prepare the [dataCollect]
+     */
     private fun ensurePrepared() {
         for (i in channels.indices) {
             dataCollect.add(ArrayList())
         }
     }
 
+    /**
+     * check the data and detect whether to emit it.
+     */
     private fun checkAndEmitToChannel() {
         var countMin = dataCollect.map { it.size }.minOrNull()
         require(countMin != null)
@@ -37,6 +45,9 @@ internal class SyncChannel<T>(private val channels: List<Channel<T>>): Channel<L
         }
     }
 
+    /**
+     * extract the data from [dataCollect]
+     */
     private fun extractData(): List<T> {
         val data = ArrayList<T>()
         dataCollect.forEach {

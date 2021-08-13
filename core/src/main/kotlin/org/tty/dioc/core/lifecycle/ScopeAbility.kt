@@ -1,6 +1,6 @@
 package org.tty.dioc.core.lifecycle
 
-import org.tty.dioc.observable.Channel
+import org.tty.dioc.observable.channel.contract.Channel
 
 /**
  * ability to handle scoped services.

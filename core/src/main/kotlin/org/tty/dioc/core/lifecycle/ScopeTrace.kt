@@ -1,7 +1,7 @@
 package org.tty.dioc.core.lifecycle
 
-import org.tty.dioc.observable.Channel
-import org.tty.dioc.observable.Channels
+import org.tty.dioc.observable.channel.contract.Channel
+import org.tty.dioc.observable.channel.Channels
 import org.tty.dioc.base.Builder
 
 /**

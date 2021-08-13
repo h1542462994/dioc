@@ -1,4 +1,4 @@
-package org.tty.dioc.observable
+package org.tty.dioc.observable.channel.contract
 
 interface ChannelEmit<T> {
     /**

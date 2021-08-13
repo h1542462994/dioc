@@ -1,6 +1,7 @@
-package org.tty.dioc.observable
+package org.tty.dioc.observable.channel
 
 import org.tty.dioc.base.*
+import org.tty.dioc.observable.channel.contract.*
 
 
 object Channels {
@@ -62,27 +63,36 @@ object Channels {
 
      /**
       * to record all [channels].
-      * @return the channel will be emitted by latest recorded data any channel receive the data.
+      * @return if you call the init, the recorded data will be initialized with init.
+      * the record channel with be emitted when all recorded data is prepared.
+      * @see [RecordChannelVarargs]
       */
-     fun <T> record(vararg channels: Channel<T>): InitVarargsR<T, Channel<List<T>>> {
-          TODO("not yet implemented.")
+     fun <T> record(vararg channels: Channel<T>): RecordChannelVarargs<T> {
+          return RecordChannel(channels.toList())
      }
 
      /**
       * to record [channel1] and [channel2]
-      * @return the channel will be emitted by latest recorded data any channel receive the data.
+      * @return if you call the init, the recorded data will be initialized with init.
+      * the record channel with be emitted when all recorded data is prepared.
+      * @see [RecordChannel2]
       */
-     fun <T1, T2> record(channel1: Channel<T1>, channel2: Channel<T2>): Init2R<T1, T2, Channel<Pair<T1, T2>>> {
-          TODO("not yet implemented.")
+     fun <T1, T2> record(channel1: Channel<T1>, channel2: Channel<T2>): RecordChannel2<T1, T2> {
+          val channel1X = channel1.map { it as Any }
+          val channel2X = channel2.map { it as Any }
+          return RecordChannel(listOf(channel1X, channel2X)).castToRecordChannel2()
      }
 
      /**
       * to record [channel1], [channel2] and [channel3]
-      * @return the channel will be emitted by latest recorded data any channel receive the data.
+      * @return if you call the init, the recorded data will be initialized with init.
+      * the record channel with be emitted when all recorded data is prepared.
+      * @see [RecordChannel3]
       */
-     fun <T1, T2, T3> record(channel1: Channel<T1>, channel2: Channel<T2>, channel3: Channel<T3>): Init3R<T1, T2, T3, Channel<Triple<T1, T2, T3>>> {
-          TODO("not yet implemented.")
+     fun <T1, T2, T3> record(channel1: Channel<T1>, channel2: Channel<T2>, channel3: Channel<T3>): RecordChannel3<T1, T2, T3> {
+          val channel1X = channel1.map { it as Any }
+          val channel2X = channel2.map { it as Any }
+          val channel3X = channel3.map { it as Any }
+          return RecordChannel(listOf(channel1X, channel2X, channel3X)).castToRecordChannel3()
      }
-
-
 }

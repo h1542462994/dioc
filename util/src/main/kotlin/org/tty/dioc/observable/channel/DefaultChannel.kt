@@ -1,4 +1,9 @@
-package org.tty.dioc.observable
+package org.tty.dioc.observable.channel
+
+import org.tty.dioc.observable.channel.contract.Channel
+import org.tty.dioc.observable.channel.contract.ChannelEmit
+import org.tty.dioc.observable.channel.contract.ChannelFull
+import org.tty.dioc.observable.channel.contract.ChannelInterceptor
 
 /**
  * default channel implementation
