@@ -1,4 +1,4 @@
-package org.tty.dioc.reflect.test
+package org.tty.dioc.util.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*

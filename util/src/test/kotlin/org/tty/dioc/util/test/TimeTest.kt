@@ -1,8 +1,10 @@
-package org.tty.dioc.reflect.test
+package org.tty.dioc.util.test
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.tty.dioc.datetime.ChronoCarry
 import java.time.*
+import java.time.temporal.ChronoField
 import java.util.*
 
 
@@ -115,6 +117,29 @@ class TimeTest {
 
     @Test
     fun testProperty() {
+        val fixedInstant = Instant.parse("2021-07-11T19:00:00.00Z")
+        val fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault())
+
+        val localDateTime = LocalDateTime.ofInstant(fixedInstant, ZoneId.systemDefault())
+        println("year:${localDateTime.year}")
+        println("monthValue:${localDateTime.monthValue}")
+        println("month:${localDateTime.month}")
+        println("dayOfMonth:${localDateTime.dayOfMonth}")
+        println("dayOfWeek:${localDateTime.dayOfWeek}")
+        println("dayOfYear:${localDateTime.dayOfYear}")
+        println("hour:${localDateTime.hour}")
+        println("minute:${localDateTime.minute}")
+        println("second:${localDateTime.second}")
+        println("nano:${localDateTime.nano}")
+
+        // 例如要获取离1970-01-01T00:00:00Z的毫秒数
+        // mill_per_day = 24 * 60 * 60 * 1000
+        val milli =
+            ChronoCarry.MILLI_PER_DAY * localDateTime.getLong(ChronoField.EPOCH_DAY) +
+                    localDateTime.getLong(ChronoField.MILLI_OF_DAY)
+        println("milli:${milli}")
+
 
     }
 }
+
