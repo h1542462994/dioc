@@ -30,16 +30,16 @@ inline fun <reified TD: Any, reified TI: Any> ServiceDeclareAware.addSingleton2(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-inline fun <reified T: Any> ServiceDeclareAware.addScoped() {
+inline fun <reified T: Any> ServiceDeclareAware.addScoped(lazy: Boolean = true) {
     val t: KClass<T> = T::class
-    return this.addScoped(t)
+    return this.addScoped(t, lazy)
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-inline fun <reified TD: Any, reified TI: Any> ServiceDeclareAware.addScoped2() {
+inline fun <reified TD: Any, reified TI: Any> ServiceDeclareAware.addScoped2(lazy: Boolean = true) {
     val td: KClass<TD> = TD::class
     val ti: KClass<TI> = TI::class
-    return this.addScoped(td, ti)
+    return this.addScoped(td, ti, lazy)
 }
 
 @OptIn(ExperimentalStdlibApi::class)

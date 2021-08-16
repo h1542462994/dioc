@@ -15,7 +15,7 @@ class LocalDynamicApplicationContext(scopeFactory: Builder<Scope> = DefaultScope
     ServiceDeclares(listOf()),
     scopeFactory
 ) {
-    init {
-        super.onInit()
-    }
+//    init {
+//        super.onInit()
+//    }
 }

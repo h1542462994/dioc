@@ -94,6 +94,8 @@ class LocalApplicationContextScopeTest {
         }
     }
 
+
+
     companion object {
         private lateinit var context: ApplicationContext
 

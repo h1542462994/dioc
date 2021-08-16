@@ -3,6 +3,8 @@ package org.tty.dioc.core.declare
 
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
+import org.tty.dioc.observable.channel.Channels
+import org.tty.dioc.observable.channel.contract.Channel
 import kotlin.reflect.KClass
 
 /**
@@ -10,11 +12,12 @@ import kotlin.reflect.KClass
  */
 class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDeclares, ReadonlyServiceDeclares {
     private val container = ArrayList<ServiceDeclare>()
+    private var forceReplaceEnabled = false
+    private val createLazyChannel = Channels.create<MutableServiceDeclares.CreateLazy>()
+
     init {
         container.addAll(serviceDeclares)
     }
-
-    private var forceReplaceEnabled = false
 
     override fun iterator(): Iterator<ServiceDeclare> {
         return container.iterator()
@@ -23,6 +26,7 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
     override fun <T : Any> addSingleton(type: KClass<T>, lazy: Boolean) {
         // use delegate.
         addDeclareByType(type, type, lifecycle = Lifecycle.Singleton, lazy)
+        onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
     }
 
     override fun <TD : Any, TI : Any> addSingleton(
@@ -32,16 +36,19 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
     ) {
         // use delegate.
         addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Singleton, lazy)
+        onCreateLazy(declarationType, lifecycle = Lifecycle.Singleton, lazy)
     }
 
     override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) {
         // use delegate.
         addDeclareByType(type, type, lifecycle = Lifecycle.Scoped, lazy)
+        onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
     }
 
     override fun <TD : Any, TI : Any> addScoped(declarationType: KClass<TD>, implementationType: KClass<TI>, lazy: Boolean) {
         // use delegate.
         addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Scoped, lazy)
+        onCreateLazy(declarationType, lifecycle = Lifecycle.Scoped, lazy)
     }
 
     override fun <T : Any> addTransient(type: KClass<T>) {
@@ -123,5 +130,15 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
                 }
             }
         }
+    }
+
+    override fun createLazyChannel(): Channel<MutableServiceDeclares.CreateLazy> {
+        return createLazyChannel.next()
+    }
+
+    private fun onCreateLazy(declarationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
+        createLazyChannel.emit(
+            MutableServiceDeclares.CreateLazy(declarationType, lifecycle, lazy)
+        )
     }
 }

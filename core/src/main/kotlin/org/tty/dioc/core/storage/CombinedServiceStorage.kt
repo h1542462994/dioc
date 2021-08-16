@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference
 /**
  * the storage for service
  */
-class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransaction> {
+class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransaction> {
     /**
      * the full storage, also the first level cache.
      */
@@ -32,9 +32,9 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
     /**
      * the storage transaction for creating a service.
      */
-    inner class StorageTransaction: IStorageTransaction {
+    inner class CreateTransaction: IStorageTransaction {
         /**
-         * to record the resolved service in [StorageTransaction]
+         * to record the resolved service in [CreateTransaction]
          */
         private val marking = HashMap<ServiceDeclare, Any>()
 
@@ -181,6 +181,11 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
         }
     }
 
+    fun remove(serviceIdentifier: ServiceIdentifier) {
+        fullStorage.remove(serviceIdentifier)
+        partStorage.remove(serviceIdentifier)
+    }
+
     /**
      * whether the [partStorage] is empty.
      */
@@ -200,8 +205,8 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.StorageTransa
     /**
      * to begin a transaction
      */
-    override fun beginTransaction(): StorageTransaction {
-        val transaction = StorageTransaction()
+    override fun beginTransaction(): CreateTransaction {
+        val transaction = CreateTransaction()
         transactionCount++
         return transaction
     }

@@ -2,7 +2,9 @@ package org.tty.dioc.core.lifecycle
 
 import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.reflect.toClasses
 import java.lang.reflect.InvocationTargetException
@@ -37,6 +39,15 @@ class ServiceProxyFactory(
             if (serviceEntry.storage.anyTransaction()) {
                 throw ServiceConstructException("you could n't call proxy object when proxy is creating.")
             }
+
+//            if (serviceEntry.storage.findService(
+//                    ServiceIdentifier.ofDeclare(
+//                        serviceDeclare,
+//                        serviceEntry.scopeAbility.currentScope()
+//                    )
+//            ) == null) {
+//                throw ServiceConstructException("the proxy service is out of control.")
+//            }
 
             /**
              * the proxy object will be created after the first call

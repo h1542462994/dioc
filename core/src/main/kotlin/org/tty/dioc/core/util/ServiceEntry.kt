@@ -15,7 +15,7 @@ import kotlin.reflect.jvm.javaConstructor
 class ServiceEntry(
     private val serviceDeclarations: ReadonlyServiceDeclares,
     val storage: CombinedServiceStorage,
-    private val scopeAbility: ScopeAbility
+    val scopeAbility: ScopeAbility
 ) {
 
     // entry function for createService
@@ -54,7 +54,7 @@ class ServiceEntry(
                 val (identifier, current) = storage.partFirst
                 current.notInjectedComponents.forEach {
                     it.fill(serviceDeclarations)
-                    //val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
+//                    val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
                     if (it.propertyComponent.injectLazy) {
                         val serviceProxy = ServiceProxyFactory(it.propertyServiceDeclare, this).createProxy()
                         ServiceUtil.injectComponentToService(it, serviceProxy)
@@ -85,7 +85,7 @@ class ServiceEntry(
      * create the stub service, means the service on constructor has been injected.
      */
     @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-    private fun createStub(declare: ServiceDeclare, transaction: CombinedServiceStorage.StorageTransaction, scope: Scope?): Any {
+    private fun createStub(declare: ServiceDeclare, transaction: CombinedServiceStorage.CreateTransaction, scope: Scope?): Any {
         // check.
         serviceDeclarations.check(declare)
 
@@ -98,7 +98,7 @@ class ServiceEntry(
         // create the stub recursively
         val args = constructor.parameters.map {
             val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
-            // get the declare of the type
+            // get declaration of the type
             val parameterDeclare = serviceDeclarations.singleDeclarationType(parameter.declareType)
             // if is lazyInject then inject the proxy object.
             if (parameter.injectLazy) {

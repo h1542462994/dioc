@@ -30,14 +30,33 @@ interface ScopeAbility {
     fun endScope()
 
     /**
-     * to end the scope
+     * to end the specified scope.
      */
     fun endScope(scope: Scope)
 
     /**
      * to run the scope and then end it.
      */
-    fun withScope(action: (Scope) -> Unit)
+    fun withScope(action: (Scope) -> Unit) {
+        val scope = beginScope()
+        action(scope)
+        if (currentScope() != scope) {
+            throw IllegalStateException("the scope is not equal to the scope before action.")
+        }
+        endScope()
+    }
+
+    /**
+     * to run the scope and then end it
+     */
+    fun withScope(scope: Scope, action: () -> Unit) {
+        beginScope(scope)
+        action()
+        if (currentScope() != scope) {
+            throw IllegalStateException("the scope is not equal to the scope before action.")
+        }
+        endScope()
+    }
 
     /**
      * the channel for create the scope.
@@ -48,4 +67,9 @@ interface ScopeAbility {
      * the channel for remove the scope.
      */
     fun removeChannel(): Channel<Scope>
+
+    /**
+     * current channel.
+     */
+    fun currentChannel(): Channel<Scope>
 }

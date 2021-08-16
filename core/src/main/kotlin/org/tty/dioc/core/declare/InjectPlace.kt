@@ -1,7 +1,7 @@
 package org.tty.dioc.core.declare
 
 /**
- * the inject type of the property
+ * inject type of the property
  * @see [ServiceDeclare]
  * @see [ServiceProperty]
  */

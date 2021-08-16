@@ -78,7 +78,7 @@ class ServiceDeclare(
          * to get the [ServiceDeclare] from [implementationType]
          */
         fun fromType(implementationType: KClass<*>): ServiceDeclare {
-            // you must annotated [@Service] on serviceType.
+            // you must annotate [@Service] on serviceType.
             require(implementationType.hasServiceAnnotation) {
                 "serviceType $implementationType is not a service"
             }

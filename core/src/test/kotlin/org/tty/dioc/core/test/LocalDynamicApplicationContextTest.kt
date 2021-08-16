@@ -10,6 +10,10 @@ import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.local.LocalContext
 import org.tty.dioc.core.local.resolve
+import org.tty.dioc.core.test.model.LogLevel
+import org.tty.dioc.core.test.model.LogToken
+import org.tty.dioc.core.test.services.Logger
+import org.tty.dioc.core.test.services.SeqLogger
 import org.tty.dioc.core.test.services.dynamic.*
 
 /**
@@ -59,18 +63,37 @@ class LocalDynamicApplicationContextTest {
         }
     }
 
+    @Test
+    @Order(3)
     fun testScoped() {
+        context.forceReplace {
+            it.addScoped2<AddService, AddServiceStep2>(lazy = false)
+        }
 
+        context.withScope {
+            val logger = resolve<Logger>()
+            assertEquals(log2, logger.top())
+            context.forceReplace {
+                it.addScoped2<AddService, AddServiceStep1>(lazy = false)
+                assertEquals(log1, logger.top())
+            }
+
+        }
     }
 
     companion object {
         private lateinit var context: DynamicApplicationContext
         private const val addServiceRedundantMessage = "the declaration of the type class org.tty.dioc.core.test.services.dynamic.AddService is redundant."
+        private val log1 = LogToken(LogLevel.Debug, "AddServiceStep1", "init")
+        private val log2 = LogToken(LogLevel.Debug, "AddServiceStep2", "init")
 
         @JvmStatic
         @BeforeAll
         fun initialize() {
             context = LocalDynamicApplicationContext()
+            context.addSingleton2<Logger, SeqLogger>()
+            context.onInit()
+
             LocalContext provides context
         }
     }
