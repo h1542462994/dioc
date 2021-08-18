@@ -6,19 +6,21 @@ import java.time.LocalDateTime
 import java.time.temporal.*
 
 enum class ExtendTemporalField(
-    private val b: TemporalUnit,
-    private val r: TemporalUnit
+    private val base: TemporalUnit,
+    private val range: TemporalUnit
 ): TemporalField {
 
-    NANO_OF_EPOCH(ChronoUnit.NANOS, ChronoUnit.FOREVER)
+    NANO_OF_EPOCH(ChronoUnit.NANOS, ChronoUnit.FOREVER),
+    MILLI_OF_EPOCH(ChronoUnit.MILLIS, ChronoUnit.FOREVER)
+
     ;
 
     override fun getBaseUnit(): TemporalUnit {
-        return b
+        return base
     }
 
     override fun getRangeUnit(): TemporalUnit {
-        return r
+        return range
     }
 
     override fun range(): ValueRange {
@@ -41,19 +43,24 @@ enum class ExtendTemporalField(
     }
 
     override fun rangeRefinedBy(temporal: TemporalAccessor?): ValueRange {
-        throw DateTimeException("not support.")
+        // ignore the check of the value range.
+        // only support getLong()
+        return ValueRange.of(0, Long.MAX_VALUE)
     }
 
     override fun getFrom(temporal: TemporalAccessor?): Long {
         require(temporal != null)
-        if (b.duration < Duration.ofDays(1) && r.duration > Duration.ofDays(1)) {
+        if (base.duration < Duration.ofDays(1) && range.duration > Duration.ofDays(1)) {
             // mill of epoch
-            if (r == ChronoUnit.FOREVER) {
+            if (range == ChronoUnit.FOREVER) {
                 val days = temporal.getLong(ChronoField.EPOCH_DAY)
-
+                val carry = ChronoCarry.of(base, ChronoUnit.DAYS)
+                val epochTick = carry * days + temporal.getLong(carry.toBaseDayField())
             }
+
+
         }
-        TODO("not implemented yet.")
+        throw IllegalStateException("not support.")
     }
 
     override fun <R : Temporal?> adjustInto(temporal: R, newValue: Long): R {
