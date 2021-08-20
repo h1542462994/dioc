@@ -55,7 +55,7 @@ enum class ExtendTemporalField(
             if (range == ChronoUnit.FOREVER) {
                 val days = temporal.getLong(ChronoField.EPOCH_DAY)
                 val carry = ChronoCarry.of(base, ChronoUnit.DAYS)
-                val epochTick = carry * days + temporal.getLong(carry.toBaseDayField())
+                return carry * days + temporal.getLong(carry.toBaseDayField())
             }
 
 
