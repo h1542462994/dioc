@@ -62,16 +62,6 @@ object Channels {
      }
 
      /**
-      * to record all [channels].
-      * @return if you call the init, the recorded data will be initialized with init.
-      * the record channel with be emitted when all recorded data is prepared.
-      * @see [RecordChannelVarargs]
-      */
-     fun <T> record(vararg channels: Channel<T>): RecordChannelVarargs<T> {
-          return RecordChannel(channels.toList())
-     }
-
-     /**
       * to record [channel1] and [channel2]
       * @return if you call the init, the recorded data will be initialized with init.
       * the record channel with be emitted when all recorded data is prepared.
@@ -94,5 +84,15 @@ object Channels {
           val channel2X = channel2.map { it as Any }
           val channel3X = channel3.map { it as Any }
           return RecordChannel(listOf(channel1X, channel2X, channel3X)).castToRecordChannel3()
+     }
+
+     /**
+      * to record all [channels].
+      * @return if you call the init, the recorded data will be initialized with init.
+      * the record channel with be emitted when all recorded data is prepared.
+      * @see [RecordChannelVarargs]
+      */
+     fun <T> record(vararg channels: Channel<T>): RecordChannelVarargs<T> {
+          return RecordChannel(channels.toList())
      }
 }

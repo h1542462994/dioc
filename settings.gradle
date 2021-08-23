@@ -8,5 +8,6 @@ pluginManagement {
 include 'core'
 include 'util'
 include 'http'
+include 'linq'
 
 rootProject.name = "dioc"

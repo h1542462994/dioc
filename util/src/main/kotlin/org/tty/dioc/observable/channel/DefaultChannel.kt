@@ -56,8 +56,7 @@ internal class DefaultChannel<T>: ChannelFull<T> {
         // the real chain element.
         val emit = object: ChannelEmit<T> {
             override fun emit(data: T) {
-                // fixed bug
-                // use should call the receiver.
+                // fixed bug: should call the receiver.
                 interceptors[index].intercept(data, nextEmit)
             }
         }

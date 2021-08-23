@@ -7,6 +7,8 @@ import org.tty.dioc.datetime.ExtendTemporalField
 import org.tty.dioc.datetime.toInstant
 import java.time.*
 import java.time.temporal.ChronoField
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalAdjuster
 import java.time.zone.ZoneOffsetTransition
 import java.util.*
 
@@ -152,9 +154,16 @@ class TimeTest {
 
         val milli2 = localDateTime.getLong(ExtendTemporalField.MILLI_OF_EPOCH)
         println("milli:${milli2}")
+    }
 
-
-
+    @Test
+    fun testChange() {
+        val date1 = LocalDate.of(2021,8,31)
+        println(date1)
+        val date2 = date1.plusMonths(1)
+        println(date2)
+        val date3 = date2.plusMonths(1)
+        println(date3)
     }
 }
 
