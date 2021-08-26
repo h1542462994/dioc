@@ -22,7 +22,7 @@ infix fun <T> QueryFrom<T>.of(many: Iterable<T>): QueryStart<T> {
     TODO("Not yet implemented.")
 }
 
-infix fun <T> QueryStart<T>.where(call: () -> Boolean): QueryPart<T> {
+infix fun <T> QueryStart<T>.where(call: T.() -> Boolean): QueryPart<T> {
     TODO("Not yet implemented.")
 }
 
