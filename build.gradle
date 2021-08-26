@@ -17,9 +17,11 @@ repositories {
 }
 
 ext {
-
     junitVersion = '5.7.2'
-    ktVersion = '1.4.32'
+    kotlinVersion = '1.4.32'
+    gsonVersionn = '2.8.6'
+    cglibVersion = '3.3.0'
+    mockitoVersion = '3.3.3'
 }
 
 sourceCompatibility = 1.8
@@ -31,26 +33,28 @@ subprojects {
 
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "${sourceCompatibility}"
         }
     }
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "${sourceCompatibility}"
         }
     }
 
     dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.32"
-        implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32')
-        implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.32"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
-        implementation('com.google.code.gson:gson:2.8.6')
+        implementation "com.google.code.gson:gson:${gsonVersionn}"
+        implementation "cglib:cglib:${cglibVersion}"
 
-        testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-        testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
-        testImplementation 'org.mockito:mockito-core:3.3.3'
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+        testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+
 
     }
 

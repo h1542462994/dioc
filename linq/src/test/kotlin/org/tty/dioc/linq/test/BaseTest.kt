@@ -13,9 +13,7 @@ class BaseTest {
 
     @Test
     fun testLambda() {
-        val l = { it: Int -> it > 0 }
 
-        println()
 
     }
 }
