@@ -1,50 +1,51 @@
 package org.tty.dioc.linq.test
 
 import org.junit.jupiter.api.Test
+import org.tty.dioc.base.pair
 import org.tty.dioc.linq.Linq
 import org.tty.dioc.linq.extension.*
-import org.tty.dioc.reflect.virtual.Virtual
+import org.tty.dioc.reflect.virtual.operator.*
 
 class LinqTest {
     @Test
-    fun testBasic() {
-        /** linq的基础语法支持
-         */
-
-        /**
-         * 创建一个linq entry
-         */
+    fun testBase() {
         val i = Linq.start<Int>()
-        val j = Linq.start<Int>()
+        val result = (
+                from(i) of 0..9 where (i eq 2) select i
+                )
 
-        /**
-         * from(i) 绑定entry
-         * of 0 . 9 绑定数据源
-         */
-        val result = from(i) of 0..9 where { false } select i
+        val result2 = (
+                from(i) of 0..10 where (!(i gt 2) or (i le 5)) select i
+                )
 
-        val result2 = from(i) of 0..9 from(j) of 1..10
+        val result3 = (
+                from(i) of 0..9 where (i within 1..5) select i
+                )
     }
 
     @Test
-    fun testMemberAccess() {
-        val i = Linq.start<Student>()
-        val students = mockQueryable<Student>()
-        val t = from(i) of students where { false }
-        val student = Student()
+    fun testCondition() {
+        val i = Linq.start<Int>()
+        val result = (
+                from(i) of 0..9 where (i gt 2) and (i le 5) select (i + 1)
+                )
 
+        val result2 = (
+                from(i) of 0..9 where (i gt 2) and (i le 5) select pair(i, i + 2)
+                )
 
     }
 
-    class Student {
-        var id: String = ""
-        var name: String = ""
+    @Test
+    fun testMultiFrom() {
+        val i = Linq.start<Int>()
+        val j = Linq.start<Int>()
+        val result = (
+                from(i) of 0..9
+                from(j) of 0..10
+                where (i gt 4) and (j gt 5)
+                select pair(i, j)
+                )
     }
-
-    val Virtual<Student>.id : Virtual<String>
-    get() {
-        return this[Student::id]
-    }
-
 }
 

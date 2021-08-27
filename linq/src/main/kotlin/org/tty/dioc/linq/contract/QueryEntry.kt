@@ -7,10 +7,8 @@ import org.tty.dioc.reflect.virtual.Virtual
 import kotlin.reflect.KProperty
 
 /**
- * the entry of the query, you should create with [Linq.start] and query with [from]
- * @sample {
- *
- * }
+ * the entry of the query, you should create with [Linq.start] and query with [from].
+ * val i = Linq.start&lt;Int&gt;()
  * @see [Linq.start]
  */
 interface QueryEntry<T>: Virtual<T> {

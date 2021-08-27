@@ -17,4 +17,19 @@ interface Virtual<T> {
      * to get property with [name] and return a [Virtual]
      */
     operator fun <E> get(name: String): Virtual<E>
+
+    /**
+     * the real object
+     */
+    val real: T
+
+    /**
+     * the eventSource of the virtual.
+     */
+    val eventSource: VirtualEventSource<T>
+
+    /**
+     * the source of the virtual. to generate a virtual object by real object.
+     */
+    val source: VirtualSource
 }
