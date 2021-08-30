@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDeclares, ReadonlyServiceDeclares {
     private val container = ArrayList<ServiceDeclare>()
     private var forceReplaceEnabled = false
-    private val createLazyChannel = Channels.create<MutableServiceDeclares.CreateLazy>()
+    override val createLazyChannel = Channels.create<MutableServiceDeclares.CreateLazy>()
 
     init {
         container.addAll(serviceDeclares)
@@ -130,10 +130,6 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
                 }
             }
         }
-    }
-
-    override fun createLazyChannel(): Channel<MutableServiceDeclares.CreateLazy> {
-        return createLazyChannel.next()
     }
 
     private fun onCreateLazy(declarationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {

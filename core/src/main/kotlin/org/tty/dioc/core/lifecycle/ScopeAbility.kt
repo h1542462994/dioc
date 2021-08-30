@@ -59,17 +59,18 @@ interface ScopeAbility {
     }
 
     /**
-     * the channel for create the scope.
+     * the [Channel] for create the [Scope].
      */
-    fun createChannel(): Channel<Scope>
+    val createChannel: Channel<Scope>
+
 
     /**
-     * the channel for remove the scope.
+     * the [Channel] for remove the [Scope].
      */
-    fun removeChannel(): Channel<Scope>
+    val removeChannel: Channel<Scope>
 
     /**
-     * current channel.
+     * current [Channel] of the [Scope].
      */
-    fun currentChannel(): Channel<Scope>
+    val currentChannel: Channel<Scope?>
 }

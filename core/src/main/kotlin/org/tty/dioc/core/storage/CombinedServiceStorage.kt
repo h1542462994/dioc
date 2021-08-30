@@ -8,6 +8,7 @@ import org.tty.dioc.core.declare.identifier.ScopeIdentifier
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
+import org.tty.dioc.core.lifecycle.FinishAware
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.transaction.TransactionClosedException
 import org.tty.dioc.transaction.Transactional
@@ -16,7 +17,7 @@ import java.lang.ref.WeakReference
 /**
  * the storage for service
  */
-class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransaction> {
+class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransaction>, FinishAware {
     /**
      * the full storage, also the first level cache.
      */
@@ -216,5 +217,12 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
      */
     fun anyTransaction(): Boolean {
         return transactionCount != 0
+    }
+
+    /**
+     * finish the storage.
+     */
+    override fun onFinish() {
+
     }
 }

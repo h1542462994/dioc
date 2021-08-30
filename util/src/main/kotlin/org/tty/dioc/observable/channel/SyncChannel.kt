@@ -1,14 +1,12 @@
 package org.tty.dioc.observable.channel
 
-import org.tty.dioc.observable.channel.contract.Channel
-import org.tty.dioc.observable.channel.contract.ChannelEmit
-import org.tty.dioc.observable.channel.contract.ChannelInterceptor
+import org.tty.dioc.observable.channel.contract.*
 
 /**
  * the synchronized channel with [channels]
  * a descriptor for [Channel]
  */
-internal class SyncChannel<T>(private val channels: List<Channel<T>>) : Channel<List<T>> {
+internal class SyncChannel<T>(private val channels: List<Channel<T>>) : Channel<List<T>>  {
     private val dataCollect = ArrayList<ArrayList<T>>()
     private val channel = Channels.create<List<T>>()
 

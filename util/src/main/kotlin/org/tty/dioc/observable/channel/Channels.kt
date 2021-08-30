@@ -1,8 +1,6 @@
 package org.tty.dioc.observable.channel
 
-import org.tty.dioc.base.*
 import org.tty.dioc.observable.channel.contract.*
-
 
 object Channels {
      /**

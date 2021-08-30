@@ -83,9 +83,9 @@ open class DefaultDynamicApplicationContext(
             }
         }
 
-        stackScopeTrace.createChannel().observe(this::onCreateScope)
-        stackScopeTrace.removeChannel().observe(this::onRemoveScope)
-        declarations.createLazyChannel().observe(this::onCreateLazy)
+        stackScopeTrace.createChannel.observe(this::onCreateScope)
+        stackScopeTrace.removeChannel.observe(this::onRemoveScope)
+        declarations.createLazyChannel.observe(this::onCreateLazy)
     }
 
 
