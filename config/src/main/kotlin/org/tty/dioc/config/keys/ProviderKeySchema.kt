@@ -1,6 +1,7 @@
 package org.tty.dioc.config.keys
 
 import kotlin.reflect.KClass
+import kotlin.reflect.typeOf
 
 
 class ProviderKeySchema(

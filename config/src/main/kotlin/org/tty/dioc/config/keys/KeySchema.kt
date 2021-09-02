@@ -1,5 +1,7 @@
 package org.tty.dioc.config.keys
 
+import kotlin.reflect.KClass
+
 /**
  * schema of the key.
  * the declaration of the config, registered in [ConfigKeys]
@@ -7,7 +9,7 @@ package org.tty.dioc.config.keys
  */
 sealed interface KeySchema {
     /**
-     * the type of the key stored
+     * the name of the schema
      */
     val name: String
 }

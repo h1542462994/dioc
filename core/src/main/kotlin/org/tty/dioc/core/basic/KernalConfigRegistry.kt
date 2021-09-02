@@ -8,8 +8,16 @@ import org.tty.dioc.core.util.ServiceEntry
 
 // this file declares the basic service used.
 //region keys
+/**
+ * the storage component
+ */
 private const val storageKey = "org.tty.dioc.storage"
+
+/**
+ * the resolver component
+ */
 private const val resolverKey = "org.tty.dioc.resolver"
+
 //endregion
 
 //region schemas
