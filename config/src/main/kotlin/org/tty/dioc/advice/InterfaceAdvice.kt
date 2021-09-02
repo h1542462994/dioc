@@ -1,6 +1,6 @@
-package org.tty.dioc.core.advice
+package org.tty.dioc.advice
 
-import kotlin.reflect.KClass
+import org.tty.dioc.config.keys.ConfigKeys
 
 /**
  * advice for interface class
@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 annotation class InterfaceAdvice(
     /**
-     * the real service type
+     * the key of the [ConfigKeys]
      */
-    val implementationType: KClass<*>
+    val key: String
 )

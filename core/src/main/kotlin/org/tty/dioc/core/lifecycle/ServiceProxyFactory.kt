@@ -2,9 +2,7 @@ package org.tty.dioc.core.lifecycle
 
 import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.reflect.toClasses
 import java.lang.reflect.InvocationTargetException
@@ -53,7 +51,7 @@ class ServiceProxyFactory(
              * the proxy object will be created after the first call
              */
             if (realObject == null) {
-                realObject = serviceEntry.getOrCreateService(serviceDeclare)
+                realObject = serviceEntry.resolve(serviceDeclare)
             }
 
             /**

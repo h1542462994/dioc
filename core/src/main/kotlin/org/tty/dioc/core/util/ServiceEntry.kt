@@ -1,5 +1,6 @@
 package org.tty.dioc.core.util
 
+import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
@@ -16,18 +17,18 @@ class ServiceEntry(
     private val serviceDeclarations: ReadonlyServiceDeclares,
     val storage: CombinedServiceStorage,
     val scopeAbility: ScopeAbility
-) {
+): ComponentResolver {
 
     // entry function for createService
     @Suppress("UNCHECKED_CAST")
-    fun <T> getOrCreateService(type: ServiceDeclare): T {
-        return getOrCreateService(type, scopeAbility.currentScope()) as T
+    override fun <T> resolve(declare: ServiceDeclare): T {
+        return resolve(declare, scopeAbility.currentScope()) as T
     }
 
     /**
      * the implementation of the creation of the service.
      */
-    private fun getOrCreateService(serviceDeclare: ServiceDeclare, scope: Scope?): Any  {
+    private fun resolve(serviceDeclare: ServiceDeclare, scope: Scope?): Any  {
         // check.
         serviceDeclarations.check(serviceDeclare)
 

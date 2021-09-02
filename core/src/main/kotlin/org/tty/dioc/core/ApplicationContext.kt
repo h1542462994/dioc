@@ -7,4 +7,4 @@ import org.tty.dioc.core.lifecycle.ScopeAware
  * represents a container for ability of getting service.
  *
  */
-interface ApplicationContext : ServiceAware, ScopeAware
+sealed interface ApplicationContext : ServiceAware, ScopeAware

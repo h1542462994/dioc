@@ -8,7 +8,7 @@ import org.tty.dioc.transaction.TransactionClosedException
 import org.tty.dioc.transaction.Transaction
 import kotlin.jvm.Throws
 
-interface IStorageTransaction: Transaction {
+sealed interface IStorageTransaction: Transaction {
     /**
      * add the [serviceCreated].
      */

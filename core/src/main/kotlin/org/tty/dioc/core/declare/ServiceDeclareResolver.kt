@@ -1,6 +1,6 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.core.advice.InterfaceAdvice
+import org.tty.dioc.advice.InterfaceAdvice
 import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
 import org.tty.dioc.reflect.KClassScanner
 import kotlin.reflect.full.hasAnnotation
@@ -16,23 +16,9 @@ class ServiceDeclareResolver(
      */
     fun getDeclarations(): List<ServiceDeclare> {
         val basic = getBasicDeclarations()
-        return basic.plus(getAdviceDeclarations(basic))
+        return basic
     }
 
-    /**
-     * get the advice declarations
-     */
-    private fun getAdviceDeclarations(serviceDeclares: List<ServiceDeclare>): List<ServiceDeclare> {
-        val advice = HashSet<ServiceDeclare>()
-        serviceDeclares.forEach { serviceDeclare ->
-            serviceDeclare.components.forEach { propertyComponent ->
-                if (propertyComponent.declareType.hasAnnotation<InterfaceAdvice>()) {
-                    advice.add(ServiceDeclare.fromDeclareAdvice(propertyComponent.declareType))
-                }
-            }
-        }
-        return advice.toList()
-    }
 
     private fun getBasicDeclarations(): List<ServiceDeclare> {
         val declarations = ArrayList<ServiceDeclare>()

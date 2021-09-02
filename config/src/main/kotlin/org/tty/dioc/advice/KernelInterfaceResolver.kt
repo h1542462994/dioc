@@ -1,4 +1,4 @@
-package org.tty.dioc.core.advice
+package org.tty.dioc.advice
 
 import kotlin.reflect.KClass
 

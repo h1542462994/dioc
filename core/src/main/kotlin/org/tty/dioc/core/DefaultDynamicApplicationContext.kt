@@ -10,7 +10,6 @@ import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.base.Builder
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.observable.channel.observe
-import kotlin.io.path.createTempDirectory
 import kotlin.reflect.KClass
 
 /**
@@ -30,7 +29,7 @@ open class DefaultDynamicApplicationContext(
             throw IllegalStateException("you must initialized it before getService.")
         }
         val serviceDeclare = declarations.singleDeclarationType(declareType)
-        return entry.getOrCreateService(serviceDeclare)
+        return entry.resolve(serviceDeclare)
     }
 
     override fun scopeAbility(): ScopeAbility {

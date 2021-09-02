@@ -1,6 +1,6 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.core.advice.InterfaceAdvice
+import org.tty.dioc.advice.InterfaceAdvice
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
@@ -96,23 +96,6 @@ class ServiceDeclare(
                 declarationTypes = declarationTypes,
                 lifecycle = serviceAnnotation.lifecycle,
                 isLazyService = serviceAnnotation.lazy,
-                constructor = constructor,
-                components = components
-            )
-        }
-        fun fromDeclareAdvice(declarationType: KClass<*>): ServiceDeclare {
-            val service = declarationType.findAnnotation<Service>()
-                ?: throw ServiceDeclarationException("interface advice should be mark as @Service")
-            val interfaceAdvice = declarationType.findAnnotation<InterfaceAdvice>()!!
-            val implementationType = interfaceAdvice.implementationType
-            val constructor = ServiceUtil.getInjectConstructor(implementationType)
-            val components = ServiceUtil.getComponents(implementationType)
-            return ServiceDeclare(
-                isInterfaceAdvice = true,
-                implementationType = implementationType,
-                declarationTypes = listOf(declarationType),
-                lifecycle = service.lifecycle,
-                isLazyService = service.lazy,
                 constructor = constructor,
                 components = components
             )

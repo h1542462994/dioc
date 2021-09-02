@@ -42,7 +42,7 @@ open class DefaultApplicationContext(
      */
     override fun <T : Any> getService(declareType: KClass<T>): T {
         val serviceDeclare = declarations.singleDeclarationType(declareType)
-        return entry.getOrCreateService(serviceDeclare)
+        return entry.resolve(serviceDeclare)
     }
 
     /**

@@ -2,6 +2,7 @@ package org.tty.dioc.core.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.tty.dioc.config.keys.ConfigKeys
 import org.tty.dioc.core.DynamicApplicationContext
 import org.tty.dioc.core.LocalDynamicApplicationContext
 import org.tty.dioc.core.addScoped2
@@ -9,6 +10,7 @@ import org.tty.dioc.core.addSingleton2
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.local.LocalContext
+import org.tty.dioc.core.local.logger
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
@@ -81,6 +83,13 @@ class LocalDynamicApplicationContextTest {
         }
     }
 
+    @Test
+    @Order(4)
+    fun testKey() {
+        val logger = ConfigKeys.logger
+        println(logger)
+    }
+
     companion object {
         private lateinit var context: DynamicApplicationContext
         private const val addServiceRedundantMessage = "the declaration of the type class org.tty.dioc.core.test.services.dynamic.AddService is redundant."
@@ -95,6 +104,7 @@ class LocalDynamicApplicationContextTest {
             context.onInit()
 
             LocalContext provides context
+
         }
     }
 

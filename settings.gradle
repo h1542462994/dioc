@@ -9,5 +9,6 @@ include 'core'
 include 'util'
 include 'http'
 include 'linq'
+include 'config'
 
 rootProject.name = "dioc"

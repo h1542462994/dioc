@@ -8,7 +8,6 @@ import org.tty.dioc.core.declare.identifier.ScopeIdentifier
 import org.tty.dioc.core.declare.identifier.ServiceIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
-import org.tty.dioc.core.lifecycle.FinishAware
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.transaction.TransactionClosedException
 import org.tty.dioc.transaction.Transactional
@@ -17,7 +16,7 @@ import java.lang.ref.WeakReference
 /**
  * the storage for service
  */
-class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransaction>, FinishAware {
+class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransaction>, ServiceStorage {
     /**
      * the full storage, also the first level cache.
      */
@@ -67,9 +66,6 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
                 }
                 is TransientIdentifier -> {
                     WeakReference(service)
-                }
-                else -> {
-                    throw IllegalArgumentException("serviceIdentifier $serviceIdentifier not supported")
                 }
             }
             fullStorage[serviceIdentifier] = entry
@@ -165,7 +161,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
     /**
      * find the service by [serviceIdentifier] in [CombinedServiceStorage]
      */
-    fun findService(serviceIdentifier: ServiceIdentifier): Any? {
+    override fun findService(serviceIdentifier: ServiceIdentifier): Any? {
         return when(serviceIdentifier) {
             is SingletonIdentifier -> {
                 fullStorage[serviceIdentifier]
@@ -176,13 +172,10 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
             is TransientIdentifier -> {
                 null
             }
-            else -> {
-                throw IllegalArgumentException("serviceIdentifier $serviceIdentifier not supported")
-            }
         }
     }
 
-    fun remove(serviceIdentifier: ServiceIdentifier) {
+    override fun remove(serviceIdentifier: ServiceIdentifier) {
         fullStorage.remove(serviceIdentifier)
         partStorage.remove(serviceIdentifier)
     }
@@ -190,7 +183,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
     /**
      * whether the [partStorage] is empty.
      */
-    val isPartEmpty: Boolean
+    override val isPartEmpty: Boolean
     get() {
         return partStorage.isEmpty()
     }
@@ -198,7 +191,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
     /**
      * the first service not injected.
      */
-    val partFirst: MutableMap.MutableEntry<ServiceIdentifier, ServiceCreating>
+    override val partFirst: MutableMap.MutableEntry<ServiceIdentifier, ServiceCreating>
     get() {
         return partStorage.entries.first()
     }
@@ -215,7 +208,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
     /**
      * whether exists any transaction.
      */
-    fun anyTransaction(): Boolean {
+    override fun anyTransaction(): Boolean {
         return transactionCount != 0
     }
 

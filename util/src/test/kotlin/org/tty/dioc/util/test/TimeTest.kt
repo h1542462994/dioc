@@ -165,5 +165,14 @@ class TimeTest {
         val date3 = date2.plusMonths(1)
         println(date3)
     }
+
+    @Test
+    fun testAssociate() {
+        val keys = 'a'..'f'
+        val map = keys.associateWith { it.toString().repeat(5) }
+        map.forEach { println(it) }
+
+
+    }
 }
 

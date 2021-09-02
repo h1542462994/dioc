@@ -1,4 +1,4 @@
-package org.tty.dioc.core.advice
+package org.tty.dioc.advice
 
 /**
  * descriptor for resolving extension annotation type.

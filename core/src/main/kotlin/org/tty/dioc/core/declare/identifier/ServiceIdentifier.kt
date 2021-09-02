@@ -4,12 +4,13 @@ import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.ServiceDeclare
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
+import kotlin.properties.Delegates
 
 /**
  * the identifier to store the service
  * @see [Lifecycle]
  */
-interface ServiceIdentifier {
+sealed interface ServiceIdentifier {
     companion object {
         fun ofDeclare(serviceDeclare: ServiceDeclare, scope: Scope?): ServiceIdentifier {
             return when (serviceDeclare.lifecycle) {
@@ -22,7 +23,7 @@ interface ServiceIdentifier {
                     }
                     ScopeIdentifier(serviceDeclare.implementationType, scope)
                 }
-                else -> {
+                Lifecycle.Transient -> {
                     TransientIdentifier()
                 }
             }
