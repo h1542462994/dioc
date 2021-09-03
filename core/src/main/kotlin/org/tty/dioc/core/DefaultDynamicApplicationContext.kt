@@ -22,7 +22,7 @@ open class DefaultDynamicApplicationContext(
      */
     private val declarations: MutableServiceDeclares,
     scopeFactory: Builder<Scope>
-): DynamicApplicationContext, InitializeAware {
+): DynamicApplicationContext {
 
     override fun <T : Any> getService(declareType: KClass<T>): T {
         if (!initialized) {

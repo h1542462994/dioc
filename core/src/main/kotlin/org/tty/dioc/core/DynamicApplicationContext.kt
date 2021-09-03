@@ -6,4 +6,4 @@ import org.tty.dioc.core.lifecycle.InitializeAware
 /**
  * represents a container for ability of getting and declare service.
  */
-sealed interface DynamicApplicationContext: ApplicationContext, ServiceDeclareAware, InitializeAware
+sealed interface DynamicApplicationContext: ApplicationContext, ServiceDeclareAware
