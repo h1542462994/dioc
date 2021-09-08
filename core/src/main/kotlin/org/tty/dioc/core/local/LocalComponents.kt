@@ -4,7 +4,7 @@ import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.util.Logger
 import org.tty.dioc.util.SimpleConsoleLogger
 
-inline fun <reified T: Any> staticComponentLocalOf(crossinline default: () -> T): ComponentLocal<T> {
+fun <T: Any> staticComponentLocalOf(default: () -> T): ComponentLocal<T> {
     val local = DefaultComponentLocal<T>()
     val slot = 1
     local.provides(slot) {
@@ -12,7 +12,7 @@ inline fun <reified T: Any> staticComponentLocalOf(crossinline default: () -> T)
     }
     return local
 }
-inline fun <reified T: Any> staticComponentLocalOf(): ComponentLocal<T> {
+fun <T: Any> staticComponentLocalOf(): ComponentLocal<T> {
     return staticComponentLocalOf {
         throw IllegalStateException("component has no value.")
     }
@@ -21,16 +21,19 @@ inline fun <reified T: Any> staticComponentLocalOf(): ComponentLocal<T> {
 /**
  * the local component to provide [ApplicationContext]
  */
-val LocalContext = staticComponentLocalOf<ApplicationContext>()
+val ComponentContext = staticComponentLocalOf<ApplicationContext>()
 
-val LocalLogger = staticComponentLocalOf<Logger> {
+/**
+ * the local component to provide [Logger]
+ */
+val ComponentLogger = staticComponentLocalOf<Logger> {
     SimpleConsoleLogger()
 }
 
 /**
- * resolve the service on [LocalContext]
+ * resolve the service on [ComponentContext]
  */
 inline fun <reified T: Any> resolve(): T {
-    return LocalContext.current.getService(T::class)
+    return ComponentContext.current.getService(T::class)
 }
 
