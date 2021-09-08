@@ -1,84 +1,57 @@
 package org.tty.dioc.core.local
 
-import java.lang.ref.WeakReference
+import org.tty.dioc.observable.channel.contract.Channel
 
 /**
  * the local component, used on stack visitation.
- * you should use the component local carefully, because it break the ooc.
+ * you should use the component local carefully, because it breaks the ooc.
  */
-@Suppress("UNCHECKED_CAST")
-class ComponentLocal<T: Any> {
-    interface Holder
-
+interface ComponentLocal<T: Any> {
     /**
-     * the holder by direct reference
+     * the holder for component.
      */
-    class DirectHolder(val component: WeakReference<Any>): Holder
-
-    /**
-     * the holder by caller reference
-     */
-    class CallerHolder(val holder: WeakReference<Any>, val call: (Any) -> Any): Holder
-
-    /**
-     * the records of the [Holder] by stack.
-     */
-    private val records: ArrayList<Holder> = ArrayList()
-
-    /**
-     * provides the [ComponentLocal] with [component]
-     */
-    infix fun provides(component: T) {
-        records.add(DirectHolder(WeakReference(component)))
+    interface Holder<T> {
+        fun isLive(): Boolean
+        fun get(): T
     }
 
     /**
-     * provides the [ComponentLocal] with [holderCall]
+     * provides the [DefaultComponentLocal] with [component]
+     */
+    infix fun provides(component: T)
+
+    /**
+     * provides the [DefaultComponentLocal] with [holderCall]
      * @see [HolderCall]
      */
-    infix fun <TH: Any> provides(holderCall: HolderCall<TH, T>) {
-        val call = holderCall.caller as (Any) -> Any
-        records.add(CallerHolder(WeakReference(holderCall.holder), call))
-    }
+    infix fun <TH: Any> provides(holderCall: HolderCall<TH, T>)
 
     /**
-     * provides the [ComponentLocal] with [holder] and [call]
+     * provides the [DefaultComponentLocal] with [holder] and [call]
      */
-    fun <TH: Any> provides(holder: TH, call: (TH) -> T) {
-        val c = call as (Any) -> Any
-        records.add(CallerHolder(WeakReference(holder), c))
-    }
-
+    fun <TH: Any> provides(holder: TH, call: (TH) -> T)
 
     /**
      * to pop the current [Holder].
      */
-    fun pop() {
-        records.removeLast()
-    }
+    fun pop()
+
+    fun isEmpty(): Boolean
 
     /**
-     * get the current available component of [ComponentLocal]
+     * get the current available component of [DefaultComponentLocal]
      */
-    fun current(): T {
-        return when (val holder = records.last()) {
-            is DirectHolder -> {
-                val c = holder.component.get()
-                require(c != null) {
-                    "the component couldn't be null."
-                }
-                c as T
-            }
-            is CallerHolder -> {
-                val h = holder.holder.get()
-                require(h != null) {
-                    "the holder couldn't be null."
-                }
-                holder.call.invoke(h) as T
-            }
-            else -> {
-                throw IllegalStateException("the holder is type error.")
-            }
-        }
-    }
+    val current: T
+
+    val currentHolder: Holder<T>
+
+    /**
+     * add channel
+     */
+    val addChannel: Channel<Holder<T>>
+
+    /**
+     * remove channel
+     */
+    val removeChannel: Channel<Holder<T>>
 }

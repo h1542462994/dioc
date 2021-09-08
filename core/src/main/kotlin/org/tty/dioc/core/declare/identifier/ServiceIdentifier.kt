@@ -10,7 +10,7 @@ import kotlin.properties.Delegates
  * the identifier to store the service
  * @see [Lifecycle]
  */
-sealed interface ServiceIdentifier {
+interface ServiceIdentifier {
     companion object {
         fun ofDeclare(serviceDeclare: ServiceDeclare, scope: Scope?): ServiceIdentifier {
             return when (serviceDeclare.lifecycle) {

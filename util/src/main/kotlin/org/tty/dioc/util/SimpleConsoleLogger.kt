@@ -1,4 +1,4 @@
-package org.tty.dioc.core.local
+package org.tty.dioc.util
 
 class SimpleConsoleLogger: Logger {
     override fun v(tag: String, message: String) {

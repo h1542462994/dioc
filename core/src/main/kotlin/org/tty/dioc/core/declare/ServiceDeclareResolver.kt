@@ -1,9 +1,7 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.advice.InterfaceAdvice
 import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
 import org.tty.dioc.reflect.KClassScanner
-import kotlin.reflect.full.hasAnnotation
 
 class ServiceDeclareResolver(
     private val jsonFiles: ArrayList<String> = ArrayList(),
@@ -38,7 +36,6 @@ class ServiceDeclareResolver(
     private fun getDeclarationsFromJsonFile(fileName: String): List<ServiceDeclare> {
         TODO("not implemented.")
     }
-
 
     /**
      * get the declaration of the service from the json file.

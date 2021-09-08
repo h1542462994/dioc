@@ -67,6 +67,9 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
                 is TransientIdentifier -> {
                     WeakReference(service)
                 }
+                else -> {
+                    throw IllegalArgumentException("identifier not support.")
+                }
             }
             fullStorage[serviceIdentifier] = entry
             marking[serviceDeclare] = entry
@@ -171,6 +174,9 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
             }
             is TransientIdentifier -> {
                 null
+            }
+            else -> {
+                throw IllegalArgumentException("identifier not support.")
             }
         }
     }

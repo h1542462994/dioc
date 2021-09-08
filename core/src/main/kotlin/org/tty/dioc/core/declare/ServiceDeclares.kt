@@ -102,7 +102,6 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
         if (l == null || forceReplaceEnabled) {
             container.add(
                 ServiceDeclare(
-                    isInterfaceAdvice = false,
                     implementationType = implementationType,
                     declarationTypes = listOf(declarationType),
                     lifecycle = lifecycle,

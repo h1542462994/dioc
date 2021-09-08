@@ -2,14 +2,7 @@ package org.tty.dioc.util.test
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.tty.dioc.datetime.ChronoCarry
-import org.tty.dioc.datetime.ExtendTemporalField
-import org.tty.dioc.datetime.toInstant
 import java.time.*
-import java.time.temporal.ChronoField
-import java.time.temporal.Temporal
-import java.time.temporal.TemporalAdjuster
-import java.time.zone.ZoneOffsetTransition
 import java.util.*
 
 
@@ -118,42 +111,6 @@ class TimeTest {
 
         val zonedDateTime2 = localDateTime.atZone(ZoneId.systemDefault())
         println(zonedDateTime2)
-    }
-
-    @Test
-    fun testProperty() {
-        val fixedInstant = Instant.parse("2021-07-11T19:00:00.00Z")
-        println("milli:${fixedInstant.toEpochMilli()}")
-        val fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault())
-
-        val localDateTime = LocalDateTime.ofInstant(fixedInstant, ZoneId.systemDefault())
-        println("year:${localDateTime.year}")
-        println("monthValue:${localDateTime.monthValue}")
-        println("month:${localDateTime.month}")
-        println("dayOfMonth:${localDateTime.dayOfMonth}")
-        println("dayOfWeek:${localDateTime.dayOfWeek}")
-        println("dayOfYear:${localDateTime.dayOfYear}")
-        println("hour:${localDateTime.hour}")
-        println("minute:${localDateTime.minute}")
-        println("second:${localDateTime.second}")
-        println("nano:${localDateTime.nano}")
-
-        // 例如要获取离1970-01-01T00:00:00Z的毫秒数
-        // mill_per_day = 24 * 60 * 60 * 1000
-        val milli =
-            ChronoCarry.MILLI_PER_DAY * localDateTime.getLong(ChronoField.EPOCH_DAY) +
-                    localDateTime.getLong(ChronoField.MILLI_OF_DAY) -
-                    ChronoCarry.MILLI_PER_HOUR * 8
-
-        println("milli:${milli}")
-
-        // LocalDateTime.toInstant(ZoneId) 是扩展方法
-        val instant = localDateTime.toInstant(ZoneId.systemDefault())
-        println(instant)
-        println("milli:${instant.toEpochMilli()}")
-
-        val milli2 = localDateTime.getLong(ExtendTemporalField.MILLI_OF_EPOCH)
-        println("milli:${milli2}")
     }
 
     @Test
