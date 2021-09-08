@@ -1,7 +1,5 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.advice.InterfaceAdvice
-import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
@@ -17,11 +15,6 @@ import kotlin.reflect.full.findAnnotation
  * @see [Service]
  */
 class ServiceDeclare(
-    /**
-     * the service declare is from [InterfaceAdvice]
-     * TODO: ?not available?
-     */
-    val isInterfaceAdvice: Boolean,
     /**
      * the real service type.
      */
@@ -91,7 +84,6 @@ class ServiceDeclare(
             val components = ServiceUtil.getComponents(implementationType)
 
             return ServiceDeclare(
-                isInterfaceAdvice = false,
                 implementationType = implementationType,
                 declarationTypes = declarationTypes,
                 lifecycle = serviceAnnotation.lifecycle,

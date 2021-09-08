@@ -7,7 +7,6 @@ import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.getService
-import org.tty.dioc.core.local.HolderCall
 import org.tty.dioc.core.local.LocalContext
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
@@ -23,17 +22,17 @@ import java.lang.reflect.InvocationTargetException
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalApplicationContextTest {
 
-    /**
-     * test service with javaClass.
-     * [TestJava]
-     */
-    @Order(0)
-    @Test
-    @DisplayName("测试Java服务的正确性")
-    fun testJavaService() {
-        val testJava: TestJava = context.getService()
-        assertEquals("helloJava", testJava.helloJava())
-    }
+//    /**
+//     * test service with javaClass.
+//     * [TestJava]
+//     */
+//    @Order(0)
+//    @Test
+//    @DisplayName("测试Java服务的正确性")
+//    fun testJavaService() {
+//        val testJava: TestJava = context.getService()
+//        assertEquals("helloJava", testJava.helloJava())
+//    }
 
     /**
      * singleton,lazy [HelloService]

@@ -2,24 +2,26 @@
 //file:noinspection GroovyUnusedAssignment
 //file:noinspection GrUnresolvedAccess
 
-
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.30'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.30'
+    id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.21'
 }
 
 group 'org.tty'
 version '1.0.0-rc01'
 
 repositories {
+    mavenLocal()
+    maven { url 'https://maven.aliyun.com/repository/google' }
     maven { url 'https://maven.aliyun.com/repository/public' }
     mavenCentral()
 }
 
 ext {
     junitVersion = '5.7.2'
-    kotlinVersion = '1.5.30'
+    kotlinVersion = '1.5.21'
     kotlinSerializationJson = '1.2.2'
     gsonVersionn = '2.8.6'
     cglibVersion = '3.3.0'
@@ -29,9 +31,18 @@ ext {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-subprojects {
+dependencies {
+    api project(":core")
+    api project(":util")
+}
+
+allprojects {
+    group 'org.tty'
+    version '1.0.0-rc01'
+
     apply plugin: 'java'
     apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'maven-publish'
 
     compileKotlin {
         kotlinOptions {
@@ -44,26 +55,82 @@ subprojects {
         }
     }
 
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
+
     dependencies {
         // kotlin stdlib
         implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
         implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
-        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${kotlinSerializationJson}"
-        implementation "cglib:cglib:${cglibVersion}"
+//        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${kotlinSerializationJson}"
+//        implementation "cglib:cglib:${cglibVersion}"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
         testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-        testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-
+//        testImplementation "org.mockito:mockito-core:${mockitoVersion}"
 
     }
 
     test {
         useJUnitPlatform()
     }
-}
 
+    // 打包sourcesJar任务
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        archiveClassifier.set('sources')
+        from sourceSets.main.allSource
+    }
+
+    // 打包javadocJar任务
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        archiveClassifier.set('javadoc')
+        from javadoc.destinationDir
+    }
+
+    // 解决javadoc打包乱码
+    javadoc {
+        options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            author true
+            version true
+            title "dioc"
+        }
+    }
+
+
+    publishing {
+        // 发布
+        publications {
+            mavenJava(MavenPublication) {
+                //指定group/artifact/version信息
+                groupId project.group
+                artifactId project.name == 'dioc' ? project.name : 'dioc.' + project.name
+                version project.version
+                // components.java jar包
+                // components.web war包
+                from components.java
+
+                // 增加 sourcesJar、javadocJar 任务
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+        // 发布仓库
+        repositories {
+            // 本地仓库位于USER_HOME/.m2/repository
+            mavenLocal()
+//        // 其他maven仓库
+//        maven { url uri('/Users/__/Desktop/1') }
+        }
+    }
+
+}
 
