@@ -8,7 +8,7 @@ import org.tty.dioc.core.addScoped2
 import org.tty.dioc.core.addSingleton2
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.error.ServiceDeclarationException
-import org.tty.dioc.core.local.LocalContext
+import org.tty.dioc.core.local.ComponentContext
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
@@ -94,7 +94,7 @@ class LocalDynamicApplicationContextTest {
             context.addSingleton2<Logger, SeqLogger>()
             context.onInit()
 
-            LocalContext provides context
+            ComponentContext provides context
 
         }
     }

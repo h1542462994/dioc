@@ -7,7 +7,7 @@ import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.core.declare.Lazy
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.getService
-import org.tty.dioc.core.local.LocalContext
+import org.tty.dioc.core.local.ComponentContext
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
@@ -241,7 +241,7 @@ class LocalApplicationContextTest {
     }
 
     /**
-     * test [LocalContext]
+     * test [ComponentContext]
      */
     @Order(34)
     @Test
@@ -264,7 +264,7 @@ class LocalApplicationContextTest {
         @JvmStatic
         fun initialize() {
             context = LocalApplicationContext("org.tty.dioc.core.test.services")
-            LocalContext provides context
+            ComponentContext provides context
             // or you can write will this
 //            LocalContext provides HolderCall(Companion) {
 //                it.context
