@@ -1,14 +1,13 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.*
-import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.lifecycle.StackScopeTrace
-import org.tty.dioc.core.storage.CombinedServiceStorage
-import org.tty.dioc.core.util.ServiceEntry
+import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
-import org.tty.dioc.core.declare.identifier.ServiceIdentifier
+import org.tty.dioc.core.declare.identifier.ComponentIdentifier
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -24,7 +23,7 @@ open class DefaultDynamicApplicationContext(
     scopeFactory: Builder<Scope>
 ): DynamicApplicationContext {
 
-    override fun <T : Any> getService(declareType: KClass<T>): T {
+    override fun <T : Any> getComponent(declareType: KClass<T>): T {
         if (!initialized) {
             throw IllegalStateException("you must initialized it before getService.")
         }
@@ -75,10 +74,10 @@ open class DefaultDynamicApplicationContext(
     @Suppress("DuplicatedCode")
     override fun onInit() {
         initialized = true
-        entry = ServiceEntry(declarations, storage, stackScopeTrace)
+        entry = ComponentResolverImpl(declarations, storage, stackScopeTrace)
         declarations.forEach {
-            if (!it.isLazyService && it.lifecycle == Lifecycle.Singleton) {
-                getService(it.declarationTypes[0])
+            if (!it.isLazyComponent && it.lifecycle == Lifecycle.Singleton) {
+                getComponent(it.declarationTypes[0])
             }
         }
 
@@ -93,7 +92,7 @@ open class DefaultDynamicApplicationContext(
     /**
      * the entry to get the service.
      */
-    private lateinit var entry: ServiceEntry
+    private lateinit var entry: ComponentResolverImpl
 
     /**
      * the trace of the scope.
@@ -103,7 +102,7 @@ open class DefaultDynamicApplicationContext(
     /**
      * the storage of the services.
      */
-    private val storage = CombinedServiceStorage()
+    private val storage = CombinedComponentStorage()
 
     /**
      * the function callback after create a lazy service.
@@ -112,9 +111,9 @@ open class DefaultDynamicApplicationContext(
         val (declarationType, lifecycle, lazy) = createLazy
         if (!lazy) {
             if (lifecycle == Lifecycle.Singleton) {
-                getService(declarationType)
+                getComponent(declarationType)
             } else if (stackScopeTrace.currentScope() != null && lifecycle == Lifecycle.Scoped) {
-                getService(declarationType)
+                getComponent(declarationType)
             }
         }
     }
@@ -125,8 +124,8 @@ open class DefaultDynamicApplicationContext(
     @Suppress("UNUSED_PARAMETER")
     private fun onCreateScope(scope: Scope) {
         declarations.forEach {
-            if (!it.isLazyService && it.lifecycle == Lifecycle.Scoped) {
-                getService(it.declarationTypes[0])
+            if (!it.isLazyComponent && it.lifecycle == Lifecycle.Scoped) {
+                getComponent(it.declarationTypes[0])
             }
         }
     }
@@ -138,7 +137,7 @@ open class DefaultDynamicApplicationContext(
         declarations.forEach {
             if (it.lifecycle == Lifecycle.Scoped) {
                 storage.remove(
-                    ServiceIdentifier.ofDeclare(
+                    ComponentIdentifier.ofDeclare(
                         it,
                         scope
                     )

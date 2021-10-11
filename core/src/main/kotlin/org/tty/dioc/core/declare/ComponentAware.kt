@@ -5,9 +5,9 @@ import kotlin.reflect.KClass
 /**
  * the ability to get the service
  */
-interface ServiceAware {
+interface ComponentAware {
     /**
      * to get the service by [declareType]
      */
-    fun <T: Any> getService(declareType: KClass<T>): T
+    fun <T: Any> getComponent(declareType: KClass<T>): T
 }

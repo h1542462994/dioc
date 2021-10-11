@@ -14,8 +14,8 @@ object ServiceUtil {
     /**
      * to detect whether a class is a service
      */
-    val KClass<*>.hasServiceAnnotation: Boolean
-    get() = this.hasAnnotation<Service>()
+    val KClass<*>.hasComponentAnnotation: Boolean
+    get() = this.hasAnnotation<Component>()
 
     /**
      * to detect whether a service is a proxy service

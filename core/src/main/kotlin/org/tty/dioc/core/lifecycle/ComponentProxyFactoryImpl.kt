@@ -1,9 +1,10 @@
 package org.tty.dioc.core.lifecycle
 
+import org.tty.dioc.core.basic.ComponentResolver
+import org.tty.dioc.core.basic.ComponentProxyFactory
 import org.tty.dioc.core.declare.Lazy
-import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.core.util.ServiceEntry
 import org.tty.dioc.reflect.toClasses
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Proxy
@@ -11,19 +12,19 @@ import java.lang.reflect.Proxy
 /**
  * service proxy. it means the service will only be created after invoke.
  */
-class ServiceProxyFactory(
-    private val serviceDeclare: ServiceDeclare,
-    private val serviceEntry: ServiceEntry
-) {
+class ComponentProxyFactoryImpl(
+    private val componentDeclare: ComponentDeclare,
+    private val serviceEntry: ComponentResolver
+): ComponentProxyFactory {
     /**
      * create the proxy for service inject with [Lazy]
      */
-    fun createProxy(): Any {
+    override fun createProxy(): Any {
 
         /**
          * make the proxy implements service declarationTypes
          */
-        val interfaces = serviceDeclare.declarationTypes.plus(ProxyService::class)
+        val interfaces = componentDeclare.declarationTypes.plus(ProxyService::class)
 
         /**
          * the realObject for proxy
@@ -51,7 +52,7 @@ class ServiceProxyFactory(
              * the proxy object will be created after the first call
              */
             if (realObject == null) {
-                realObject = serviceEntry.resolve(serviceDeclare)
+                realObject = serviceEntry.resolve(componentDeclare)
             }
 
             /**

@@ -17,4 +17,4 @@ data class ScopeIdentifier(
      * the scope
      */
     val scope: Scope
-): ServiceIdentifier
+): ComponentIdentifier

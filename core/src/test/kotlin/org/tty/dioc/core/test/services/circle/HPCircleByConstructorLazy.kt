@@ -1,7 +1,7 @@
 package org.tty.dioc.core.test.services.circle
 
 import org.tty.dioc.core.declare.Lazy
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.test.services.Logger
 
@@ -10,7 +10,7 @@ interface H2 {
     fun print(): String
 }
 
-@Service
+@Component
 class H2Impl(
     private val p2: P2,
     private val logger: Logger
@@ -28,7 +28,7 @@ class H2Impl(
     }
 }
 
-@Service
+@Component
 class P2(
     @Lazy private val h2: H2
 ) {

@@ -2,7 +2,7 @@ package org.tty.dioc.core.declare
 
 /**
  * the lifecycle of the service.
- * @see [Service]
+ * @see [Component]
  */
 enum class Lifecycle {
     /**

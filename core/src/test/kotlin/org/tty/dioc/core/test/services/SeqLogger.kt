@@ -1,10 +1,10 @@
 package org.tty.dioc.core.test.services
 
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
 
-@Service
+@Component
 class SeqLogger: Iterable<LogToken>, Logger {
     private val container: ArrayList<LogToken> = ArrayList()
 

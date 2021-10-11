@@ -2,8 +2,7 @@
 
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.Lifecycle
-import org.tty.dioc.core.declare.ServiceAware
+import org.tty.dioc.core.declare.ComponentAware
 import org.tty.dioc.core.declare.ServiceDeclareAware
 import kotlin.reflect.KClass
 
@@ -11,9 +10,9 @@ import kotlin.reflect.KClass
  * to get the service of [T]
  */
 @OptIn(ExperimentalStdlibApi::class)
-inline fun <reified T : Any> ServiceAware.getService(): T {
+inline fun <reified T : Any> ComponentAware.getService(): T {
     val type: KClass<T> = T::class
-    return this.getService(type)
+    return this.getComponent(type)
 }
 
 @OptIn(ExperimentalStdlibApi::class)

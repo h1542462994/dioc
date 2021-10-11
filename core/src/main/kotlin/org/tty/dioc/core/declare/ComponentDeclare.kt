@@ -5,16 +5,16 @@ import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.util.ServiceUtil
-import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
+import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 /**
  * declaration of the service
- * @see [Service]
+ * @see [Component]
  */
-class ServiceDeclare(
+class ComponentDeclare(
     /**
      * the real service type.
      */
@@ -25,14 +25,14 @@ class ServiceDeclare(
     val declarationTypes: List<KClass<*>>,
     /**
      * the lifecycle of the service.
-     * @see [Service.lifecycle]
+     * @see [Component.lifecycle]
      */
     val lifecycle: Lifecycle,
     /**
      * whether the service is a lazy service
-     * @see [Service.lazy]
+     * @see [Component.lazy]
      */
-    val isLazyService: Boolean,
+    val isLazyComponent: Boolean,
     /**
      * the constructor for injection.
      */
@@ -48,7 +48,7 @@ class ServiceDeclare(
      */
     fun toServiceProperties(service: Any, injectPlace: InjectPlace): List<ServiceProperty> {
         return componentsOf(injectPlace = injectPlace).map {
-            ServiceProperty(serviceDeclare = this, service = service, it.name, injectPlace = injectPlace)
+            ServiceProperty(componentDeclare = this, service = service, it.name, injectPlace = injectPlace)
         }
     }
 
@@ -63,31 +63,31 @@ class ServiceDeclare(
      * a short description of the service.
      */
     override fun toString(): String {
-        return "${implementationType},${lifecycle},${if (isLazyService) "lazy" else "not lazy"}"
+        return "${implementationType},${lifecycle},${if (isLazyComponent) "lazy" else "not lazy"}"
     }
 
     companion object {
         /**
-         * to get the [ServiceDeclare] from [implementationType]
+         * to get the [ComponentDeclare] from [implementationType]
          */
-        fun fromType(implementationType: KClass<*>): ServiceDeclare {
+        fun fromType(implementationType: KClass<*>): ComponentDeclare {
             // you must annotate [@Service] on serviceType.
-            require(implementationType.hasServiceAnnotation) {
+            require(implementationType.hasComponentAnnotation) {
                 "serviceType $implementationType is not a service"
             }
             val exceptInterfaces = listOf(
                 InitializeAware::class, ProxyService::class, Scope::class, ScopeAbility::class
             )
             val declarationTypes = ServiceUtil.declareTypes(implementationType, exceptInterfaces)
-            val serviceAnnotation = implementationType.findAnnotation<Service>()!!
+            val componentAnnotation = implementationType.findAnnotation<Component>()!!
             val constructor = ServiceUtil.getInjectConstructor(implementationType)
             val components = ServiceUtil.getComponents(implementationType)
 
-            return ServiceDeclare(
+            return ComponentDeclare(
                 implementationType = implementationType,
                 declarationTypes = declarationTypes,
-                lifecycle = serviceAnnotation.lifecycle,
-                isLazyService = serviceAnnotation.lazy,
+                lifecycle = componentAnnotation.lifecycle,
+                isLazyComponent = componentAnnotation.lazy,
                 constructor = constructor,
                 components = components
             )

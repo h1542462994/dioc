@@ -1,10 +1,10 @@
 package org.tty.dioc.core.test.services
 
 import org.tty.dioc.core.declare.Inject
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 import org.tty.dioc.core.lifecycle.InitializeAware
 
-@Service(lazy = false)
+@Component(lazy = false)
 class HelloServiceNotLazyImpl: HelloServiceNotLazy, InitializeAware {
 
     @Inject

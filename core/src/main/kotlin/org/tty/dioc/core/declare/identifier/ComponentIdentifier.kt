@@ -1,27 +1,26 @@
 package org.tty.dioc.core.declare.identifier
 
 import org.tty.dioc.core.declare.Lifecycle
-import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
-import kotlin.properties.Delegates
 
 /**
  * the identifier to store the service
  * @see [Lifecycle]
  */
-interface ServiceIdentifier {
+interface ComponentIdentifier {
     companion object {
-        fun ofDeclare(serviceDeclare: ServiceDeclare, scope: Scope?): ServiceIdentifier {
-            return when (serviceDeclare.lifecycle) {
+        fun ofDeclare(componentDeclare: ComponentDeclare, scope: Scope?): ComponentIdentifier {
+            return when (componentDeclare.lifecycle) {
                 Lifecycle.Singleton -> {
-                    SingletonIdentifier(serviceDeclare.implementationType)
+                    SingletonIdentifier(componentDeclare.implementationType)
                 }
                 Lifecycle.Scoped -> {
                     if (scope == null) {
                         throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
                     }
-                    ScopeIdentifier(serviceDeclare.implementationType, scope)
+                    ScopeIdentifier(componentDeclare.implementationType, scope)
                 }
                 Lifecycle.Transient -> {
                     TransientIdentifier()

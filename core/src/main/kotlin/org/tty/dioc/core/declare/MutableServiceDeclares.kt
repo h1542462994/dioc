@@ -16,7 +16,7 @@ interface MutableServiceDeclares: ReadonlyServiceDeclares, ServiceDeclareAware {
 
     /**
      * the channel for create a lazy service
-     * @see Service
+     * @see Component
      */
     val createLazyChannel: Channel<CreateLazy>
 }

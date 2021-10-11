@@ -34,6 +34,6 @@ val ComponentLogger = staticComponentLocalOf<Logger> {
  * resolve the service on [ComponentContext]
  */
 inline fun <reified T: Any> resolve(): T {
-    return ComponentContext.current.getService(T::class)
+    return ComponentContext.current.getComponent(T::class)
 }
 

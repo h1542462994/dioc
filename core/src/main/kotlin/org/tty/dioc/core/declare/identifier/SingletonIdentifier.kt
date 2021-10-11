@@ -12,4 +12,4 @@ data class SingletonIdentifier(
      * the type of the service (runtime)
      */
     val serviceType: KClass<*>
-): ServiceIdentifier
+): ComponentIdentifier

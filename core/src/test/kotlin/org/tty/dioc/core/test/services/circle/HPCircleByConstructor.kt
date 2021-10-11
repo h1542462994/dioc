@@ -1,11 +1,11 @@
 package org.tty.dioc.core.test.services.circle
 
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 
 /**
  * helloService to print singleton by constructor inject.
  */
-@Service
+@Component
 class H1(private val p1: P1) {
     fun hello(): String {
         return "hello"
@@ -15,7 +15,7 @@ class H1(private val p1: P1) {
     }
 }
 
-@Service
+@Component
 class P1(private val h1: H1) {
     fun print(): String {
         val s = "print:${h1.hello()}"

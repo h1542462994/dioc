@@ -1,11 +1,12 @@
 package org.tty.dioc.core.storage
 
+import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.ServiceCreated
 import org.tty.dioc.core.declare.ServiceCreating
-import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.declare.identifier.ScopeIdentifier
-import org.tty.dioc.core.declare.identifier.ServiceIdentifier
+import org.tty.dioc.core.declare.identifier.ComponentIdentifier
 import org.tty.dioc.core.declare.identifier.SingletonIdentifier
 import org.tty.dioc.core.declare.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.InitializeAware
@@ -16,16 +17,16 @@ import java.lang.ref.WeakReference
 /**
  * the storage for service
  */
-class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransaction>, ServiceStorage {
+class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTransaction>, ComponentStorage {
     /**
      * the full storage, also the first level cache.
      */
-    private val fullStorage = HashMap<ServiceIdentifier, Any>()
+    private val fullStorage = HashMap<ComponentIdentifier, Any>()
 
     /**
      * the part storage, also the second level cache.
      */
-    private val partStorage = HashMap<ServiceIdentifier, ServiceCreating>()
+    private val partStorage = HashMap<ComponentIdentifier, ServiceCreating>()
 
     private var transactionCount = 0
 
@@ -36,7 +37,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
         /**
          * to record the resolved service in [CreateTransaction]
          */
-        private val marking = HashMap<ServiceDeclare, Any>()
+        private val marking = HashMap<ComponentDeclare, Any>()
 
         /**
          * whether the transaction is closed
@@ -54,10 +55,10 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
          * add the [serviceCreated] to [partStorage] and [marking].
          */
         @Throws(TransactionClosedException::class)
-        override fun addFull(serviceIdentifier: ServiceIdentifier, serviceCreated: ServiceCreated) {
+        override fun addFull(componentIdentifier: ComponentIdentifier, serviceCreated: ServiceCreated) {
             requireNotClosed()
             val (service, serviceDeclare) = serviceCreated
-            val entry: Any = when(serviceIdentifier) {
+            val entry: Any = when(componentIdentifier) {
                 is SingletonIdentifier -> {
                     service
                 }
@@ -71,7 +72,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
                     throw IllegalArgumentException("identifier not support.")
                 }
             }
-            fullStorage[serviceIdentifier] = entry
+            fullStorage[componentIdentifier] = entry
             marking[serviceDeclare] = entry
         }
 
@@ -79,50 +80,50 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
          * add the [serviceCreating] to [partStorage] and [marking]
          */
         @Throws(TransactionClosedException::class)
-        override fun addPart(serviceIdentifier: ServiceIdentifier, serviceCreating: ServiceCreating) {
+        override fun addPart(componentIdentifier: ComponentIdentifier, serviceCreating: ServiceCreating) {
             requireNotClosed()
-            partStorage[serviceIdentifier] = serviceCreating
-            marking[serviceCreating.serviceDeclare] = serviceCreating
+            partStorage[componentIdentifier] = serviceCreating
+            marking[serviceCreating.componentDeclare] = serviceCreating
         }
 
         /**
-         * add [serviceDeclare] to [marking]
+         * add [componentDeclare] to [marking]
          */
         @Throws(TransactionClosedException::class)
-        override fun addEmpty(serviceDeclare: ServiceDeclare) {
+        override fun addEmpty(componentDeclare: ComponentDeclare) {
             requireNotClosed()
-            marking[serviceDeclare] = Any()
+            marking[componentDeclare] = Any()
         }
 
         /**
          * move the service from [partStorage] to [fullStorage]
          */
         @Throws(TransactionClosedException::class)
-        override fun moveToFull(serviceIdentifier: ServiceIdentifier) {
+        override fun moveToFull(componentIdentifier: ComponentIdentifier) {
             requireNotClosed()
-            val creating = partStorage[serviceIdentifier]!!
-            partStorage.remove(serviceIdentifier)
-            fullStorage[serviceIdentifier] = creating.service
-            marking[creating.serviceDeclare] = creating.service
+            val creating = partStorage[componentIdentifier]!!
+            partStorage.remove(componentIdentifier)
+            fullStorage[componentIdentifier] = creating.service
+            marking[creating.componentDeclare] = creating.service
         }
 
         /**
          * whether the transient service is not ready.
          */
         @Throws(TransactionClosedException::class)
-        override fun transientNotReady(serviceDeclare: ServiceDeclare): Boolean {
+        override fun transientNotReady(componentDeclare: ComponentDeclare): Boolean {
             requireNotClosed()
-            return serviceDeclare.lifecycle == Lifecycle.Transient &&
-                    marking.containsKey(serviceDeclare)
+            return componentDeclare.lifecycle == Lifecycle.Transient &&
+                    marking.containsKey(componentDeclare)
         }
 
         /**
          * whether the service is created.
          */
         @Throws(TransactionClosedException::class)
-        override fun notReady(serviceDeclare: ServiceDeclare): Boolean {
+        override fun notReady(componentDeclare: ComponentDeclare): Boolean {
             requireNotClosed()
-            return marking.containsKey(serviceDeclare)
+            return marking.containsKey(componentDeclare)
         }
 
         /**
@@ -162,15 +163,15 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
     }
 
     /**
-     * find the service by [serviceIdentifier] in [CombinedServiceStorage]
+     * find the service by [componentIdentifier] in [CombinedComponentStorage]
      */
-    override fun findService(serviceIdentifier: ServiceIdentifier): Any? {
-        return when(serviceIdentifier) {
+    override fun findService(componentIdentifier: ComponentIdentifier): Any? {
+        return when(componentIdentifier) {
             is SingletonIdentifier -> {
-                fullStorage[serviceIdentifier]
+                fullStorage[componentIdentifier]
             }
             is ScopeIdentifier -> {
-                fullStorage[serviceIdentifier]
+                fullStorage[componentIdentifier]
             }
             is TransientIdentifier -> {
                 null
@@ -181,9 +182,9 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
         }
     }
 
-    override fun remove(serviceIdentifier: ServiceIdentifier) {
-        fullStorage.remove(serviceIdentifier)
-        partStorage.remove(serviceIdentifier)
+    override fun remove(componentIdentifier: ComponentIdentifier) {
+        fullStorage.remove(componentIdentifier)
+        partStorage.remove(componentIdentifier)
     }
 
     /**
@@ -197,7 +198,7 @@ class CombinedServiceStorage: Transactional<CombinedServiceStorage.CreateTransac
     /**
      * the first service not injected.
      */
-    override val partFirst: MutableMap.MutableEntry<ServiceIdentifier, ServiceCreating>
+    override val partFirst: MutableMap.MutableEntry<ComponentIdentifier, ServiceCreating>
     get() {
         return partStorage.entries.first()
     }

@@ -5,26 +5,26 @@ import kotlin.reflect.KClass
 /**
  * serviceDeclares read.
  */
-interface ReadonlyServiceDeclares: Iterable<ServiceDeclare> {
+interface ReadonlyServiceDeclares: Iterable<ComponentDeclare> {
 
     /**
-     * find in collection where [ServiceDeclare.declarationTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]
      */
-    fun singleDeclarationType(declarationType: KClass<*>): ServiceDeclare
+    fun singleDeclarationType(declarationType: KClass<*>): ComponentDeclare
 
     /**
-     * find in collection where [ServiceDeclare.implementationType] == [implementationType]
+     * find in collection where [ComponentDeclare.implementationType] == [implementationType]
      */
-    fun singleServiceType(implementationType: KClass<*>): ServiceDeclare
+    fun singleServiceType(implementationType: KClass<*>): ComponentDeclare
 
     /**
-     * find in collection where [ServiceDeclare.declarationTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]
      * @return null means not match.
      */
-    fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ServiceDeclare?
+    fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ComponentDeclare?
 
     /**
-     * to check the structure of the service on the current [serviceDeclare]
+     * to check the structure of the service on the current [componentDeclare]
      */
-    fun check(serviceDeclare: ServiceDeclare)
+    fun check(componentDeclare: ComponentDeclare)
 }

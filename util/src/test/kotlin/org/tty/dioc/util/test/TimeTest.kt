@@ -124,12 +124,10 @@ class TimeTest {
     }
 
     @Test
-    fun testAssociate() {
-        val keys = 'a'..'f'
-        val map = keys.associateWith { it.toString().repeat(5) }
-        map.forEach { println(it) }
-
-
+    fun testDayOfWeek() {
+        for(dayOfWeek in DayOfWeek.values()) {
+            println("$dayOfWeek - ${dayOfWeek.value}")
+        }
     }
 }
 

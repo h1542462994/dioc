@@ -1,12 +1,12 @@
 package org.tty.dioc.core.lifecycle
 
 import org.tty.dioc.core.declare.Once
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 
 /**
  * the lifecycle function [onFinish]
  * the [onFinish] will be called once it is deconstructed
- * @see [Service]
+ * @see [Component]
  */
 interface FinishAware {
     /**

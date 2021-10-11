@@ -2,15 +2,15 @@ package org.tty.dioc.core.declare
 
 /**
  * the property of the service
- * the [ServiceProperty] is the combination of the [ServiceDeclare] and the [PropertyComponent]
- * @see [ServiceDeclare]
+ * the [ServiceProperty] is the combination of the [ComponentDeclare] and the [PropertyComponent]
+ * @see [ComponentDeclare]
  * @see [PropertyComponent]
  */
 class ServiceProperty(
     /**
      * the declare of the service
      */
-    val serviceDeclare: ServiceDeclare,
+    val componentDeclare: ComponentDeclare,
     /**
      * the service
      */
@@ -27,13 +27,13 @@ class ServiceProperty(
     /**
      * property service declare
      */
-    lateinit var propertyServiceDeclare: ServiceDeclare
+    lateinit var propertyComponentDeclare: ComponentDeclare
 
     /**
-     * initialize the [propertyServiceDeclare] on by [serviceDeclares], then call [check] to check the structure
+     * initialize the [propertyComponentDeclare] on by [serviceDeclares], then call [check] to check the structure
      */
     fun fill(serviceDeclares: ReadonlyServiceDeclares) {
-        propertyServiceDeclare = serviceDeclares.singleDeclarationType(propertyComponent.declareType)
+        propertyComponentDeclare = serviceDeclares.singleDeclarationType(propertyComponent.declareType)
         //check(serviceDeclares)
     }
 
@@ -42,6 +42,6 @@ class ServiceProperty(
      */
     val propertyComponent: PropertyComponent
     get() {
-        return serviceDeclare.components.find { it.name == name && it.injectPlace == injectPlace }!!
+        return componentDeclare.components.find { it.name == name && it.injectPlace == injectPlace }!!
     }
 }
