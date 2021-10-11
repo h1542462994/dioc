@@ -7,7 +7,7 @@ import org.tty.dioc.core.lifecycle.StackScopeTrace
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
-import org.tty.dioc.core.declare.identifier.ComponentIdentifier
+import org.tty.dioc.core.identifier.ComponentIdentifier
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -19,7 +19,7 @@ open class DefaultDynamicApplicationContext(
     /**
      * the declaration of the services.
      */
-    private val declarations: MutableServiceDeclares,
+    private val declarations: MutableComponentDeclares,
     scopeFactory: Builder<Scope>
 ): DynamicApplicationContext {
 
@@ -67,7 +67,7 @@ open class DefaultDynamicApplicationContext(
         declarations.addTransient(declarationType, implementationType)
     }
 
-    override fun forceReplace(action: (ServiceDeclareAware) -> Unit) {
+    override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
         declarations.forceReplace(action)
     }
 
@@ -107,7 +107,7 @@ open class DefaultDynamicApplicationContext(
     /**
      * the function callback after create a lazy service.
      */
-    private fun onCreateLazy(createLazy: MutableServiceDeclares.CreateLazy) {
+    private fun onCreateLazy(createLazy: MutableComponentDeclares.CreateLazy) {
         val (declarationType, lifecycle, lazy) = createLazy
         if (!lazy) {
             if (lifecycle == Lifecycle.Singleton) {

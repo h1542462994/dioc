@@ -46,9 +46,9 @@ class ComponentDeclare(
     /**
      * get the serviceProperties which the injectPlace is equal to [injectPlace], relies on [componentsOf].
      */
-    fun toServiceProperties(service: Any, injectPlace: InjectPlace): List<ServiceProperty> {
+    fun toComponentProperties(service: Any, injectPlace: InjectPlace): List<ComponentProperty> {
         return componentsOf(injectPlace = injectPlace).map {
-            ServiceProperty(componentDeclare = this, service = service, it.name, injectPlace = injectPlace)
+            ComponentProperty(componentDeclare = this, service = service, it.name, injectPlace = injectPlace)
         }
     }
 

@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 /**
  * serviceDeclares read.
  */
-interface ReadonlyServiceDeclares: Iterable<ComponentDeclare> {
+interface ReadonlyComponentDeclares: Iterable<ComponentDeclare> {
 
     /**
      * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]

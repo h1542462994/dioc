@@ -7,12 +7,12 @@ import org.tty.dioc.observable.channel.Channels
 import kotlin.reflect.KClass
 
 /**
- * a implementation of [MutableServiceDeclares] and [ReadonlyServiceDeclares]
+ * a implementation of [MutableComponentDeclares] and [ReadonlyComponentDeclares]
  */
-class ServiceDeclares(componentDeclares: List<ComponentDeclare>) : MutableServiceDeclares, ReadonlyServiceDeclares {
+class ComponentDeclares(componentDeclares: List<ComponentDeclare>) : MutableComponentDeclares, ReadonlyComponentDeclares {
     private val container = ArrayList<ComponentDeclare>()
     private var forceReplaceEnabled = false
-    override val createLazyChannel = Channels.create<MutableServiceDeclares.CreateLazy>()
+    override val createLazyChannel = Channels.create<MutableComponentDeclares.CreateLazy>()
 
     init {
         container.addAll(componentDeclares)
@@ -60,7 +60,7 @@ class ServiceDeclares(componentDeclares: List<ComponentDeclare>) : MutableServic
         addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Transient, true)
     }
 
-    override fun forceReplace(action: (ServiceDeclareAware) -> Unit) {
+    override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
         forceReplaceEnabled = true
         action.invoke(this)
         forceReplaceEnabled = false
@@ -132,7 +132,7 @@ class ServiceDeclares(componentDeclares: List<ComponentDeclare>) : MutableServic
 
     private fun onCreateLazy(declarationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
         createLazyChannel.emit(
-            MutableServiceDeclares.CreateLazy(declarationType, lifecycle, lazy)
+            MutableComponentDeclares.CreateLazy(declarationType, lifecycle, lazy)
         )
     }
 }

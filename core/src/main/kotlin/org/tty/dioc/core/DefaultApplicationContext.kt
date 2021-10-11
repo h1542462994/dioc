@@ -1,12 +1,12 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.Lifecycle
-import org.tty.dioc.core.declare.ReadonlyServiceDeclares
+import org.tty.dioc.core.declare.ReadonlyComponentDeclares
 import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
-import org.tty.dioc.core.declare.identifier.ComponentIdentifier
+import org.tty.dioc.core.identifier.ComponentIdentifier
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -18,7 +18,7 @@ open class DefaultApplicationContext(
     /**
      * the declaration of the services.
      */
-    private val declarations: ReadonlyServiceDeclares,
+    private val declarations: ReadonlyComponentDeclares,
     scopeFactory: Builder<Scope>
     ) : ApplicationContext, InitializeAware, FinishAware {
 

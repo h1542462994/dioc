@@ -23,7 +23,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
             jsonFiles, scanPackages
         )
         return DefaultApplicationContext(
-            ServiceDeclares(serviceDeclareResolver.getDeclarations()),
+            ComponentDeclares(serviceDeclareResolver.getDeclarations()),
             scopeFactory
         )
     }

@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 /**
  * apis for add a [ComponentDeclare].
  */
-interface ServiceDeclareAware {
+interface ComponentDeclareAware {
     /**
      * to add a singleton service
      * @param type the implementation type also the declaration type.
@@ -53,5 +53,5 @@ interface ServiceDeclareAware {
     /**
      * the [action] can replace serviceDeclare by force.
      */
-    fun forceReplace(action: (ServiceDeclareAware) -> Unit)
+    fun forceReplace(action: (ComponentDeclareAware) -> Unit)
 }

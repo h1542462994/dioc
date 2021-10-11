@@ -2,7 +2,7 @@ package org.tty.dioc.core.internal
 
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.declare.*
-import org.tty.dioc.core.declare.identifier.ComponentIdentifier
+import org.tty.dioc.core.identifier.ComponentIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
@@ -15,7 +15,7 @@ import kotlin.reflect.jvm.javaConstructor
  * the entry for create or get the service
  */
 class ComponentResolverImpl(
-    private val serviceDeclarations: ReadonlyServiceDeclares,
+    private val serviceDeclarations: ReadonlyComponentDeclares,
     override val storage: CombinedComponentStorage,
     val scopeAbility: ScopeAbility
 ): ComponentResolver {
@@ -129,7 +129,7 @@ class ComponentResolverImpl(
         } else {
             transaction.addPart(
                 componentIdentifier,
-                ServiceCreating(stub, declare, ArrayList(injects))
+                ComponentCreating(stub, declare, ArrayList(injects))
             )
         }
 
@@ -139,9 +139,9 @@ class ComponentResolverImpl(
     /**
      * extract stub to property read to injected
      */
-    private fun extractStubToInjectProperties(value: Any): List<ServiceProperty> {
+    private fun extractStubToInjectProperties(value: Any): List<ComponentProperty> {
         val declare = serviceDeclarations.singleServiceType(value::class)
-        return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
+        return declare.toComponentProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
 

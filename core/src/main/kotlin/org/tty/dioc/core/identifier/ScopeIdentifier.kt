@@ -1,4 +1,4 @@
-package org.tty.dioc.core.declare.identifier
+package org.tty.dioc.core.identifier
 
 import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.lifecycle.Scope

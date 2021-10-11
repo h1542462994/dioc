@@ -1,8 +1,8 @@
 package org.tty.dioc.core.internal
 
 import org.tty.dioc.core.basic.ComponentDeclareResolver
-import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
 import org.tty.dioc.reflect.KClassScanner
 

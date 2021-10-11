@@ -37,9 +37,9 @@ object ServiceUtil {
     }
 
     /**
-     * inject the component [component] to [ServiceProperty.service]
+     * inject the component [component] to [ComponentProperty.service]
      */
-    fun injectComponentToService(serviceProperty: ServiceProperty, component: Any) {
+    fun injectComponentToService(serviceProperty: ComponentProperty, component: Any) {
         val property = serviceProperty.service::class.getProperty<KMutableProperty<*>>(serviceProperty.name)!!
         property.setter.call(serviceProperty.service, component)
     }

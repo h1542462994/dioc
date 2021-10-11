@@ -3,12 +3,12 @@ package org.tty.dioc.core.storage
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.declare.Lifecycle
 import org.tty.dioc.core.declare.ServiceCreated
-import org.tty.dioc.core.declare.ServiceCreating
+import org.tty.dioc.core.declare.ComponentCreating
 import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.core.declare.identifier.ScopeIdentifier
-import org.tty.dioc.core.declare.identifier.ComponentIdentifier
-import org.tty.dioc.core.declare.identifier.SingletonIdentifier
-import org.tty.dioc.core.declare.identifier.TransientIdentifier
+import org.tty.dioc.core.identifier.ScopeIdentifier
+import org.tty.dioc.core.identifier.ComponentIdentifier
+import org.tty.dioc.core.identifier.SingletonIdentifier
+import org.tty.dioc.core.identifier.TransientIdentifier
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.transaction.TransactionClosedException
 import org.tty.dioc.transaction.Transactional
@@ -26,7 +26,7 @@ class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTra
     /**
      * the part storage, also the second level cache.
      */
-    private val partStorage = HashMap<ComponentIdentifier, ServiceCreating>()
+    private val partStorage = HashMap<ComponentIdentifier, ComponentCreating>()
 
     private var transactionCount = 0
 
@@ -80,7 +80,7 @@ class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTra
          * add the [serviceCreating] to [partStorage] and [marking]
          */
         @Throws(TransactionClosedException::class)
-        override fun addPart(componentIdentifier: ComponentIdentifier, serviceCreating: ServiceCreating) {
+        override fun addPart(componentIdentifier: ComponentIdentifier, serviceCreating: ComponentCreating) {
             requireNotClosed()
             partStorage[componentIdentifier] = serviceCreating
             marking[serviceCreating.componentDeclare] = serviceCreating
@@ -198,7 +198,7 @@ class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTra
     /**
      * the first service not injected.
      */
-    override val partFirst: MutableMap.MutableEntry<ComponentIdentifier, ServiceCreating>
+    override val partFirst: MutableMap.MutableEntry<ComponentIdentifier, ComponentCreating>
     get() {
         return partStorage.entries.first()
     }
