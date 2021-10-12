@@ -1,9 +1,9 @@
 package org.tty.dioc.core.storage
 
 import org.tty.dioc.core.declare.ServiceCreated
-import org.tty.dioc.core.declare.ServiceCreating
-import org.tty.dioc.core.declare.ServiceDeclare
-import org.tty.dioc.core.declare.identifier.ServiceIdentifier
+import org.tty.dioc.core.declare.ComponentCreating
+import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.identifier.ComponentIdentifier
 import org.tty.dioc.transaction.TransactionClosedException
 import org.tty.dioc.transaction.Transaction
 import kotlin.jvm.Throws
@@ -13,35 +13,35 @@ sealed interface IStorageTransaction: Transaction {
      * add the [serviceCreated].
      */
     @Throws(TransactionClosedException::class)
-    fun addFull(serviceIdentifier: ServiceIdentifier, serviceCreated: ServiceCreated)
+    fun addFull(componentIdentifier: ComponentIdentifier, serviceCreated: ServiceCreated)
 
     /**
      * add the [serviceCreating].
      */
     @Throws(TransactionClosedException::class)
-    fun addPart(serviceIdentifier: ServiceIdentifier, serviceCreating: ServiceCreating)
+    fun addPart(componentIdentifier: ComponentIdentifier, serviceCreating: ComponentCreating)
 
     /**
      * add the marking placeholder.
      */
     @Throws(TransactionClosedException::class)
-    fun addEmpty(serviceDeclare: ServiceDeclare)
+    fun addEmpty(componentDeclare: ComponentDeclare)
 
     /**
-     * move from [ServiceCreating] to [ServiceCreated]
+     * move from [ComponentCreating] to [ServiceCreated]
      */
     @Throws(TransactionClosedException::class)
-    fun moveToFull(serviceIdentifier: ServiceIdentifier)
+    fun moveToFull(componentIdentifier: ComponentIdentifier)
 
     /**
      * whether the transient component is ready.
      */
     @Throws(TransactionClosedException::class)
-    fun transientNotReady(serviceDeclare: ServiceDeclare): Boolean
+    fun transientNotReady(componentDeclare: ComponentDeclare): Boolean
 
     /**
      * whether the component is ready.
      */
     @Throws(TransactionClosedException::class)
-    fun notReady(serviceDeclare: ServiceDeclare): Boolean
+    fun notReady(componentDeclare: ComponentDeclare): Boolean
 }

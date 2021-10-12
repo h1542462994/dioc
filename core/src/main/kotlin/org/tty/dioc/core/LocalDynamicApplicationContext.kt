@@ -1,6 +1,6 @@
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.ServiceDeclares
+import org.tty.dioc.core.declare.ComponentDeclares
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.base.Builder
@@ -12,7 +12,7 @@ import org.tty.dioc.base.Builder
  */
 class LocalDynamicApplicationContext(scopeFactory: Builder<Scope> = DefaultScopeFactory())
     : DefaultDynamicApplicationContext(
-    ServiceDeclares(listOf()),
+    ComponentDeclares(listOf()),
     scopeFactory
 ) {
 //    init {

@@ -2,8 +2,8 @@ package org.tty.dioc.core.declare
 
 /**
  * inject type of the property
- * @see [ServiceDeclare]
- * @see [ServiceProperty]
+ * @see [ComponentDeclare]
+ * @see [ComponentProperty]
  */
 enum class InjectPlace {
     /**

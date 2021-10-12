@@ -1,4 +1,4 @@
-package org.tty.dioc.core.declare.identifier
+package org.tty.dioc.core.identifier
 
 import org.tty.dioc.core.declare.Lifecycle
 import kotlin.reflect.KClass
@@ -12,4 +12,4 @@ data class SingletonIdentifier(
      * the type of the service (runtime)
      */
     val serviceType: KClass<*>
-): ServiceIdentifier
+): ComponentIdentifier

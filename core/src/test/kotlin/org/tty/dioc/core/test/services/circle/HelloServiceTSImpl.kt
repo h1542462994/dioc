@@ -2,9 +2,9 @@ package org.tty.dioc.core.test.services.circle
 
 import org.tty.dioc.core.declare.Inject
 import org.tty.dioc.core.declare.Lifecycle
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 
-@Service(lifecycle = Lifecycle.Transient)
+@Component(lifecycle = Lifecycle.Transient)
 class HelloServiceTSImpl: HelloServiceTS {
 
     @Inject

@@ -1,9 +1,9 @@
 package org.tty.dioc.core.test.services
 
 import org.tty.dioc.core.declare.Lifecycle
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 
-@Service(lifecycle = Lifecycle.Transient)
+@Component(lifecycle = Lifecycle.Transient)
 class TransientAddServiceImpl: TransientAddService {
     var value: Int = 0
 

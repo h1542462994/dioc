@@ -106,7 +106,7 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
         // prepared = true means data is ready
         var prepared = true
         for (i in channels.indices) {
-            if (recordMap[i] == null) {
+            if (!recordMap.keys.contains(i)) {
                 prepared = false
                 break
             }
@@ -115,8 +115,9 @@ internal class RecordChannel<T>(private val channels: List<Channel<T>>) : Record
         if (!prepared) {
             return
         }
+        @Suppress("UNCHECKED_CAST")
         val data = channels.indices.map {
-            recordMap[it]!!
+            recordMap[it] as T
         }
         channel.emit(data)
     }

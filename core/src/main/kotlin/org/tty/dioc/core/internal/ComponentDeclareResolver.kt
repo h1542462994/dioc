@@ -1,25 +1,27 @@
-package org.tty.dioc.core.declare
+package org.tty.dioc.core.internal
 
-import org.tty.dioc.core.util.ServiceUtil.hasServiceAnnotation
+import org.tty.dioc.core.basic.ComponentDeclareResolver
+import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.declare.PackageOption
+import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
 import org.tty.dioc.reflect.KClassScanner
 
-class ServiceDeclareResolver(
+class ComponentDeclareResolver(
     private val jsonFiles: ArrayList<String> = ArrayList(),
     private val scanPackages: ArrayList<PackageOption> = ArrayList()
-) {
+): ComponentDeclareResolver {
 
 
     /**
      * get the declaration of the service.
      */
-    fun getDeclarations(): List<ServiceDeclare> {
-        val basic = getBasicDeclarations()
-        return basic
+    override fun getDeclarations(): List<ComponentDeclare> {
+        return getBasicDeclarations()
     }
 
 
-    private fun getBasicDeclarations(): List<ServiceDeclare> {
-        val declarations = ArrayList<ServiceDeclare>()
+    private fun getBasicDeclarations(): List<ComponentDeclare> {
+        val declarations = ArrayList<ComponentDeclare>()
         jsonFiles.forEach {
             declarations.addAll(getDeclarationsFromJsonFile(it))
         }
@@ -33,21 +35,21 @@ class ServiceDeclareResolver(
     /**
      * get the declaration of the service from the json file.
      */
-    private fun getDeclarationsFromJsonFile(fileName: String): List<ServiceDeclare> {
+    private fun getDeclarationsFromJsonFile(fileName: String): List<ComponentDeclare> {
         TODO("not implemented.")
     }
 
     /**
      * get the declaration of the service from the json file.
      */
-    private fun getDeclarationsFromPackage(packageOption: PackageOption): List<ServiceDeclare> {
+    private fun getDeclarationsFromPackage(packageOption: PackageOption): List<ComponentDeclare> {
         val (name, inclusive) = packageOption
         val kClassScanner = KClassScanner(name, inclusive, { true }, { true })
         val kClasses = kClassScanner.doScanAllClasses()
         return kClasses.filter {
-            it.hasServiceAnnotation
+            it.hasComponentAnnotation
         }.map {
-            ServiceDeclare.fromType(it)
+            ComponentDeclare.fromType(it)
         }
     }
 }

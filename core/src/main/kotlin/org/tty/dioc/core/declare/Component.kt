@@ -8,7 +8,7 @@ package org.tty.dioc.core.declare
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class Service(
+annotation class Component(
     /**
      * the lifecycle of the service.
      * @see [Lifecycle]

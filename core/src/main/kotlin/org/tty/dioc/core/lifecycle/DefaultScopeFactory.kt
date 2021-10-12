@@ -1,9 +1,9 @@
 package org.tty.dioc.core.lifecycle
 
-import org.tty.dioc.base.Builder
+import org.tty.dioc.core.basic.ScopeFactory
 import java.util.*
 
-class DefaultScopeFactory: Builder<Scope> {
+class DefaultScopeFactory: ScopeFactory {
     override fun create(): Scope {
         return object: Scope {
             override val id: String

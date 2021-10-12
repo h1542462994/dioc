@@ -1,0 +1,9 @@
+package org.tty.dioc.core.basic
+
+import org.tty.dioc.base.Builder
+import org.tty.dioc.core.lifecycle.Scope
+
+/**
+ * factory of [Scope]
+ */
+interface ScopeFactory: Builder<Scope>

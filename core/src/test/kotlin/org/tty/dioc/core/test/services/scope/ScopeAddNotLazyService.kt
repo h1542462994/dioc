@@ -1,9 +1,9 @@
 package org.tty.dioc.core.test.services.scope
 
 import org.tty.dioc.core.declare.Lifecycle
-import org.tty.dioc.core.declare.Service
+import org.tty.dioc.core.declare.Component
 
-@Service(lifecycle = Lifecycle.Scoped, lazy = false)
+@Component(lifecycle = Lifecycle.Scoped, lazy = false)
 class ScopeAddNotLazyService {
     private var value = 0
 

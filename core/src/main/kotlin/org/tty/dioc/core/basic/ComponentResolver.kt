@@ -1,7 +1,15 @@
 package org.tty.dioc.core.basic
 
-import org.tty.dioc.core.declare.ServiceDeclare
+import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.declare.InternalComponent
+import org.tty.dioc.core.internal.ComponentResolverImpl
 
+/**
+ * the resolver for component. the default implementation is [ComponentResolverImpl]
+ * @see ComponentResolverImpl
+ */
+@InternalComponent
 interface ComponentResolver {
-    fun <T> resolve(declare: ServiceDeclare): T
+    fun <T> resolve(declare: ComponentDeclare): T
+    val storage: ComponentStorage
 }

@@ -1,45 +1,46 @@
-package org.tty.dioc.core.util
+package org.tty.dioc.core.internal
 
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.declare.*
-import org.tty.dioc.core.declare.identifier.ServiceIdentifier
+import org.tty.dioc.core.identifier.ComponentIdentifier
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
-import org.tty.dioc.core.lifecycle.ServiceProxyFactory
-import org.tty.dioc.core.storage.CombinedServiceStorage
+import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
+import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.core.util.ServiceUtil
 import kotlin.reflect.jvm.javaConstructor
 
 /**
  * the entry for create or get the service
  */
-class ServiceEntry(
-    private val serviceDeclarations: ReadonlyServiceDeclares,
-    val storage: CombinedServiceStorage,
+class ComponentResolverImpl(
+    private val serviceDeclarations: ReadonlyComponentDeclares,
+    override val storage: CombinedComponentStorage,
     val scopeAbility: ScopeAbility
 ): ComponentResolver {
 
     // entry function for createService
     @Suppress("UNCHECKED_CAST")
-    override fun <T> resolve(declare: ServiceDeclare): T {
+    override fun <T> resolve(declare: ComponentDeclare): T {
         return resolve(declare, scopeAbility.currentScope()) as T
     }
 
     /**
      * the implementation of the creation of the service.
      */
-    private fun resolve(serviceDeclare: ServiceDeclare, scope: Scope?): Any  {
+    private fun resolve(componentDeclare: ComponentDeclare, scope: Scope?): Any  {
         // check.
-        serviceDeclarations.check(serviceDeclare)
+        serviceDeclarations.check(componentDeclare)
 
         // return the provided service if exists.
-        val s = storage.findService(ServiceIdentifier.ofDeclare(serviceDeclare, scope))
+        val s = storage.findService(ComponentIdentifier.ofDeclare(componentDeclare, scope))
         if (s != null) {
             return s
         }
 
         // check the creating of scoped service.
-        if (scope == null && serviceDeclare.lifecycle == Lifecycle.Scoped) {
+        if (scope == null && componentDeclare.lifecycle == Lifecycle.Scoped) {
             throw ServiceConstructException("you couldn't get a scoped service out a scope.")
         }
 
@@ -48,7 +49,7 @@ class ServiceEntry(
 
         try {
             // then create the stub
-            val stub = createStub(serviceDeclare, transaction, scope)
+            val stub = createStub(componentDeclare, transaction, scope)
             // to fill the service not full (ready to inject components.)
             while (!storage.isPartEmpty) {
                 // get the created service
@@ -57,17 +58,17 @@ class ServiceEntry(
                     it.fill(serviceDeclarations)
 //                    val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
                     if (it.propertyComponent.injectLazy) {
-                        val serviceProxy = ServiceProxyFactory(it.propertyServiceDeclare, this).createProxy()
+                        val serviceProxy = ComponentProxyFactoryImpl(it.propertyComponentDeclare, this).createProxy()
                         ServiceUtil.injectComponentToService(it, serviceProxy)
                     } else {
                         // get the service by declaration
-                        var service = storage.findService(ServiceIdentifier.ofDeclare(it.propertyServiceDeclare, scope))
+                        var service = storage.findService(ComponentIdentifier.ofDeclare(it.propertyComponentDeclare, scope))
                         if (service == null) {
-                            if (transaction.transientNotReady(it.propertyServiceDeclare)) {
+                            if (transaction.transientNotReady(it.propertyComponentDeclare)) {
 //                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
-                                throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyServiceDeclare.implementationType} -> ... -> ${it.propertyServiceDeclare.implementationType}")
+                                throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyComponentDeclare.implementationType} -> ... -> ${it.propertyComponentDeclare.implementationType}")
                             }
-                            service = createStub(it.propertyServiceDeclare, transaction, scope)
+                            service = createStub(it.propertyComponentDeclare, transaction, scope)
                         }
                         ServiceUtil.injectComponentToService(it, service)
                     }
@@ -86,13 +87,13 @@ class ServiceEntry(
      * create the stub service, means the service on constructor has been injected.
      */
     @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-    private fun createStub(declare: ServiceDeclare, transaction: CombinedServiceStorage.CreateTransaction, scope: Scope?): Any {
+    private fun createStub(declare: ComponentDeclare, transaction: CombinedComponentStorage.CreateTransaction, scope: Scope?): Any {
         // check.
         serviceDeclarations.check(declare)
 
         // get the constructor
         val constructor = declare.constructor
-        val serviceIdentifier = ServiceIdentifier.ofDeclare(declare, scope)
+        val componentIdentifier = ComponentIdentifier.ofDeclare(declare, scope)
 
         // add the not created to marking
         transaction.addEmpty(declare)
@@ -103,7 +104,7 @@ class ServiceEntry(
             val parameterDeclare = serviceDeclarations.singleDeclarationType(parameter.declareType)
             // if is lazyInject then inject the proxy object.
             if (parameter.injectLazy) {
-                ServiceProxyFactory(parameterDeclare, this).createProxy()
+                ComponentProxyFactoryImpl(parameterDeclare, this).createProxy()
             } else {
                 // the circle link check.
                 if (
@@ -112,7 +113,7 @@ class ServiceEntry(
                     throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.implementationType} -> ... -> ${parameterDeclare.implementationType}")
                 }
                 // if the service is in the fullStorage, then return it.
-                storage.findService(ServiceIdentifier.ofDeclare(parameterDeclare, scope)) ?:
+                storage.findService(ComponentIdentifier.ofDeclare(parameterDeclare, scope)) ?:
                 this.createStub(parameterDeclare, transaction, scope)
             }
 
@@ -122,13 +123,13 @@ class ServiceEntry(
         val injects = extractStubToInjectProperties(stub)
         if (injects.isEmpty()) {
             transaction.addFull(
-                serviceIdentifier,
+                componentIdentifier,
                 ServiceCreated(stub, declare)
             )
         } else {
             transaction.addPart(
-                serviceIdentifier,
-                ServiceCreating(stub, declare, ArrayList(injects))
+                componentIdentifier,
+                ComponentCreating(stub, declare, ArrayList(injects))
             )
         }
 
@@ -138,9 +139,9 @@ class ServiceEntry(
     /**
      * extract stub to property read to injected
      */
-    private fun extractStubToInjectProperties(value: Any): List<ServiceProperty> {
+    private fun extractStubToInjectProperties(value: Any): List<ComponentProperty> {
         val declare = serviceDeclarations.singleServiceType(value::class)
-        return declare.toServiceProperties(value, injectPlace = InjectPlace.InjectProperty)
+        return declare.toComponentProperties(value, injectPlace = InjectPlace.InjectProperty)
     }
 
 

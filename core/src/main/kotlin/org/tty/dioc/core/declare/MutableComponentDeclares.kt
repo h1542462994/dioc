@@ -5,9 +5,9 @@ import kotlin.reflect.KClass
 
 /**
  * mutable service declares
- * @see [ServiceDeclares]
+ * @see [ComponentDeclares]
  */
-interface MutableServiceDeclares: ReadonlyServiceDeclares, ServiceDeclareAware {
+interface MutableComponentDeclares: ReadonlyComponentDeclares, ComponentDeclareAware {
     data class CreateLazy(
         val declarationType: KClass<*>,
         val lifecycle: Lifecycle,
@@ -16,7 +16,7 @@ interface MutableServiceDeclares: ReadonlyServiceDeclares, ServiceDeclareAware {
 
     /**
      * the channel for create a lazy service
-     * @see Service
+     * @see Component
      */
     val createLazyChannel: Channel<CreateLazy>
 }

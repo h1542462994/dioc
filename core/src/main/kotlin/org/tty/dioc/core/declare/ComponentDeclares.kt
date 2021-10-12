@@ -4,22 +4,21 @@ package org.tty.dioc.core.declare
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.observable.channel.Channels
-import org.tty.dioc.observable.channel.contract.Channel
 import kotlin.reflect.KClass
 
 /**
- * a implementation of [MutableServiceDeclares] and [ReadonlyServiceDeclares]
+ * a implementation of [MutableComponentDeclares] and [ReadonlyComponentDeclares]
  */
-class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDeclares, ReadonlyServiceDeclares {
-    private val container = ArrayList<ServiceDeclare>()
+class ComponentDeclares(componentDeclares: List<ComponentDeclare>) : MutableComponentDeclares, ReadonlyComponentDeclares {
+    private val container = ArrayList<ComponentDeclare>()
     private var forceReplaceEnabled = false
-    override val createLazyChannel = Channels.create<MutableServiceDeclares.CreateLazy>()
+    override val createLazyChannel = Channels.create<MutableComponentDeclares.CreateLazy>()
 
     init {
-        container.addAll(serviceDeclares)
+        container.addAll(componentDeclares)
     }
 
-    override fun iterator(): Iterator<ServiceDeclare> {
+    override fun iterator(): Iterator<ComponentDeclare> {
         return container.iterator()
     }
 
@@ -61,27 +60,27 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
         addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Transient, true)
     }
 
-    override fun forceReplace(action: (ServiceDeclareAware) -> Unit) {
+    override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
         forceReplaceEnabled = true
         action.invoke(this)
         forceReplaceEnabled = false
     }
 
-    override fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ServiceDeclare? {
+    override fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ComponentDeclare? {
         return this.singleOrNull { it.declarationTypes.contains(declarationType) }
     }
 
     /**
-     * find in collection where [ServiceDeclare.declarationTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]
      */
-    override fun singleDeclarationType(declarationType: KClass<*>): ServiceDeclare {
+    override fun singleDeclarationType(declarationType: KClass<*>): ComponentDeclare {
         return this.single { it.declarationTypes.contains(declarationType) }
     }
 
     /**
-     * find in collection where [ServiceDeclare.implementationType] == [implementationType]
+     * find in collection where [ComponentDeclare.implementationType] == [implementationType]
      */
-    override fun singleServiceType(implementationType: KClass<*>): ServiceDeclare {
+    override fun singleServiceType(implementationType: KClass<*>): ComponentDeclare {
         return this.single { it.implementationType == implementationType }
     }
 
@@ -101,11 +100,11 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
 
         if (l == null || forceReplaceEnabled) {
             container.add(
-                ServiceDeclare(
+                ComponentDeclare(
                     implementationType = implementationType,
                     declarationTypes = listOf(declarationType),
                     lifecycle = lifecycle,
-                    isLazyService = lazy,
+                    isLazyComponent = lazy,
                     constructor = ServiceUtil.getInjectConstructor(implementationType),
                     components = ServiceUtil.getComponents(implementationType)
                 )
@@ -116,13 +115,13 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
     }
 
     /**
-     * to check the structure of the service on the current [serviceDeclare]
+     * to check the structure of the service on the current [componentDeclare]
      */
-    override fun check(serviceDeclare: ServiceDeclare) {
-        if (serviceDeclare.lifecycle == Lifecycle.Transient && !serviceDeclare.isLazyService) {
+    override fun check(componentDeclare: ComponentDeclare) {
+        if (componentDeclare.lifecycle == Lifecycle.Transient && !componentDeclare.isLazyComponent) {
             throw ServiceDeclarationException("the transient service must be a lazy service.")
         } else {
-            serviceDeclare.components.forEach {
+            componentDeclare.components.forEach {
                 val aDeclare = this.singleDeclarationTypeOrNull(it.declareType)
                 if (aDeclare != null && aDeclare.lifecycle == Lifecycle.Scoped && !it.injectLazy) {
                     throw ServiceDeclarationException("you must inject a scoped service by @Lazy")
@@ -133,7 +132,7 @@ class ServiceDeclares(serviceDeclares: List<ServiceDeclare>) : MutableServiceDec
 
     private fun onCreateLazy(declarationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
         createLazyChannel.emit(
-            MutableServiceDeclares.CreateLazy(declarationType, lifecycle, lazy)
+            MutableComponentDeclares.CreateLazy(declarationType, lifecycle, lazy)
         )
     }
 }
