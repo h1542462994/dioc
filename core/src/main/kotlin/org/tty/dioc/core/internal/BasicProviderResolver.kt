@@ -33,7 +33,7 @@ class BasicProviderResolver(
         require(configSchema.rule == ConfigRule.Declare) {
             "basicProviderResolver could only resolve the $configSchema which has the rule declare."
         }
-        val interfaceType = configSchema.interfaceType
+        val interfaceType = configSchema.type
         val providerTypes = configSchema.default
         val providers = providerTypes.map {
             createProvider(it)

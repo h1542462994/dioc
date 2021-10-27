@@ -27,6 +27,7 @@ inline fun <reified T: Any> dataSchema(name: String, default: T, configRule: Con
     return DataSchema(name, T::class, default, getRuleByTypeAndRule<T>(configRule))
 }
 
+@Suppress("UNCHECKED_CAST")
 inline infix fun <reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<T> {
     // length -> file.length
     var relevantPath = path
@@ -46,7 +47,7 @@ inline infix fun <reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<
         "the root rule could n't be not assigned."
     }
     var currentType = when(currentSlot) {
-        is DataSchema<*> -> currentSlot.dataType
+        is DataSchema<*> -> currentSlot.type
         else -> error("the root schema must be dataSchema")
     }
     for (visit in properties) {
@@ -62,5 +63,5 @@ inline infix fun <reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<
         currentType = p.returnTypeKotlin
     }
 
-    return PathSchema(relevantPath, currentSlot, currentRule)
+    return PathSchema(relevantPath, currentType as KClass<T>, currentSlot, currentRule)
 }

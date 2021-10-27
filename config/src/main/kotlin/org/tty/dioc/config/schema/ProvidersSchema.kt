@@ -7,11 +7,18 @@ import kotlin.reflect.KClass
  */
 class ProvidersSchema<T: Any>(
     override val name: String,
-    val interfaceType: KClass<T>,
+    override val type: KClass<T>,
     val default: List<KClass<out T>> = listOf(),
     override val rule: ConfigRule
 ): ConfigSchema {
+    override fun info(): String {
+        return "${type.simpleName} <--- ${default.map { it.simpleName }}"
+    }
+
+    override val tag: String
+        get() = "provider"
+
     override fun toString(): String {
-        return "provider[$name] ${interfaceType.simpleName} <--- ${default.map { it.simpleName }}"
+        return "[$name] $tag (${type.simpleName}) ${info()}"
     }
 }

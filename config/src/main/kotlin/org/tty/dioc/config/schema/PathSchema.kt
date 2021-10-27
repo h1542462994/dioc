@@ -1,5 +1,7 @@
 package org.tty.dioc.config.schema
 
+import kotlin.reflect.KClass
+
 /**
  * indirect visitor for schema.
  */
@@ -9,10 +11,12 @@ class PathSchema<T: Any>(
      * path expression, for example (user.)name.length
      */
     val path: String,
+    override val type: KClass<T>,
     /**
      * referent [ConfigSchema]
      */
     val referent: ConfigSchema,
+
     override val rule: ConfigRule
 ): ConfigSchema {
     init {
@@ -27,4 +31,14 @@ class PathSchema<T: Any>(
     override val name: String
         get() = referent.name + "." + path
 
+    override val tag: String
+        get() = "path"
+
+    override fun info(): String {
+        return "${referent.name} . $path"
+    }
+
+    override fun toString(): String {
+        return "[$name] $tag (${type.simpleName}) ${info()}"
+    }
 }

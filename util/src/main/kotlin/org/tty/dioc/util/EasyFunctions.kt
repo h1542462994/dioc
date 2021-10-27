@@ -11,3 +11,7 @@ fun <T, R> T?.optional(mapper: T.() -> R): R? {
         mapper(this)
     }
 }
+
+fun withLeft(str: Any?, length: Int): String {
+    return String.format("%-${length}s", str.toString())
+}
