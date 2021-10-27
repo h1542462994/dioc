@@ -1,15 +1,15 @@
-package org.tty.dioc.core.identifier
+package org.tty.dioc.core.key
 
-import org.tty.dioc.core.declare.Lifecycle
+import org.tty.dioc.annotation.Lifecycle
 import kotlin.reflect.KClass
 
 /**
  * the identifier of the service which lifeCycle is [Lifecycle.Singleton]
  * @see [Lifecycle]
  */
-data class SingletonIdentifier(
+data class SingletonKey(
     /**
      * the type of the service (runtime)
      */
     val serviceType: KClass<*>
-): ComponentIdentifier
+): ComponentKey

@@ -1,4 +1,4 @@
-package org.tty.dioc.core.declare
+package org.tty.dioc.annotation
 
 /**
  * to declare a method could only be called once.

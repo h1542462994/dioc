@@ -1,5 +1,6 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.annotation.InjectPlace
 import kotlin.reflect.KClass
 
 /**

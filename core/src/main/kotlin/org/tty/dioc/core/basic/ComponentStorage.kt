@@ -1,9 +1,9 @@
 package org.tty.dioc.core.basic
 
-import org.tty.dioc.core.declare.Component
-import org.tty.dioc.core.declare.InternalComponent
+import org.tty.dioc.annotation.Component
+import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.core.declare.ComponentCreating
-import org.tty.dioc.core.identifier.ComponentIdentifier
+import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.core.lifecycle.FinishAware
 import org.tty.dioc.core.storage.CombinedComponentStorage
 
@@ -20,13 +20,13 @@ interface ComponentStorage : FinishAware {
     /**
      * the first service not injected.
      */
-    val partFirst: MutableMap.MutableEntry<ComponentIdentifier, ComponentCreating>
+    val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentCreating>
 
     /**
-     * find the service by [componentIdentifier] in [CombinedComponentStorage]
+     * find the service by [componentKey] in [CombinedComponentStorage]
      */
-    fun findService(componentIdentifier: ComponentIdentifier): Any?
-    fun remove(componentIdentifier: ComponentIdentifier)
+    fun findService(componentKey: ComponentKey): Any?
+    fun remove(componentKey: ComponentKey)
 
     /**
      * to begin a transaction

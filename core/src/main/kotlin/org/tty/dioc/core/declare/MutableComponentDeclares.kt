@@ -1,5 +1,6 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.observable.channel.contract.Channel
 import kotlin.reflect.KClass
 

@@ -1,8 +1,10 @@
 package org.tty.dioc.core.internal
 
+import org.tty.dioc.annotation.InjectPlace
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.declare.*
-import org.tty.dioc.core.identifier.ComponentIdentifier
+import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
@@ -34,7 +36,7 @@ class ComponentResolverImpl(
         serviceDeclarations.check(componentDeclare)
 
         // return the provided service if exists.
-        val s = storage.findService(ComponentIdentifier.ofDeclare(componentDeclare, scope))
+        val s = storage.findService(ComponentKey.ofDeclare(componentDeclare, scope))
         if (s != null) {
             return s
         }
@@ -62,7 +64,7 @@ class ComponentResolverImpl(
                         ServiceUtil.injectComponentToService(it, serviceProxy)
                     } else {
                         // get the service by declaration
-                        var service = storage.findService(ComponentIdentifier.ofDeclare(it.propertyComponentDeclare, scope))
+                        var service = storage.findService(ComponentKey.ofDeclare(it.propertyComponentDeclare, scope))
                         if (service == null) {
                             if (transaction.transientNotReady(it.propertyComponentDeclare)) {
 //                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
@@ -93,7 +95,7 @@ class ComponentResolverImpl(
 
         // get the constructor
         val constructor = declare.constructor
-        val componentIdentifier = ComponentIdentifier.ofDeclare(declare, scope)
+        val componentKey = ComponentKey.ofDeclare(declare, scope)
 
         // add the not created to marking
         transaction.addEmpty(declare)
@@ -113,7 +115,7 @@ class ComponentResolverImpl(
                     throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.implementationType} -> ... -> ${parameterDeclare.implementationType}")
                 }
                 // if the service is in the fullStorage, then return it.
-                storage.findService(ComponentIdentifier.ofDeclare(parameterDeclare, scope)) ?:
+                storage.findService(ComponentKey.ofDeclare(parameterDeclare, scope)) ?:
                 this.createStub(parameterDeclare, transaction, scope)
             }
 
@@ -123,12 +125,12 @@ class ComponentResolverImpl(
         val injects = extractStubToInjectProperties(stub)
         if (injects.isEmpty()) {
             transaction.addFull(
-                componentIdentifier,
+                componentKey,
                 ServiceCreated(stub, declare)
             )
         } else {
             transaction.addPart(
-                componentIdentifier,
+                componentKey,
                 ComponentCreating(stub, declare, ArrayList(injects))
             )
         }

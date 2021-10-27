@@ -1,6 +1,6 @@
 package org.tty.dioc.core.test.services;
 
-import org.tty.dioc.core.declare.Component;
+import org.tty.dioc.annotation.Component;
 
 /**
  * the implementation for the [TestJava]

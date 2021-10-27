@@ -1,6 +1,6 @@
 package org.tty.dioc.core.test.services.circle
 
-import org.tty.dioc.core.declare.Component
+import org.tty.dioc.annotation.Component
 
 /**
  * helloService to print singleton by constructor inject.

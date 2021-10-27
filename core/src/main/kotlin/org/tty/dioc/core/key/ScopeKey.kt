@@ -1,6 +1,6 @@
-package org.tty.dioc.core.identifier
+package org.tty.dioc.core.key
 
-import org.tty.dioc.core.declare.Lifecycle
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.lifecycle.Scope
 import kotlin.reflect.KClass
 
@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
  * the identifier of the service which lifecycle is [Lifecycle.Scoped]
  * @see [Lifecycle]
  */
-data class ScopeIdentifier(
+data class ScopeKey(
     /**
      * the type of service (runtime)
      */
@@ -17,4 +17,4 @@ data class ScopeIdentifier(
      * the scope
      */
     val scope: Scope
-): ComponentIdentifier
+): ComponentKey

@@ -1,4 +1,4 @@
-package org.tty.dioc.core.declare
+package org.tty.dioc.annotation
 
 /**
  * to mark the interface is a basic foundation for applicationContext.

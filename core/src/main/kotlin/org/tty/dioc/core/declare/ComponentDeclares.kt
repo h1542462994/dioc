@@ -1,6 +1,7 @@
 
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.observable.channel.Channels

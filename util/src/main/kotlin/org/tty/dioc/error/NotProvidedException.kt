@@ -1,8 +1,11 @@
-package org.tty.dioc.transaction
+package org.tty.dioc.error
 
-class TransactionClosedException: Exception {
-    constructor() : super("transaction is closed.")
-    constructor(message: String?) : super(message)
+/**
+ * the value is not provided
+ */
+class NotProvidedException: Exception {
+    constructor(): super("not provided")
+    constructor(message: String): super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)
     constructor(cause: Throwable?) : super(cause)
     constructor(message: String?, cause: Throwable?, enableSuppression: Boolean, writableStackTrace: Boolean) : super(

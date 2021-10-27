@@ -1,4 +1,4 @@
-package org.tty.dioc.core.declare
+package org.tty.dioc.annotation
 
 /**
  * to declare the field in service should be injected

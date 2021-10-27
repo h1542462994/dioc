@@ -1,5 +1,7 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.annotation.InjectPlace
+
 /**
  * the property of the service
  * the [ComponentProperty] is the combination of the [ComponentDeclare] and the [PropertyComponent]

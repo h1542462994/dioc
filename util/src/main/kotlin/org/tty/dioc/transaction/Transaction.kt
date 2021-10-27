@@ -1,6 +1,6 @@
 package org.tty.dioc.transaction
 
-import org.tty.dioc.transaction.TransactionClosedException
+import org.tty.dioc.error.TransactionClosedException
 import kotlin.jvm.Throws
 
 interface Transaction {

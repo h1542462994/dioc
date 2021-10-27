@@ -4,7 +4,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
-import org.tty.dioc.core.declare.Lazy
+import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.core.getService
 import org.tty.dioc.core.local.ComponentContext

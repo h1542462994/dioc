@@ -3,6 +3,8 @@ package org.tty.dioc.util.test
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.tty.dioc.reflect.KClassScanner
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 class KClassScannerTest {
 
@@ -25,4 +27,6 @@ class KClassScannerTest {
         }
         assertTrue(classes.isNotEmpty())
     }
+
+
 }

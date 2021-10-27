@@ -1,5 +1,8 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.annotation.Component
+import org.tty.dioc.annotation.InjectPlace
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.lifecycle.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope

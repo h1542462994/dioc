@@ -2,7 +2,7 @@ package org.tty.dioc.core.lifecycle
 
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.basic.ComponentProxyFactory
-import org.tty.dioc.core.declare.Lazy
+import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.reflect.toClasses

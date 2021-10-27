@@ -1,12 +1,12 @@
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.Lifecycle
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.declare.ReadonlyComponentDeclares
 import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
-import org.tty.dioc.core.identifier.ComponentIdentifier
+import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -40,7 +40,7 @@ open class DefaultApplicationContext(
     /**
      * root function to get the service by [declareType]
      */
-    override fun <T : Any> getComponent(declareType: KClass<T>): T {
+    override fun <T: Any> getComponent(declareType: KClass<T>): T {
         val serviceDeclare = declarations.singleDeclarationType(declareType)
         return entry.resolve(serviceDeclare)
     }
@@ -83,7 +83,7 @@ open class DefaultApplicationContext(
         declarations.forEach {
             if (it.lifecycle == Lifecycle.Scoped) {
                 storage.remove(
-                    ComponentIdentifier.ofDeclare(
+                    ComponentKey.ofDeclare(
                         it,
                         scope
                     )

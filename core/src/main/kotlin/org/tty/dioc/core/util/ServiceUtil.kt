@@ -1,5 +1,6 @@
 package org.tty.dioc.core.util
 
+import org.tty.dioc.annotation.*
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.error.ServiceConstructException
 import org.tty.dioc.reflect.*

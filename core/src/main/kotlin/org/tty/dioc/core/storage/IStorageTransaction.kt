@@ -3,8 +3,8 @@ package org.tty.dioc.core.storage
 import org.tty.dioc.core.declare.ServiceCreated
 import org.tty.dioc.core.declare.ComponentCreating
 import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.core.identifier.ComponentIdentifier
-import org.tty.dioc.transaction.TransactionClosedException
+import org.tty.dioc.core.key.ComponentKey
+import org.tty.dioc.error.TransactionClosedException
 import org.tty.dioc.transaction.Transaction
 import kotlin.jvm.Throws
 
@@ -13,13 +13,13 @@ sealed interface IStorageTransaction: Transaction {
      * add the [serviceCreated].
      */
     @Throws(TransactionClosedException::class)
-    fun addFull(componentIdentifier: ComponentIdentifier, serviceCreated: ServiceCreated)
+    fun addFull(componentKey: ComponentKey, serviceCreated: ServiceCreated)
 
     /**
      * add the [serviceCreating].
      */
     @Throws(TransactionClosedException::class)
-    fun addPart(componentIdentifier: ComponentIdentifier, serviceCreating: ComponentCreating)
+    fun addPart(componentKey: ComponentKey, serviceCreating: ComponentCreating)
 
     /**
      * add the marking placeholder.
@@ -31,7 +31,7 @@ sealed interface IStorageTransaction: Transaction {
      * move from [ComponentCreating] to [ServiceCreated]
      */
     @Throws(TransactionClosedException::class)
-    fun moveToFull(componentIdentifier: ComponentIdentifier)
+    fun moveToFull(componentKey: ComponentKey)
 
     /**
      * whether the transient component is ready.

@@ -1,8 +1,8 @@
 package org.tty.dioc.core.test.services
 
-import org.tty.dioc.core.declare.Inject
-import org.tty.dioc.core.declare.Lazy
-import org.tty.dioc.core.declare.Component
+import org.tty.dioc.annotation.Inject
+import org.tty.dioc.annotation.Lazy
+import org.tty.dioc.annotation.Component
 
 @Component
 class LazyInjectHelloServiceImpl: LazyInjectHelloService {

@@ -1,5 +1,6 @@
 package org.tty.dioc.core
 
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
@@ -7,7 +8,7 @@ import org.tty.dioc.core.lifecycle.StackScopeTrace
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
-import org.tty.dioc.core.identifier.ComponentIdentifier
+import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -137,7 +138,7 @@ open class DefaultDynamicApplicationContext(
         declarations.forEach {
             if (it.lifecycle == Lifecycle.Scoped) {
                 storage.remove(
-                    ComponentIdentifier.ofDeclare(
+                    ComponentKey.ofDeclare(
                         it,
                         scope
                     )

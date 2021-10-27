@@ -1,7 +1,7 @@
 package org.tty.dioc.core.lifecycle
 
-import org.tty.dioc.core.declare.Once
-import org.tty.dioc.core.declare.Component
+import org.tty.dioc.annotation.Once
+import org.tty.dioc.annotation.Component
 
 /**
  * the lifecycle function [onFinish]

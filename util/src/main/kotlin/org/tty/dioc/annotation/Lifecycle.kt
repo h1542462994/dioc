@@ -1,4 +1,4 @@
-package org.tty.dioc.core.declare
+package org.tty.dioc.annotation
 
 /**
  * the lifecycle of the service.
