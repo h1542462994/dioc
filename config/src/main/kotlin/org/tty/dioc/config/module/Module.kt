@@ -1,5 +1,5 @@
 package org.tty.dioc.config.module
 
-interface Module {
-    fun initialize()
-}
+import org.tty.dioc.base.Init
+
+interface Module: Init

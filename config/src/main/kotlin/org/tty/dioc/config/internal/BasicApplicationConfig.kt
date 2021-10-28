@@ -1,5 +1,6 @@
 package org.tty.dioc.config.internal
 
+import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.schema.*
 import org.tty.dioc.error.notProvided
@@ -11,7 +12,8 @@ import kotlin.reflect.KClass
  * basic application config
  * it is readonly
  */
-internal class BasicApplicationConfig(
+@InternalComponent
+class BasicApplicationConfig(
     private val configSchemas: ConfigSchemas
 ): ApplicationConfig {
     @Suppress("UNCHECKED_CAST")

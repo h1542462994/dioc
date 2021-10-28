@@ -1,8 +1,12 @@
 package org.tty.dioc.config.schema
 
+import org.tty.dioc.annotation.InternalComponent
+import kotlin.reflect.KClass
+
 /**
  * the visitor for [ConfigSchema]
  */
+@InternalComponent
 class ConfigSchemas {
     /**
      * the store saving [ConfigSchema]
@@ -29,6 +33,19 @@ class ConfigSchemas {
         } else {
             value as T
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T: Any> getProvider(type: KClass<T>): ProvidersSchema<T> {
+        val providerSchemas = schemaStore.values.filterIsInstance<ProvidersSchema<*>>()
+            .filter { it.interfaceType == type }
+        require(providerSchemas.isNotEmpty()) {
+            "providerSchema is not provided"
+        }
+        require(providerSchemas.size == 1) {
+            "provideSchemas has more than one declaration"
+        }
+        return providerSchemas[0] as ProvidersSchema<T>
     }
 
 }

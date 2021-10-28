@@ -1,6 +1,7 @@
 package org.tty.dioc.config
 
 import org.tty.dioc.annotation.InternalComponent
+import org.tty.dioc.annotation.Once
 import org.tty.dioc.config.bean.ConfigMode
 import org.tty.dioc.config.internal.BasicApplicationConfig
 import org.tty.dioc.config.module.Module
@@ -21,7 +22,8 @@ internal val configModeFileSchema = PathSchema<Boolean>("$configModeKey.file", c
 class ConfigModule(
     private val configSchemas: ConfigSchemas
 ): Module {
-    override fun initialize() {
+    @Once
+    override fun init() {
         configSchemas.config(configSchema)
         configSchemas.config(configModeSchema)
         configSchemas.config(configModeAnnotationSchema)
