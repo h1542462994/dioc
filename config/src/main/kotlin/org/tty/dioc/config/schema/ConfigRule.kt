@@ -5,6 +5,11 @@ package org.tty.dioc.config.schema
  */
 enum class ConfigRule {
     /**
+     * not assigned config rule.
+     */
+    NoAssigned,
+
+    /**
      * config can only write on declare.
      */
     Declare,

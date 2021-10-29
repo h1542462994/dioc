@@ -4,17 +4,17 @@ import org.tty.dioc.annotation.InternalComponent
 import kotlin.reflect.KClass
 
 /**
- * the visitor for [ConfigSchema]
+ * storage for schema
  */
 @InternalComponent
 class ConfigSchemas {
     /**
-     * the store saving [ConfigSchema]
+     * storage for [ConfigSchema]
      */
     private val schemaStore = HashMap<String, ConfigSchema>()
 
     /**
-     * config the [ConfigSchema]
+     * config the [ConfigSchema] and return itself
      */
     fun <T: ConfigSchema> config(value: T): T {
         schemaStore[value.name] = value
@@ -35,8 +35,11 @@ class ConfigSchemas {
         }
     }
 
+    /**
+     * get the defaultProvider from [ConfigSchema]
+     */
     @Suppress("UNCHECKED_CAST")
-    fun <T: Any> getProvider(type: KClass<T>): ProvidersSchema<T> {
+    fun <T: Any> getDefaultProvider(type: KClass<T>): ProvidersSchema<T> {
         val providerSchemas = schemaStore.values.filterIsInstance<ProvidersSchema<*>>()
             .filter { it.interfaceType == type }
         require(providerSchemas.isNotEmpty()) {

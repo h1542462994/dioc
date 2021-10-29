@@ -4,7 +4,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
-import org.tty.dioc.core.getService
+import org.tty.dioc.core.getComponent
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.test.services.scope.ScopedAddService
@@ -83,14 +83,14 @@ class LocalApplicationContextScopeTest {
     @Test
     fun testWithScopeEmbed() {
         context.withScope {
-            val addService = context.getService<ScopedAddService>()
+            val addService = context.getComponent<ScopedAddService>()
             addService.add()
             context.withScope {
-                val addService1 = context.getService<ScopedAddService>()
+                val addService1 = context.getComponent<ScopedAddService>()
                 assertNotSame(addService, addService1)
                 assertEquals(0, addService1.current())
             }
-            assertEquals(1, context.getService<ScopedAddService>().current())
+            assertEquals(1, context.getComponent<ScopedAddService>().current())
         }
     }
 

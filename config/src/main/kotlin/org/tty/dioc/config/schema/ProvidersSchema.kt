@@ -9,9 +9,9 @@ class ProvidersSchema<T: Any>(
     override val name: String,
     val interfaceType: KClass<T>,
     val default: List<KClass<out T>> = listOf(),
-    override val rule: ConfigRule = ConfigRule.Declare
+    override val rule: ConfigRule
 ): ConfigSchema {
     override fun toString(): String {
-        return "[$name] ${interfaceType.simpleName} <--- [${default.map { it.simpleName }}]"
+        return "provider[$name] ${interfaceType.simpleName} <--- ${default.map { it.simpleName }}"
     }
 }

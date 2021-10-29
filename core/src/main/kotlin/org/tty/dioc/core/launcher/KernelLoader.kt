@@ -22,8 +22,8 @@ class KernelLoader {
     private inline fun <reified T : Any> addProvider() {
         val configSchemas = componentStorage.configSchemas
         val providerResolver = componentStorage.providerResolver
-        val providerSchema: ProvidersSchema<T> = configSchemas.getProvider(T::class)
-        componentStorage.addComponent(providerSchema.name, providerResolver.resolveProvider(providerSchema.name))
+        val providerSchema: ProvidersSchema<T> = configSchemas.getDefaultProvider(T::class)
+        componentStorage.addComponent(providerSchema.name, T::class, providerResolver.resolveProvider(providerSchema.name))
     }
 
     private fun addConfigSchemas() {
@@ -52,7 +52,7 @@ class KernelLoader {
             val componentStorage = this@KernelLoader.componentStorage
 
             override fun <T : Any> getComponent(declareType: KClass<T>): T {
-                TODO("Not yet implemented")
+                return componentStorage.getComponent(declareType)
             }
 
             override fun scopeAbility(): ScopeAbility {

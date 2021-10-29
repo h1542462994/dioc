@@ -8,15 +8,13 @@ import org.tty.dioc.config.module.Module
 import org.tty.dioc.config.schema.*
 
 internal const val configKey = "org.tty.dioc.config.provider"
-internal val configSchema = ProvidersSchema(configKey, ApplicationConfig::class,
-    default = listOf(BasicApplicationConfig::class),
-    rule = ConfigRule.Declare)
 internal const val configModeKey = "org.tty.dioc.config.mode"
-internal val configModeSchema = DataSchema(configModeKey, ConfigMode::class, ConfigMode(annotation = true, file = true),
-    rule = ConfigRule.CodeReadOnly
-)
-internal val configModeAnnotationSchema = PathSchema<Boolean>("$configModeKey.annotation", configModeKey)
-internal val configModeFileSchema = PathSchema<Boolean>("$configModeKey.file", configModeKey)
+
+internal val configSchema = providerSchema<ApplicationConfig>(configKey, listOf(BasicApplicationConfig::class))
+internal val configModeSchema = dataSchema(configModeKey, ConfigMode())
+internal val configModeAnnotationSchema: PathSchema<Boolean> = configModeSchema pathTo "annotation"
+internal val configModeFileSchema: PathSchema<Boolean> = configModeSchema pathTo "file"
+internal val configModeTestLengthSchema: PathSchema<String> = configModeSchema pathTo "test.length"
 
 @InternalComponent
 class ConfigModule(
@@ -28,5 +26,6 @@ class ConfigModule(
         configSchemas.config(configModeSchema)
         configSchemas.config(configModeAnnotationSchema)
         configSchemas.config(configModeFileSchema)
+        configSchemas.config(configModeTestLengthSchema)
     }
 }

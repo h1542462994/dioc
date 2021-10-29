@@ -12,23 +12,23 @@ class BasicComponentStorageImpl : BasicComponentStorage {
     private val nameTypeRef = HashMap<KClass<*>, String>()
 
     override fun <T : Any> addComponent(name: String, component: T) {
+        addComponent<T>(name, component::class, component = component)
+    }
+
+    override fun <T : Any> addComponent(name: String, interfaceType: KClass<out T>, component: T) {
         require(!store.containsKey(name)) {
-           "component $name is already added."
+            "component $name is already added."
         }
-        require(component::class.hasAnnotation<InternalComponent>()) {
-            "you could only add InternalComponent to Basic ComponentStorage"
+        require(interfaceType.hasAnnotation<InternalComponent>()) {
+            "you could only add InternalComponent to BasicComponentStorage"
         }
-        // init the component with Init.
+        // init the component with Init
         if (component is Init) {
             // initialize the component.
             component.init()
         }
         store[name] = component
-        nameTypeRef[component::class] = name
-    }
-
-    override fun <T : Any> addComponent(name: String, interfaceType: KClass<T>, component: T) {
-        TODO("Not yet implemented")
+        nameTypeRef[interfaceType] = name
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -39,10 +39,10 @@ class BasicComponentStorageImpl : BasicComponentStorage {
         return store[name] as T
     }
 
-    override fun <T : Any> getComponent(type: KClass<T>): T {
-        require (nameTypeRef.containsKey(type)) {
-            "component $type is not found."
+    override fun <T : Any> getComponent(interfaceType: KClass<T>): T {
+        require (nameTypeRef.containsKey(interfaceType)) {
+            "component $interfaceType is not found."
         }
-        return getComponent(nameTypeRef.getValue(type))
+        return getComponent(nameTypeRef.getValue(interfaceType))
     }
 }

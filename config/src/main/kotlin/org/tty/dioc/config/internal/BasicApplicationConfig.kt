@@ -52,8 +52,8 @@ class BasicApplicationConfig(
                 configSchema.default as T
             }
             is PathSchema<*> -> {
-                val chain = configSchema.name.substring(configSchema.ref.length + 1)
-                (get(configSchema.ref) as Any).getWithPropertyChain(chain) as T
+                val chain = configSchema.name.substring(configSchema.referent.name.length + 1)
+                (get(configSchema.referent) as Any).getWithPropertyChain(chain) as T
             }
             else -> unSupported("unreachable code.")
         }

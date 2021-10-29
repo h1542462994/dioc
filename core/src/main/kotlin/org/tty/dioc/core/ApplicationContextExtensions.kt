@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
  * to get the service of [T]
  */
 @OptIn(ExperimentalStdlibApi::class)
-inline fun <reified T : Any> ComponentAware.getService(): T {
+inline fun <reified T : Any> ComponentAware.getComponent(): T {
     val type: KClass<T> = T::class
     return this.getComponent(type)
 }

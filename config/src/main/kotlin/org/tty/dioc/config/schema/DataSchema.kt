@@ -6,5 +6,5 @@ class DataSchema<T: Any> (
     override val name: String,
     val dataType: KClass<T>,
     val default: T,
-    override val rule: ConfigRule = ConfigRule.Declare
+    override val rule: ConfigRule
 ): ConfigSchema
