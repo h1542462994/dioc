@@ -1,6 +1,7 @@
 package org.tty.dioc.config.schema
 
 import org.tty.dioc.annotation.InternalComponent
+import org.tty.dioc.util.formatTable
 import org.tty.dioc.util.withLeft
 import kotlin.reflect.KClass
 
@@ -53,35 +54,8 @@ class ConfigSchemas {
     }
 
     override fun toString(): String {
-        val space = 5
-
-        val nameLength = schemaStore.values.maxOf { it.name.length } + space
-        val tagLength = schemaStore.values.maxOf { it.tag.length } + space
-        val typeLength = schemaStore.values.maxOf { it.type.qualifiedName!!.length } + space
-        val configRuleLength = ConfigRule.values().maxOf { it.name.length } + space
-        val infoLength = schemaStore.values.maxOf { it.info().length } + space
-
-        fun generateTitle(): String {
-            return withLeft("", space) +
-                    withLeft("name", nameLength) +
-                    withLeft("tag", tagLength) +
-                    withLeft("type", typeLength) +
-                    withLeft("rule", configRuleLength) +
-                    withLeft("info", infoLength)
-        }
-
-        fun generateLine(configSchema: ConfigSchema): String {
-            return withLeft("", space) +
-                    withLeft(configSchema.name, nameLength) +
-                    withLeft(configSchema.tag, tagLength) +
-                    withLeft(configSchema.type.qualifiedName, typeLength) +
-                    withLeft(configSchema.rule.name, configRuleLength) +
-                    withLeft(configSchema.info(), infoLength)
-        }
-
-        return "configSchemas [\n" +
-                generateTitle() + "\n" +
-                schemaStore.values.sortedBy { it.name }.joinToString("\n") { generateLine(it) } +
-                "\n]"
+        return formatTable("${ConfigSchemas::class.simpleName}", schemaStore.values, title = listOf("name", "tag", "type", "rule", "info")) {
+            listOf(it.name, it.tag, it.type.qualifiedName, it.rule, it.info())
+        }.toString()
     }
 }

@@ -3,10 +3,10 @@ package org.tty.dioc.core.internal
 import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.base.Init
 import org.tty.dioc.core.basic.BasicComponentStorage
+import org.tty.dioc.util.formatTable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
 
-@InternalComponent
 class BasicComponentStorageImpl : BasicComponentStorage {
     private val store = HashMap<String, Any>()
     private val nameTypeRef = HashMap<KClass<*>, String>()
@@ -44,5 +44,20 @@ class BasicComponentStorageImpl : BasicComponentStorage {
             "component $interfaceType is not found."
         }
         return getComponent(nameTypeRef.getValue(interfaceType))
+    }
+
+    override fun toString(): String {
+        val realList = nameTypeRef.map {
+            listOf(it.value, it.key.qualifiedName,
+                if (store[it.value] === this) {
+                    "<self>::"
+                } else {
+                    store[it.value]
+                }
+            )
+        }.sortedBy { it[0].toString() }
+        return formatTable("${BasicComponentStorageImpl::class.simpleName}", realList, title = listOf("name", "type", "content")) {
+            it
+        }.toString()
     }
 }

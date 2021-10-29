@@ -6,6 +6,8 @@ import org.tty.dioc.config.bean.ConfigMode
 import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.useAnnotation
 import org.tty.dioc.config.useFile
+import org.tty.dioc.core.basic.BasicComponentStorage
+import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.getComponent
 import org.tty.dioc.core.launcher.startKernel
 
@@ -19,6 +21,8 @@ class LauncherTest {
         println(applicationConfig.get<ConfigMode>("org.tty.dioc.config.mode").test)
         println(applicationContext)
         val configSchemas = applicationContext.getComponent<ConfigSchemas>()
+        val componentStorage = applicationContext.getComponent<BasicComponentStorage>()
         println(configSchemas)
+        println(componentStorage)
     }
 }

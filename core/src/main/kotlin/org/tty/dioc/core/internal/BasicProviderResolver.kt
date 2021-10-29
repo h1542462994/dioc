@@ -1,7 +1,5 @@
 package org.tty.dioc.core.internal
 
-import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.base.DisplayString
 import org.tty.dioc.config.schema.ConfigRule
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.basic.BasicComponentStorage
@@ -14,14 +12,11 @@ import org.tty.dioc.reflect.toClasses
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * create a combined provider based on [ProvidersSchema]
  * the resolver will only be valid on [ConfigRule.Declare]
  */
-@InternalComponent
 class BasicProviderResolver(
     private val componentStorage: BasicComponentStorage
 ): ProviderResolver {
@@ -69,7 +64,11 @@ class BasicProviderResolver(
             var assigned = false
             providers.forEach {
                 try {
-                    resultValue = method.invoke(it, *args)
+                    resultValue = if (args == null) {
+                        method.invoke(it)
+                    } else {
+                        method.invoke(it, *args)
+                    }
                     assigned = true
                 } catch (e: InvocationTargetException) {
                     if (e.cause is NotProvidedException) {
