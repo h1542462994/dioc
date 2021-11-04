@@ -1,6 +1,6 @@
 package org.tty.dioc.core.launcher
 
-import org.tty.dioc.base.DebugOnly
+import org.tty.dioc.annotation.DebugOnly
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.local.ComponentContext
 

@@ -1,6 +1,6 @@
 package org.tty.dioc.config.bean
 
-import org.tty.dioc.base.DebugOnly
+import org.tty.dioc.annotation.DebugOnly
 import org.tty.dioc.config.schema.ConfigRule
 import org.tty.dioc.config.schema.ConfigRuleApi
 
@@ -10,12 +10,12 @@ import org.tty.dioc.config.schema.ConfigRuleApi
 @ConfigRuleApi(configRule = ConfigRule.CodeReadOnly)
 data class ConfigMode(
     /**
-     * whether open annotation support, by default, it is **true**.
+     * whether open annotation support, by default **open**.
      */
     val annotation: Boolean = true,
 
     /**
-     * whether open file support
+     * whether open file support, by default **open**.
      */
     val file: Boolean = true,
 

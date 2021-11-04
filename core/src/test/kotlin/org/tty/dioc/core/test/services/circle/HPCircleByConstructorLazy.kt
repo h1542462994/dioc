@@ -2,7 +2,7 @@ package org.tty.dioc.core.test.services.circle
 
 import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.annotation.Component
-import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.test.services.Logger
 
 interface H2 {

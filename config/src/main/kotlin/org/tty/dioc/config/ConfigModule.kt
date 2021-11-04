@@ -21,7 +21,7 @@ class ConfigModule(
     private val configSchemas: ConfigSchemas
 ): Module {
     @Once
-    override fun init() {
+    override fun onInit() {
         configSchemas.config(configSchema)
         configSchemas.config(configModeSchema)
         configSchemas.config(configModeAnnotationSchema)

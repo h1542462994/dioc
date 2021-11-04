@@ -2,8 +2,6 @@ package org.tty.dioc.annotation
 
 /**
  * inject type of the property
- * @see [ComponentDeclare]
- * @see [ComponentProperty]
  */
 enum class InjectPlace {
     /**

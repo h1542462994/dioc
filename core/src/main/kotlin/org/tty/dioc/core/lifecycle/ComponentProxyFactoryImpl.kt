@@ -4,7 +4,7 @@ import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.basic.ComponentProxyFactory
 import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.reflect.toClasses
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Proxy

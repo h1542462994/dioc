@@ -5,18 +5,9 @@ import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.lifecycle.Scope
 import kotlin.reflect.KClass
 
-/**
- * the identifier of the service which lifecycle is [Lifecycle.Scoped]
- * @see [Lifecycle]
- */
 @Component(lifecycle = Lifecycle.Scoped)
-data class ScopeKey(
-    /**
-     * the type of service (runtime)
-     */
+data class NamedScopeKey(
     override val indexType: KClass<*>,
-    /**
-     * the scope
-     */
+    override val name: String,
     override val scope: Scope
-): TypedComponentKey, ScopedComponentKey
+): NamedComponentKey, TypedComponentKey, ScopedComponentKey

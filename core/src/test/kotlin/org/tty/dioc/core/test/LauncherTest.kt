@@ -21,7 +21,7 @@ class LauncherTest {
         println(applicationConfig.get<ConfigMode>("org.tty.dioc.config.mode").test)
         println(applicationContext)
         val configSchemas = applicationContext.getComponent<ConfigSchemas>()
-        val componentStorage = applicationContext.getComponent<BasicComponentStorage>()
+        val componentStorage = applicationContext.getComponent<ComponentStorage>()
         println(configSchemas)
         println(componentStorage)
     }

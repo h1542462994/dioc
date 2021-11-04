@@ -5,8 +5,8 @@ pluginManagement {
     }
 }
 
-include ':core'
 include ':util'
+include ':core'
 include ':config'
 
 rootProject.name = "dioc"

@@ -1,5 +1,9 @@
 package org.tty.dioc.config.module
 
-import org.tty.dioc.base.Init
+import org.tty.dioc.base.InitializeAware
 
-interface Module: Init
+/**
+ * module
+ * @sample [org.tty.dioc.config.ConfigModule]
+ */
+interface Module: InitializeAware

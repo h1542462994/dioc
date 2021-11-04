@@ -6,7 +6,10 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * property delegate for [ConfigSchema]
+ * property delegate for [ConfigSchema].
+ * @see [org.tty.dioc.config.schema.delegateForSchema]
+ *
+ * @sample [org.tty.dioc.config.samples.JEIConfigSample.useDelegateForSchema]
  */
 internal class ApplicationConfigDelegate<T: Any>(
     private val configSchema: ConfigSchema

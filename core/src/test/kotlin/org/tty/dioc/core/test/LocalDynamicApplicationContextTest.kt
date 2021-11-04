@@ -6,8 +6,8 @@ import org.tty.dioc.core.DynamicApplicationContext
 import org.tty.dioc.core.LocalDynamicApplicationContext
 import org.tty.dioc.core.addScoped2
 import org.tty.dioc.core.addSingleton2
-import org.tty.dioc.core.error.ServiceConstructException
-import org.tty.dioc.core.error.ServiceDeclarationException
+import org.tty.dioc.error.ServiceConstructException
+import org.tty.dioc.error.ServiceDeclarationException
 import org.tty.dioc.core.local.ComponentContext
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel

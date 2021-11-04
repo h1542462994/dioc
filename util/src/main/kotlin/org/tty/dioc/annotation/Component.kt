@@ -4,7 +4,6 @@ package org.tty.dioc.annotation
  * to declare this is a service, once the package is under scan region.
  * the service will be auto-detected.
  * @see [Lifecycle]
- * @see [org.tty.dioc.core.ApplicationContextBuilder.usePackage]
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)

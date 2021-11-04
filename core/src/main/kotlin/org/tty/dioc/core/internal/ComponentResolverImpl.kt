@@ -5,7 +5,7 @@ import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.key.ComponentKey
-import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.lifecycle.ScopeAbility
 import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
@@ -36,7 +36,7 @@ class ComponentResolverImpl(
         serviceDeclarations.check(componentDeclare)
 
         // return the provided service if exists.
-        val s = storage.findService(ComponentKey.ofDeclare(componentDeclare, scope))
+        val s = storage.findComponent(ComponentKey.ofDeclare(componentDeclare, scope))
         if (s != null) {
             return s
         }
@@ -64,7 +64,7 @@ class ComponentResolverImpl(
                         ServiceUtil.injectComponentToService(it, serviceProxy)
                     } else {
                         // get the service by declaration
-                        var service = storage.findService(ComponentKey.ofDeclare(it.propertyComponentDeclare, scope))
+                        var service = storage.findComponent(ComponentKey.ofDeclare(it.propertyComponentDeclare, scope))
                         if (service == null) {
                             if (transaction.transientNotReady(it.propertyComponentDeclare)) {
 //                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
@@ -115,7 +115,7 @@ class ComponentResolverImpl(
                     throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.implementationType} -> ... -> ${parameterDeclare.implementationType}")
                 }
                 // if the service is in the fullStorage, then return it.
-                storage.findService(ComponentKey.ofDeclare(parameterDeclare, scope)) ?:
+                storage.findComponent(ComponentKey.ofDeclare(parameterDeclare, scope)) ?:
                 this.createStub(parameterDeclare, transaction, scope)
             }
 

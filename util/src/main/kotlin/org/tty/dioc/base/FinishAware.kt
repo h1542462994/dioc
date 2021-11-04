@@ -1,4 +1,4 @@
-package org.tty.dioc.core.lifecycle
+package org.tty.dioc.base
 
 import org.tty.dioc.annotation.Once
 import org.tty.dioc.annotation.Component

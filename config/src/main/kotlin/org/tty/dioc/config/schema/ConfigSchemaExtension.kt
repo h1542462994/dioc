@@ -1,7 +1,11 @@
 package org.tty.dioc.config.schema
 
+import org.tty.dioc.annotation.NoInfer
+import org.tty.dioc.config.ApplicationConfig
+import org.tty.dioc.config.internal.ApplicationConfigDelegate
 import org.tty.dioc.reflect.getProperty
 import org.tty.dioc.reflect.returnTypeKotlin
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
@@ -28,9 +32,10 @@ inline fun <reified T: Any> dataSchema(name: String, default: T, configRule: Con
 }
 
 @Suppress("UNCHECKED_CAST")
-inline infix fun <reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<T> {
-    // length -> file.length
+inline infix fun <@NoInfer reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<T> {
+    // relevant visit path to root.
     var relevantPath = path
+    // currentSlot to visit.
     var currentSlot = this
     // analyse the pathSchema
     while (currentSlot is PathSchema<*>) {
@@ -39,15 +44,17 @@ inline infix fun <reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<
         currentSlot = ref
     }
 
-    // visit seq
+    // property visit chain
     val properties = relevantPath.split(".")
-    // if file.length
+
+    // rule
     var currentRule = currentSlot.rule
     require(currentRule != ConfigRule.NoAssigned) {
         "the root rule could n't be not assigned."
     }
     var currentType = when(currentSlot) {
         is DataSchema<*> -> currentSlot.type
+        // pathSchema is only valid to pathSchema/dataSchema
         else -> error("the root schema must be dataSchema")
     }
     for (visit in properties) {
@@ -64,4 +71,11 @@ inline infix fun <reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<
     }
 
     return PathSchema(relevantPath, currentType as KClass<T>, currentSlot, currentRule)
+}
+
+/**
+ * create a property delegate by [ApplicationConfigDelegate]
+ */
+fun <T: Any> delegateForSchema(configSchema: ConfigSchema): ReadWriteProperty<ApplicationConfig, T> {
+    return ApplicationConfigDelegate(configSchema)
 }

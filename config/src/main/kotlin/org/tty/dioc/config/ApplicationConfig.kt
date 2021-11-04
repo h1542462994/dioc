@@ -1,7 +1,7 @@
 package org.tty.dioc.config
 
 import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.base.NoInfer
+import org.tty.dioc.annotation.NoInfer
 import org.tty.dioc.config.schema.ConfigRule
 import org.tty.dioc.config.schema.ConfigRuleApi
 import org.tty.dioc.config.schema.ConfigSchema

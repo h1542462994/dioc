@@ -1,5 +1,3 @@
-archivesBaseName = 'config'
-
 dependencies {
     api project(':util')
 }

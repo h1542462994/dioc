@@ -1,7 +1,7 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.core.basic.ComponentAware
-import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.lifecycle.ScopeAware
 
 /**

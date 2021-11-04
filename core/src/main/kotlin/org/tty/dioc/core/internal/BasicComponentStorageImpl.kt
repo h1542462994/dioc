@@ -1,18 +1,20 @@
 package org.tty.dioc.core.internal
 
 import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.base.Init
+import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.basic.BasicComponentStorage
+import org.tty.dioc.core.launcher.BasicComponentKeys
 import org.tty.dioc.util.formatTable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
 
+@Deprecated("use CombinedComponentStorage instead.")
 class BasicComponentStorageImpl : BasicComponentStorage {
     private val store = HashMap<String, Any>()
     private val nameTypeRef = HashMap<KClass<*>, String>()
 
     override fun <T : Any> addComponent(name: String, component: T) {
-        addComponent<T>(name, component::class, component = component)
+        addComponent(name, component::class, component = component)
     }
 
     override fun <T : Any> addComponent(name: String, interfaceType: KClass<out T>, component: T) {
@@ -23,9 +25,9 @@ class BasicComponentStorageImpl : BasicComponentStorage {
             "you could only add InternalComponent to BasicComponentStorage"
         }
         // init the component with Init
-        if (component is Init) {
+        if (component is InitializeAware) {
             // initialize the component.
-            component.init()
+            component.onInit()
         }
         store[name] = component
         nameTypeRef[interfaceType] = name
@@ -49,8 +51,9 @@ class BasicComponentStorageImpl : BasicComponentStorage {
     override fun toString(): String {
         val realList = nameTypeRef.map {
             listOf(it.value, it.key.qualifiedName,
+                // expect self to miss recursive kFunction call.
                 if (store[it.value] === this) {
-                    "<self>::"
+                    BasicComponentKeys.basicComponentStorage
                 } else {
                     store[it.value]
                 }

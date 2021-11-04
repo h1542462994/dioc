@@ -3,6 +3,7 @@ package org.tty.dioc.core.internal
 import org.tty.dioc.config.schema.ConfigRule
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.basic.BasicComponentStorage
+import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.basic.ProviderResolver
 import org.tty.dioc.core.launcher.configSchemas
 import org.tty.dioc.error.NotProvidedException
@@ -18,7 +19,7 @@ import kotlin.reflect.KClass
  * the resolver will only be valid on [ConfigRule.Declare]
  */
 class BasicProviderResolver(
-    private val componentStorage: BasicComponentStorage
+    private val componentStorage: ComponentStorage
 ): ProviderResolver {
     override fun <T : Any> resolveProvider(name: String): T {
         val configSchema = componentStorage.configSchemas.get<ProvidersSchema<T>>(name)
@@ -47,7 +48,7 @@ class BasicProviderResolver(
 
         val parameterMap = constructor.parameters.associateWith {
             val parameterType = it.kotlin
-            componentStorage.getComponent(parameterType)
+            componentStorage.findComponent(parameterType)
         }
         return constructor.callBy(parameterMap)
     }

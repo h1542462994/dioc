@@ -6,6 +6,8 @@ import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
+import org.tty.dioc.base.FinishAware
+import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass

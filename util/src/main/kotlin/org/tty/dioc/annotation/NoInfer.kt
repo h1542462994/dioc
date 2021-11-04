@@ -1,4 +1,4 @@
-package org.tty.dioc.base
+package org.tty.dioc.annotation
 
 /**
  * the type is not be checked.

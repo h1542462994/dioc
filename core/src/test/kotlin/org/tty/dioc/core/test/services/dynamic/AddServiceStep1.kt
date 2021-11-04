@@ -1,7 +1,7 @@
 package org.tty.dioc.core.test.services.dynamic
 
 import org.tty.dioc.annotation.Inject
-import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.test.services.Logger
 
 class AddServiceStep1: AddService, InitializeAware {

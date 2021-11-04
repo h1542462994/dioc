@@ -2,12 +2,13 @@ package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.core.error.ServiceConstructException
+import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 
 /**
- * the identifier to store the service
- * @see [Lifecycle]
+ * the key for component
+ * if the key can be searched by name, it's [NamedComponentKey]
+ * else if key can be searched by type, it's [TypedComponentKey]
  */
 interface ComponentKey {
     companion object {

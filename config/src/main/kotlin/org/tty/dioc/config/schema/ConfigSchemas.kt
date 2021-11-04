@@ -6,7 +6,7 @@ import org.tty.dioc.util.withLeft
 import kotlin.reflect.KClass
 
 /**
- * storage for schema
+ * storage for [ConfigSchema]
  */
 @InternalComponent
 class ConfigSchemas {

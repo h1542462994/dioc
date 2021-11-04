@@ -8,19 +8,22 @@ import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.basic.BasicComponentStorage
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.basic.ProviderResolver
+import org.tty.dioc.core.basic.addInternalComponent
 import org.tty.dioc.core.internal.BasicComponentStorageImpl
 import org.tty.dioc.core.internal.BasicProviderResolver
 import org.tty.dioc.core.launcher.BasicComponentKeys.configModule
 import org.tty.dioc.core.launcher.BasicComponentKeys.configSchemas
 import org.tty.dioc.core.launcher.BasicComponentKeys.providerResolver
+import org.tty.dioc.core.launcher.BasicComponentKeys.basicComponentStorage
 import org.tty.dioc.core.lifecycle.ScopeAbility
+import org.tty.dioc.core.storage.CombinedComponentStorage
 import kotlin.reflect.KClass
 
 /**
  * provide the basic
  */
 class KernelLoader {
-    private val componentStorage = BasicComponentStorageImpl()
+    private val componentStorage = CombinedComponentStorage()
 
     private inline fun <reified T : Any> addProvider() {
         val configSchemas = componentStorage.configSchemas
@@ -30,11 +33,11 @@ class KernelLoader {
     }
 
     private inline fun <reified T: Any> addComponent(name: String, component: T) {
-        componentStorage.addComponent(name, T::class, component)
+        componentStorage.addInternalComponent(name, component)
     }
 
-    private fun addSelf() {
-        addComponent<BasicComponentStorage>("<self>::", componentStorage)
+    private fun addBasicComponentStorage() {
+        addComponent<ComponentStorage>(basicComponentStorage, componentStorage)
     }
 
     private fun addConfigSchemas() {
@@ -51,8 +54,9 @@ class KernelLoader {
 
     @Suppress("UNCHECKED_CAST")
     fun load(): ApplicationContext {
+        // ----------------- create basic suites ----------------------
         // load the configSchemas
-        addSelf()
+        addBasicComponentStorage()
         addConfigSchemas()
         // load all modules, and register the config
         // it must be call there.
@@ -61,11 +65,18 @@ class KernelLoader {
         addProviderResolver()
         addProvider<ApplicationConfig>()
 
+        // ------------------ create informal suites -------------------
+
+
         return object: ApplicationContext {
             val componentStorage = this@KernelLoader.componentStorage
 
             override fun <T : Any> getComponent(declareType: KClass<T>): T {
-                return componentStorage.getComponent(declareType)
+                val component = componentStorage.findComponent(declareType)
+                require(component != null) {
+                    "component $declareType not found."
+                }
+                return component
             }
 
             override fun scopeAbility(): ScopeAbility {

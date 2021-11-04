@@ -5,7 +5,6 @@ import kotlin.reflect.KClass
 /**
  * indirect visitor for schema.
  */
-@Suppress("unused")
 class PathSchema<T: Any>(
     /**
      * path expression, for example (user.)name.length

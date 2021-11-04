@@ -4,14 +4,16 @@ import org.tty.dioc.annotation.Component
 import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.core.declare.ComponentCreating
 import org.tty.dioc.core.key.ComponentKey
-import org.tty.dioc.core.lifecycle.FinishAware
+import org.tty.dioc.base.FinishAware
 import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.transaction.Transactional
+import kotlin.reflect.KClass
 
 /**
  * the storage for [Component]
  */
 @InternalComponent
-interface ComponentStorage : FinishAware {
+interface ComponentStorage : FinishAware, Transactional<CombinedComponentStorage.CreateTransaction> {
     /**
      * whether the partStorage is empty.
      */
@@ -23,15 +25,16 @@ interface ComponentStorage : FinishAware {
     val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentCreating>
 
     /**
-     * find the service by [componentKey] in [CombinedComponentStorage]
+     * find the component by [componentKey] in [CombinedComponentStorage]
      */
-    fun findService(componentKey: ComponentKey): Any?
-    fun remove(componentKey: ComponentKey)
+    fun findComponent(componentKey: ComponentKey): Any?
 
     /**
-     * to begin a transaction
+     * remove the component by [ComponentKey] in [CombinedComponentStorage]
      */
-    fun beginTransaction(): CombinedComponentStorage.CreateTransaction
+    fun remove(componentKey: ComponentKey)
+
+    fun <T: Any> findComponent(type: KClass<T>): T?
 
     /**
      * whether exists any transaction.

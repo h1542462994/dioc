@@ -1,23 +1,25 @@
 package org.tty.dioc.core.storage
 
+import org.tty.dioc.annotation.Component
+import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.declare.ServiceCreated
 import org.tty.dioc.core.declare.ComponentCreating
 import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.core.key.ScopeKey
-import org.tty.dioc.core.key.ComponentKey
-import org.tty.dioc.core.key.SingletonKey
-import org.tty.dioc.core.key.TransientKey
-import org.tty.dioc.core.lifecycle.InitializeAware
+import org.tty.dioc.base.InitializeAware
+import org.tty.dioc.core.key.*
 import org.tty.dioc.error.TransactionClosedException
 import org.tty.dioc.transaction.Transactional
 import java.lang.ref.WeakReference
+import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 /**
  * the storage for service
  */
-class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTransaction>, ComponentStorage {
+class CombinedComponentStorage: ComponentStorage {
     /**
      * the full storage, also the first level cache.
      */
@@ -59,17 +61,11 @@ class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTra
             requireNotClosed()
             val (service, serviceDeclare) = serviceCreated
             val entry: Any = when(componentKey) {
-                is SingletonKey -> {
-                    service
-                }
-                is ScopeKey -> {
-                    service
-                }
                 is TransientKey -> {
                     WeakReference(service)
                 }
                 else -> {
-                    throw IllegalArgumentException("identifier not support.")
+                    service
                 }
             }
             fullStorage[componentKey] = entry
@@ -165,21 +161,29 @@ class CombinedComponentStorage: Transactional<CombinedComponentStorage.CreateTra
     /**
      * find the service by [componentKey] in [CombinedComponentStorage]
      */
-    override fun findService(componentKey: ComponentKey): Any? {
+    override fun findComponent(componentKey: ComponentKey): Any? {
         return when(componentKey) {
-            is SingletonKey -> {
-                fullStorage[componentKey]
-            }
-            is ScopeKey -> {
-                fullStorage[componentKey]
-            }
             is TransientKey -> {
-                null
-            }
-            else -> {
-                throw IllegalArgumentException("identifier not support.")
-            }
+                throw IllegalArgumentException("you couldn't find transient component.")
+            } else ->
+                fullStorage[componentKey]
         }
+    }
+
+
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Any> findComponent(type: KClass<T>): T? {
+        val keys = fullStorage.keys.filterIsInstance<TypedComponentKey>().filter {
+            it::class.findAnnotation<Component>()!!.lifecycle == Lifecycle.Singleton && it.indexType == type
+        }
+        require(keys.isNotEmpty()) {
+            return null
+        }
+        require(keys.size < 2) {
+            "has more than one instance for provided type."
+        }
+        return fullStorage[keys.first()] as T
     }
 
     override fun remove(componentKey: ComponentKey) {

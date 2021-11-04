@@ -9,8 +9,8 @@ import org.tty.dioc.reflect.getWithPropertyChain
 import kotlin.reflect.KClass
 
 /**
- * basic application config
- * it is readonly
+ * basic [ApplicationConfig]
+ * only get the config from [ConfigSchemas]
  */
 @InternalComponent
 class BasicApplicationConfig(
@@ -28,15 +28,16 @@ class BasicApplicationConfig(
     /**
      * get the config by type, it's not provided in [BasicApplicationConfig]
      */
-    override fun <T : Any> get(type: KClass<T>): T {
-        notProvided()
-    }
+    override fun <T : Any> get(type: KClass<T>): T = notProvided()
 
     /**
      * readonly provider, so set is not provided.
      */
     override fun <T : Any> set(name: String, value: T) = notProvided()
 
+    /**
+     * readonly provider, so set is not provided.
+     */
     override fun <T : Any> set(configSchema: ConfigSchema, value: T) = notProvided()
 
     /**
