@@ -1,11 +1,17 @@
-package org.tty.dioc.core.lifecycle
+package org.tty.dioc.core.basic
 
+import org.tty.dioc.annotation.InternalComponent
+import org.tty.dioc.config.schema.ConfigRule
+import org.tty.dioc.config.schema.ConfigRuleApi
+import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.observable.channel.contract.Channel
 
 /**
  * ability to handle scoped services.
  * the scope between thread are never equal
  */
+@InternalComponent
+@ConfigRuleApi(configRule = ConfigRule.Readonly)
 interface ScopeAbility {
 
     /**

@@ -1,6 +1,6 @@
 package org.tty.dioc.core.internal
 
-import org.tty.dioc.config.schema.ConfigRule
+import org.tty.dioc.annotation.DebugOnly
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.basic.ProviderResolver
@@ -15,9 +15,9 @@ import kotlin.reflect.KClass
 
 /**
  * create a combined provider based on [ProvidersSchema]
- * the resolver will only be valid on [ConfigRule.Declare]
  */
-class BasicProviderResolver(
+@DebugOnly
+class CombinedProviderResolver(
     private val componentStorage: ComponentStorage
 ): ProviderResolver {
     override fun <T : Any> resolveProvider(name: String): T {
@@ -26,9 +26,9 @@ class BasicProviderResolver(
         require(configSchema != null) {
             "configSchema is not defined."
         }
-        require(configSchema.rule == ConfigRule.Declare) {
-            "basicProviderResolver could only resolve the $configSchema which has the rule declare."
-        }
+//        require(configSchema.rule == ConfigRule.Declare) {
+//            "basicProviderResolver could only resolve the $configSchema which has the rule declare."
+//        }
         val interfaceType = configSchema.type
         val providerTypes = configSchema.default
         val providers = providerTypes.map {

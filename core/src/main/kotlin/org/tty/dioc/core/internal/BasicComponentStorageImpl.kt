@@ -3,7 +3,7 @@ package org.tty.dioc.core.internal
 import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.basic.BasicComponentStorage
-import org.tty.dioc.core.launcher.BasicComponentKeys
+import org.tty.dioc.core.launcher.ComponentKeys
 import org.tty.dioc.util.formatTable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
@@ -53,7 +53,7 @@ class BasicComponentStorageImpl : BasicComponentStorage {
             listOf(it.value, it.key.qualifiedName,
                 // expect self to miss recursive kFunction call.
                 if (store[it.value] === this) {
-                    BasicComponentKeys.basicComponentStorage
+                    ComponentKeys.componentStorage
                 } else {
                     store[it.value]
                 }

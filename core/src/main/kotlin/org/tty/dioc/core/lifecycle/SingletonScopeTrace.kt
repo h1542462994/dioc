@@ -1,13 +1,14 @@
 package org.tty.dioc.core.lifecycle
 
-import org.tty.dioc.base.Builder
+import org.tty.dioc.core.basic.ScopeAbility
+import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.observable.channel.Channels
 
 /**
  * the trace of the [Scope],
  * the scope is placed by singleton.
  */
-class SingletonScopeTrace(private val scopeFactory: Builder<Scope>): ScopeAbility {
+class SingletonScopeTrace(private val scopeFactory: ScopeFactory): ScopeAbility {
     private val currentScope: ThreadLocal<Scope?> = ThreadLocal()
     private val scopeRecords: ThreadLocal<ArrayList<Scope>?> = ThreadLocal()
     override val createChannel = Channels.create<Scope>()

@@ -8,6 +8,8 @@ import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
 import org.tty.dioc.base.FinishAware
 import org.tty.dioc.base.InitializeAware
+import org.tty.dioc.core.basic.ScopeAbility
+import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
@@ -21,7 +23,7 @@ open class DefaultApplicationContext(
      * the declaration of the services.
      */
     private val declarations: ReadonlyComponentDeclares,
-    scopeFactory: Builder<Scope>
+    scopeFactory: ScopeFactory
     ) : ApplicationContext, InitializeAware, FinishAware {
 
     /**

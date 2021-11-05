@@ -3,6 +3,7 @@ package org.tty.dioc.config.schema
 /**
  * rule for config
  */
+@Suppress("unused")
 enum class ConfigRule {
     /**
      * not assigned config rule.
@@ -27,10 +28,10 @@ enum class ConfigRule {
     /**
      * config can write on declare, runtime, annotation and file (boot only).
      */
-    SoftReadonly,
+    Readonly,
 
     /**
      * config can write on declare, runtime, annotation and file.
      */
-    SoftMutable,
+    Mutable,
 }

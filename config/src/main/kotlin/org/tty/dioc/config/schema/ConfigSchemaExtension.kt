@@ -2,19 +2,26 @@ package org.tty.dioc.config.schema
 
 import org.tty.dioc.annotation.NoInfer
 import org.tty.dioc.config.ApplicationConfig
+import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.internal.ApplicationConfigDelegate
 import org.tty.dioc.reflect.getProperty
+import org.tty.dioc.reflect.properties
 import org.tty.dioc.reflect.returnTypeKotlin
+import java.nio.file.Path
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.typeOf
 
 inline fun <reified T: Any> getRuleByTypeAndRule(configRule: ConfigRule): ConfigRule {
     var rule = configRule
     if (rule == ConfigRule.NoAssigned) {
         val ruleApi = T::class.findAnnotation<ConfigRuleApi>()
-        requireNotNull(ruleApi)
+        requireNotNull(ruleApi) {
+            "configRule is null"
+        }
         require(ruleApi.configRule != ConfigRule.NoAssigned) {
             "configRule couldn't be not assigned."
         }
@@ -72,6 +79,20 @@ inline infix fun <@NoInfer reified T: Any> ConfigSchema.pathTo(path: String): Pa
 
     return PathSchema(relevantPath, currentType as KClass<T>, currentSlot, currentRule)
 }
+
+//fun autoPathSchema(configSchemas: ConfigSchemas, name: String): PathSchema<Any>? {
+//    // name like org.tty.dioc.config.mode.text
+//    val tokens = name.split(".")
+//    for (i in 1 until tokens.size) {
+//        val left = tokens.slice(0 until name.length - i).joinToString(".")
+//        val right = tokens.slice(name.length - i until name.length).joinToString(".")
+//        val leftSchema = configSchemas.get<ConfigSchema>(left)
+//        if (leftSchema != null) {
+//            return leftSchema pathTo right
+//        }
+//    }
+//    return null
+//}
 
 /**
  * create a property delegate by [ApplicationConfigDelegate]

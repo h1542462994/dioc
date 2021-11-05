@@ -2,14 +2,17 @@ package org.tty.dioc.core.launcher
 
 import org.tty.dioc.annotation.DebugOnly
 import org.tty.dioc.core.ApplicationContext
+import org.tty.dioc.core.ApplicationEntryPoint
 import org.tty.dioc.core.local.ComponentContext
 
 
 /**
  * to start the kernel and return the applicationContext
  */
-fun startKernel(): ApplicationContext {
-    return KernelLoader().load()
+fun startKernel(entryPoint: ApplicationEntryPoint): ApplicationContext {
+    return KernelLoader()
+        .setApplicationEntryPoint(entryPoint)
+        .load()
 }
 
 /**
@@ -23,6 +26,6 @@ fun startConsole(): ApplicationContext {
  * to start the kernel and bind the [ApplicationContext] to [ComponentContext]
  */
 @DebugOnly
-fun runKernel() {
-    ComponentContext.provides(startKernel())
+fun runKernel(entryPoint: ApplicationEntryPoint) {
+    ComponentContext.provides(startKernel(entryPoint))
 }

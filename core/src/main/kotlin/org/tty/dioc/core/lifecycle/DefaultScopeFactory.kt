@@ -8,6 +8,10 @@ class DefaultScopeFactory: ScopeFactory {
         return object: Scope {
             override val id: String
                 get() = UUID.randomUUID().toString()
+
+            override fun toString(): String {
+                return "default:$id"
+            }
         }
     }
 }

@@ -1,10 +1,15 @@
 package org.tty.dioc.core.declare
 
+import org.tty.dioc.annotation.InternalComponent
+import org.tty.dioc.config.schema.ConfigRule
+import org.tty.dioc.config.schema.ConfigRuleApi
 import kotlin.reflect.KClass
 
 /**
  * serviceDeclares read.
  */
+@InternalComponent
+@ConfigRuleApi(configRule = ConfigRule.Readonly)
 interface ReadonlyComponentDeclares: Iterable<ComponentDeclare> {
 
     /**

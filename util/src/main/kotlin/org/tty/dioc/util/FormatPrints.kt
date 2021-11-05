@@ -44,6 +44,9 @@ fun <T> formatTable(tableName: String, collection: Collection<T>, indent: Int = 
             sizeList[index] = max(sizeList[index], any.toTruncateString().length + space)
         }
     }
+    title?.forEachIndexed { index, s ->
+        sizeList[index] = max(sizeList[index], s.toTruncateString().length + space)
+    }
 
     fun buildRow(sb: StringBuilder, value: List<*>) {
         require(value.size == columnLength) { "titleSize is not equal to columnSize." }

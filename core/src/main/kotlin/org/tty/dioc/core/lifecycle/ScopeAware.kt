@@ -1,5 +1,7 @@
 package org.tty.dioc.core.lifecycle
 
+import org.tty.dioc.core.basic.ScopeAbility
+
 /**
  * provide the scope ability
  */

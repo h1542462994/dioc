@@ -5,19 +5,25 @@ import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.observable.channel.Channels
+import org.tty.dioc.util.formatTable
 import kotlin.reflect.KClass
 
 /**
  * a implementation of [MutableComponentDeclares] and [ReadonlyComponentDeclares]
  */
-class ComponentDeclares(componentDeclares: List<ComponentDeclare>) : MutableComponentDeclares, ReadonlyComponentDeclares {
+class ComponentDeclares() : MutableComponentDeclares, ReadonlyComponentDeclares {
+//    constructor(componentDeclares: List<ComponentDeclare>) : this() {
+//        container.addAll(componentDeclares)
+//    }
+
     private val container = ArrayList<ComponentDeclare>()
     private var forceReplaceEnabled = false
-    override val createLazyChannel = Channels.create<MutableComponentDeclares.CreateLazy>()
 
-    init {
+    override fun addAll(componentDeclares: List<ComponentDeclare>) {
         container.addAll(componentDeclares)
     }
+
+    override val createLazyChannel = Channels.create<MutableComponentDeclares.CreateLazy>()
 
     override fun iterator(): Iterator<ComponentDeclare> {
         return container.iterator()
@@ -135,5 +141,16 @@ class ComponentDeclares(componentDeclares: List<ComponentDeclare>) : MutableComp
         createLazyChannel.emit(
             MutableComponentDeclares.CreateLazy(declarationType, lifecycle, lazy)
         )
+    }
+
+    override fun toString(): String {
+        return formatTable("componentDeclares", container, title = listOf("lifecycle", "isLazyComponent", "declarationTypes", "implementationType")) {
+            listOf(
+                it.lifecycle,
+                it.isLazyComponent,
+                it.declarationTypes,
+                it.implementationType,
+            )
+        }.toString()
     }
 }

@@ -6,13 +6,12 @@ import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.core.lifecycle.ScopeAbility
+import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.primaryConstructor
 
 /**
  * declaration of the service

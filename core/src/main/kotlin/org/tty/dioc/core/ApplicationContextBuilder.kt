@@ -4,6 +4,7 @@ import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.base.Builder
+import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.core.internal.ComponentDeclareResolver
 
 /**
@@ -15,7 +16,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
     private val jsonFiles: ArrayList<String> = ArrayList()
     private val scanPackages: ArrayList<PackageOption> = ArrayList()
     private lateinit var serviceDeclareResolver : ComponentDeclareResolver
-    private var scopeFactory: Builder<Scope> = DefaultScopeFactory()
+    private var scopeFactory: ScopeFactory = DefaultScopeFactory()
 
 
     override fun create(): ApplicationContext {
@@ -23,7 +24,9 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
             jsonFiles, scanPackages
         )
         return DefaultApplicationContext(
-            ComponentDeclares(serviceDeclareResolver.getDeclarations()),
+            ComponentDeclares().apply {
+                addAll(serviceDeclareResolver.getDeclarations())
+            },
             scopeFactory
         )
     }
@@ -47,7 +50,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
     /**
      * use custom scope factory.
      */
-    fun setScopeFactory(scopeFactory: Builder<Scope>): ApplicationContextBuilder {
+    fun setScopeFactory(scopeFactory: ScopeFactory): ApplicationContextBuilder {
         this.scopeFactory = scopeFactory
         return this
     }

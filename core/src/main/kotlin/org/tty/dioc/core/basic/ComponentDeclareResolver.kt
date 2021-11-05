@@ -7,7 +7,6 @@ import org.tty.dioc.annotation.InternalComponent
  * the resolver for declare of the component.
  *
  */
-@InternalComponent
 interface ComponentDeclareResolver {
     fun getDeclarations(): List<ComponentDeclare>
 }

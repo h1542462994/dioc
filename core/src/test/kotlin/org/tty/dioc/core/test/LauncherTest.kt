@@ -8,13 +8,16 @@ import org.tty.dioc.config.useAnnotation
 import org.tty.dioc.config.useFile
 import org.tty.dioc.core.basic.BasicComponentStorage
 import org.tty.dioc.core.basic.ComponentStorage
+import org.tty.dioc.core.declare.MutableComponentDeclares
+import org.tty.dioc.core.declare.ReadonlyComponentDeclares
 import org.tty.dioc.core.getComponent
 import org.tty.dioc.core.launcher.startKernel
+import org.tty.dioc.core.test.services.HelloService
 
 class LauncherTest {
     @Test
     fun test() {
-        val applicationContext = startKernel()
+        val applicationContext = startKernel(TestApplicationEntryPoint())
         val applicationConfig = applicationContext.getComponent<ApplicationConfig>()
         println(applicationConfig.useAnnotation)
         println(applicationConfig.useFile)
@@ -24,5 +27,11 @@ class LauncherTest {
         val componentStorage = applicationContext.getComponent<ComponentStorage>()
         println(configSchemas)
         println(componentStorage)
+
+        val configDeclares = applicationContext.getComponent<ReadonlyComponentDeclares>() as MutableComponentDeclares
+        println(configDeclares)
+
+        val helloService = applicationContext.getComponent<HelloService>()
+        println(helloService.hello())
     }
 }

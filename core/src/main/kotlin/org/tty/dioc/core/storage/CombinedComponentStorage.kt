@@ -8,9 +8,14 @@ import org.tty.dioc.core.declare.ServiceCreated
 import org.tty.dioc.core.declare.ComponentCreating
 import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.base.InitializeAware
+import org.tty.dioc.core.internal.BasicComponentStorageImpl
 import org.tty.dioc.core.key.*
+import org.tty.dioc.core.launcher.ComponentKeys
+import org.tty.dioc.core.launcher.componentStorage
 import org.tty.dioc.error.TransactionClosedException
 import org.tty.dioc.transaction.Transactional
+import org.tty.dioc.util.formatTable
+import org.tty.dioc.util.toTruncateString
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -229,4 +234,49 @@ class CombinedComponentStorage: ComponentStorage {
     override fun onFinish() {
 
     }
+
+
+    override fun toString(): String {
+
+        /**
+         * lifecycle | name? | type? | scope?
+         */
+        fun split(key: ComponentKey): Array<String?> {
+            return when (key) {
+                is TransientKey -> {
+                    arrayOf("transient", "<anonymous>", "?", "")
+                }
+                is SingletonKey -> {
+                    arrayOf("singleton", "<anonymous>", key.indexType.qualifiedName, "")
+                }
+                is ScopeKey -> {
+                    arrayOf("scoped", "<anonymous>", key.indexType.qualifiedName, key.scope.toTruncateString())
+                }
+                is NamedScopeKey -> {
+                    arrayOf("scoped", key.name, key.indexType.qualifiedName, key.scope.toTruncateString())
+                }
+                is NamedSingletonKey -> {
+                    arrayOf("singleton", key.name, key.indexType.qualifiedName, "")
+                }
+                else -> {
+                    arrayOf("<error/>", "", "", "")
+                }
+            }
+        }
+
+        val realList = fullStorage.map {
+            listOf(*split(it.key),
+                // expect self to miss recursive kFunction call.
+                if (it.value === this) {
+                    ComponentKeys.componentStorage
+                } else {
+                    it.value.toString()
+                }
+            )
+        }.sortedBy { it[0] }.sortedBy { it[1] }
+        return formatTable("${ComponentStorage::class.simpleName}", realList, title = listOf("lifecycle", "name?", "type?", "scope?", "value")) {
+            it
+        }.toString()
+    }
+
 }

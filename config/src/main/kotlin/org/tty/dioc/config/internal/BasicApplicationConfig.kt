@@ -18,7 +18,7 @@ class BasicApplicationConfig(
 ): ApplicationConfig {
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> get(name: String): T {
-        val configSchema: ConfigSchema = configSchemas[name] ?: notProvided("couldn't found schema with name $name")
+        val configSchema: ConfigSchema = configSchemas[name] ?: notProvided()
         return getFromSchema(configSchema)
     }
 

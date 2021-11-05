@@ -6,7 +6,7 @@ import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.core.getComponent
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.core.lifecycle.ScopeAbility
+import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.test.services.scope.ScopedAddService
 import kotlin.concurrent.thread
 

@@ -3,11 +3,12 @@ package org.tty.dioc.core
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.core.lifecycle.ScopeAbility
+import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.lifecycle.StackScopeTrace
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.Builder
+import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
@@ -21,7 +22,7 @@ open class DefaultDynamicApplicationContext(
      * the declaration of the services.
      */
     private val declarations: MutableComponentDeclares,
-    scopeFactory: Builder<Scope>
+    scopeFactory: ScopeFactory
 ): DynamicApplicationContext {
 
     override fun <T : Any> getComponent(declareType: KClass<T>): T {

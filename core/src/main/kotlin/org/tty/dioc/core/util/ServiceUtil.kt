@@ -16,7 +16,11 @@ object ServiceUtil {
      * to detect whether a class is a service
      */
     val KClass<*>.hasComponentAnnotation: Boolean
-    get() = this.hasAnnotation<Component>()
+    get() = try {
+        hasAnnotation<Component>()
+    } catch (e: UnsupportedOperationException) {
+        false
+    }
 
     /**
      * to detect whether a service is a proxy service

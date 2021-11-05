@@ -1,29 +1,33 @@
 package org.tty.dioc.core.launcher
 
+import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.basic.BasicComponentStorage
-import org.tty.dioc.core.basic.ComponentStorage
-import org.tty.dioc.core.basic.ProviderResolver
-import org.tty.dioc.core.basic.addInternalComponent
-import org.tty.dioc.core.internal.BasicComponentStorageImpl
+import org.tty.dioc.core.ApplicationEntryPoint
+import org.tty.dioc.core.CoreModule
+import org.tty.dioc.core.basic.*
+import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.internal.BasicProviderResolver
-import org.tty.dioc.core.launcher.BasicComponentKeys.configModule
-import org.tty.dioc.core.launcher.BasicComponentKeys.configSchemas
-import org.tty.dioc.core.launcher.BasicComponentKeys.providerResolver
-import org.tty.dioc.core.launcher.BasicComponentKeys.basicComponentStorage
-import org.tty.dioc.core.lifecycle.ScopeAbility
+import org.tty.dioc.core.internal.CombinedProviderResolver
+import org.tty.dioc.core.internal.ComponentDeclareResolver
+import org.tty.dioc.core.key.NamedSingletonKey
+import org.tty.dioc.core.launcher.ComponentKeys.configModule
+import org.tty.dioc.core.launcher.ComponentKeys.configSchemas
+import org.tty.dioc.core.launcher.ComponentKeys.coreModule
+import org.tty.dioc.core.launcher.ComponentKeys.providerResolver
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import kotlin.reflect.KClass
+import kotlin.reflect.full.hasAnnotation
 
 /**
  * provide the basic
  */
 class KernelLoader {
     private val componentStorage = CombinedComponentStorage()
+    private lateinit var entryPoint: ApplicationEntryPoint
 
     private inline fun <reified T : Any> addProvider() {
         val configSchemas = componentStorage.configSchemas
@@ -36,8 +40,8 @@ class KernelLoader {
         componentStorage.addInternalComponent(name, component)
     }
 
-    private fun addBasicComponentStorage() {
-        addComponent<ComponentStorage>(basicComponentStorage, componentStorage)
+    private fun addComponentStorage() {
+        addComponent<ComponentStorage>(ComponentKeys.componentStorage, componentStorage)
     }
 
     private fun addConfigSchemas() {
@@ -46,46 +50,91 @@ class KernelLoader {
 
     private fun moduleInit() {
         addComponent(configModule, ConfigModule(configSchemas = componentStorage.configSchemas))
+        addComponent(coreModule, CoreModule(configSchemas = componentStorage.configSchemas))
     }
 
-    private fun addProviderResolver() {
+    private fun addBasicProviderResolver() {
         addComponent<ProviderResolver>(providerResolver, BasicProviderResolver(componentStorage))
+    }
+
+    private fun replaceCombinedProviderResolver(){
+        componentStorage.remove(NamedSingletonKey(providerResolver, ProviderResolver::class))
+        addComponent<ProviderResolver>(providerResolver, CombinedProviderResolver(componentStorage))
+    }
+
+
+
+    fun setApplicationEntryPoint(applicationEntryPoint: ApplicationEntryPoint): KernelLoader {
+        this.entryPoint = applicationEntryPoint
+        return this
     }
 
     @Suppress("UNCHECKED_CAST")
     fun load(): ApplicationContext {
         // ----------------- create basic suites ----------------------
+
+        addComponentStorage()
         // load the configSchemas
-        addBasicComponentStorage()
         addConfigSchemas()
         // load all modules, and register the config
         // it must be call there.
         moduleInit()
         // load the providerResolver
-        addProviderResolver()
+        addBasicProviderResolver()
         addProvider<ApplicationConfig>()
 
         // ------------------ create informal suites -------------------
 
+        replaceCombinedProviderResolver()
+
+        // call on configuration
+        entryPoint.onConfiguration(componentStorage.getInternalComponent(ConfigModule.configSchema))
+        addProvider<ScopeFactory>()
+        addProvider<ScopeAbility>()
+        addProvider<ReadonlyComponentDeclares>()
+
+        val componentDeclares = componentStorage.getInternalComponent<ReadonlyComponentDeclares>(CoreModule.componentDeclaresSchema)
+                as MutableComponentDeclares
+
+        // add root components
+        val rootPackName = entryPoint.javaClass.packageName
+        componentDeclares.addAll(
+            ComponentDeclareResolver(
+                arrayListOf(), arrayListOf(
+                    PackageOption(name = rootPackName, true)
+                )
+            ).getDeclarations()
+        )
+
+        // call on startup
+        entryPoint.onStartUp(
+            componentDeclares
+        )
+        addProvider<ComponentResolver>()
 
         return object: ApplicationContext {
             val componentStorage = this@KernelLoader.componentStorage
 
             override fun <T : Any> getComponent(declareType: KClass<T>): T {
-                val component = componentStorage.findComponent(declareType)
-                require(component != null) {
-                    "component $declareType not found."
+                return if (declareType.hasAnnotation<InternalComponent>()) {
+                    // TODO("当前通过ComponentResolver去创建InternalComponent.")
+                    requireNotNull(componentStorage.findComponent(declareType)) {
+                        "internalComponent $declareType is not existed."
+                    }
+                } else {
+                    componentStorage
+                        .getInternalComponent<ComponentResolver>(CoreModule.componentResolverSchema)
+                        .resolve(declare = componentDeclares.singleDeclarationType(declarationType = declareType))
                 }
-                return component
             }
 
             override fun scopeAbility(): ScopeAbility {
-                TODO("Not yet implemented")
+                return componentStorage.getInternalComponent(CoreModule.scopeAbilitySchema)
             }
 
             override fun onInit() {
-                TODO("Not yet implemented")
+
             }
-        }
+        }.apply { onInit() }
     }
 }

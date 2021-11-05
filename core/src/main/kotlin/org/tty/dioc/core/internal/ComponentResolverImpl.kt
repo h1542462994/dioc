@@ -3,11 +3,12 @@ package org.tty.dioc.core.internal
 import org.tty.dioc.annotation.InjectPlace
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.basic.ComponentResolver
+import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
-import org.tty.dioc.core.lifecycle.ScopeAbility
+import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.util.ServiceUtil
@@ -18,7 +19,7 @@ import kotlin.reflect.jvm.javaConstructor
  */
 class ComponentResolverImpl(
     private val serviceDeclarations: ReadonlyComponentDeclares,
-    override val storage: CombinedComponentStorage,
+    override val storage: ComponentStorage,
     val scopeAbility: ScopeAbility
 ): ComponentResolver {
 

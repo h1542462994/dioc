@@ -54,7 +54,7 @@ class ConfigSchemas {
     }
 
     override fun toString(): String {
-        return formatTable("${ConfigSchemas::class.simpleName}", schemaStore.values, title = listOf("name", "tag", "type", "rule", "info")) {
+        return formatTable("${ConfigSchemas::class.simpleName}", schemaStore.values.sortedBy { it.name }, title = listOf("name", "tag", "type", "rule", "info")) {
             listOf(it.name, it.tag, it.type.qualifiedName, it.rule, it.info())
         }.toString()
     }
