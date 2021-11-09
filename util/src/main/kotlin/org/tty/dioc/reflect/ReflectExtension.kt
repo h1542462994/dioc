@@ -1,9 +1,6 @@
 package org.tty.dioc.reflect
 
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.*
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
@@ -104,6 +101,7 @@ fun Array<KClass<*>>.toClasses(): Array<out Class<*>> {
 /**
  * get property with property chain
  * like person.name.length
+ * TODO: migrate to propertyChain
  */
 fun Any.getWithPropertyChain(chain: String): Any? {
     val identifiers = chain.split(".")
@@ -116,17 +114,23 @@ fun Any.getWithPropertyChain(chain: String): Any? {
     return currentSlot
 }
 
-
+/**
+ * TODO: migrate to propertyChain
+ */
 fun Any.setWithPropertyChain(chain: String, value: Any) {
     val identifiers = chain.split(".")
     var currentSlot: Any? = this
     lateinit var slotProperty: KProperty<*>
-    for (identifier in identifiers) {
+    identifiers.forEachIndexed { index, identifier ->
         val slotType = currentSlot!!::class
-        slotProperty = slotType.getProperty<KProperty<*>>(identifier)!!
-        currentSlot = slotProperty.getter.call(currentSlot)
+        slotProperty = slotType.getProperty(identifier)!!
+
+        if (index < identifiers.size - 1) {
+            currentSlot = slotProperty.getter.call(currentSlot)
+        } else {
+            (slotProperty as KMutableProperty<*>).setter.call(currentSlot, value)
+        }
     }
-    (slotProperty as KMutableProperty<*>).setter.call(currentSlot, value)
 }
 
 val KParameter.kotlin: KClass<*>

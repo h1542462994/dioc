@@ -2,12 +2,15 @@ package org.tty.dioc.config.schema
 
 import kotlin.reflect.KClass
 
+/**
+ * [ConfigSchema] for data. the data can be used by configuration and path visitation.
+ */
 class DataSchema<T: Any> (
     override val name: String,
     override val type: KClass<T>,
     val default: T,
     override val rule: ConfigRule
-): ConfigSchema {
+): ConfigSchema<T> {
     override val tag: String
         get() = "data"
 

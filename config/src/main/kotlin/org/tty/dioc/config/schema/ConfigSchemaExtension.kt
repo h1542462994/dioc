@@ -2,20 +2,16 @@ package org.tty.dioc.config.schema
 
 import org.tty.dioc.annotation.NoInfer
 import org.tty.dioc.config.ApplicationConfig
-import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.internal.ApplicationConfigDelegate
+import org.tty.dioc.error.notProvided
 import org.tty.dioc.reflect.getProperty
-import org.tty.dioc.reflect.properties
 import org.tty.dioc.reflect.returnTypeKotlin
-import java.nio.file.Path
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.typeOf
 
-inline fun <reified T: Any> getRuleByTypeAndRule(configRule: ConfigRule): ConfigRule {
+inline fun <reified T: Any> getRuleByType(configRule: ConfigRule): ConfigRule {
     var rule = configRule
     if (rule == ConfigRule.NoAssigned) {
         val ruleApi = T::class.findAnnotation<ConfigRuleApi>()
@@ -31,15 +27,15 @@ inline fun <reified T: Any> getRuleByTypeAndRule(configRule: ConfigRule): Config
 }
 
 inline fun <reified T: Any> providerSchema(name: String, providers: List<KClass<out T>>, configRule: ConfigRule = ConfigRule.NoAssigned): ProvidersSchema<T> {
-    return ProvidersSchema(name, T::class, providers, getRuleByTypeAndRule<T>(configRule))
+    return ProvidersSchema(name, T::class, providers, getRuleByType<T>(configRule))
 }
 
 inline fun <reified T: Any> dataSchema(name: String, default: T, configRule: ConfigRule = ConfigRule.NoAssigned): DataSchema<T> {
-    return DataSchema(name, T::class, default, getRuleByTypeAndRule<T>(configRule))
+    return DataSchema(name, T::class, default, getRuleByType<T>(configRule))
 }
 
 @Suppress("UNCHECKED_CAST")
-inline infix fun <@NoInfer reified T: Any> ConfigSchema.pathTo(path: String): PathSchema<T> {
+fun <@NoInfer T: Any> ConfigSchema<*>.pathTo(path: String, resultType: KClass<T>? = null): PathSchema<T> {
     // relevant visit path to root.
     var relevantPath = path
     // currentSlot to visit.
@@ -66,37 +62,62 @@ inline infix fun <@NoInfer reified T: Any> ConfigSchema.pathTo(path: String): Pa
     }
     for (visit in properties) {
         val p = currentType.getProperty<KProperty<*>>(visit)
-        requireNotNull(p)
+        requireNotNull(p) {
+            "the property for pathSchema is not found."
+        }
         val ruleApi = p.findAnnotation<ConfigRuleApi>()
         if (ruleApi != null) {
             require(ruleApi.configRule != ConfigRule.NoAssigned) {
-                "configRule couldn't be not assigned."
+                "configRule couldn't be no assigned."
             }
             currentRule = ruleApi.configRule
         }
         currentType = p.returnTypeKotlin
     }
 
+    if (resultType != null) {
+        require(currentType == resultType) {
+            "result type is not equal to $resultType"
+        }
+    }
+
     return PathSchema(relevantPath, currentType as KClass<T>, currentSlot, currentRule)
 }
 
-//fun autoPathSchema(configSchemas: ConfigSchemas, name: String): PathSchema<Any>? {
-//    // name like org.tty.dioc.config.mode.text
-//    val tokens = name.split(".")
-//    for (i in 1 until tokens.size) {
-//        val left = tokens.slice(0 until name.length - i).joinToString(".")
-//        val right = tokens.slice(name.length - i until name.length).joinToString(".")
-//        val leftSchema = configSchemas.get<ConfigSchema>(left)
-//        if (leftSchema != null) {
-//            return leftSchema pathTo right
-//        }
-//    }
-//    return null
-//}
+inline infix fun <reified T: Any> ConfigSchema<*>.pathTo(path: String): PathSchema<T> {
+    return pathTo(path, T::class)
+}
+
+fun <T: Any> autoPathSchema(configSchemas: ConfigSchemas, name: String): PathSchema<T>? {
+    // name like org.tty.dioc.config.mode.text
+    val tokens = name.split(".")
+    for (i in 1 until tokens.size) {
+        val left = tokens.slice(0 until tokens.size - i).joinToString(".")
+        val right = tokens.slice(tokens.size - i until tokens.size).joinToString(".")
+        val leftSchema = configSchemas.get<Any>(left)
+        if (leftSchema != null) {
+            // not use type check.
+            return leftSchema.pathTo(right, resultType = null)
+        }
+    }
+    return null
+}
+
+fun <T: Any> autoSchema(configSchemas: ConfigSchemas, name: String): ConfigSchema<T>? {
+    var configSchema: ConfigSchema<T>? = configSchemas[name]
+    if (configSchema == null) {
+        configSchema = autoPathSchema(configSchemas, name)
+    }
+    return configSchema
+}
 
 /**
  * create a property delegate by [ApplicationConfigDelegate]
  */
-fun <T: Any> delegateForSchema(configSchema: ConfigSchema): ReadWriteProperty<ApplicationConfig, T> {
+fun <@NoInfer T: Any> delegateForSchema(configSchema: ConfigSchema<T>): ReadWriteProperty<ApplicationConfig, T> {
+    return ApplicationConfigDelegate(configSchema)
+}
+
+fun <T: Any, @NoInfer TR: Any> delegateForSchema2(configSchema: ConfigSchema<T>): ReadWriteProperty<ApplicationConfig, TR> {
     return ApplicationConfigDelegate(configSchema)
 }

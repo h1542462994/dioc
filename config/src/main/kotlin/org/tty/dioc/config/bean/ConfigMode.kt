@@ -12,16 +12,18 @@ data class ConfigMode(
     /**
      * whether open annotation support, by default **open**.
      */
-    val annotation: Boolean = true,
+    var annotation: Boolean = true,
 
     /**
      * whether open file support, by default **open**.
      */
-    val file: Boolean = true,
+    var file: Boolean = true,
 
     /**
      * test string
      */
     @DebugOnly
-    val test: String = "testString"
+    @ConfigRuleApi(configRule = ConfigRule.Declare)
+    //@ConfigSavable
+    var test: String = "testString"
 )

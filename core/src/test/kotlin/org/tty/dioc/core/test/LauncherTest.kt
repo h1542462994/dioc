@@ -1,37 +1,60 @@
 package org.tty.dioc.core.test
 
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.tty.dioc.config.ApplicationConfig
-import org.tty.dioc.config.bean.ConfigMode
-import org.tty.dioc.config.schema.ConfigSchemas
+import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.useAnnotation
 import org.tty.dioc.config.useFile
-import org.tty.dioc.core.basic.BasicComponentStorage
-import org.tty.dioc.core.basic.ComponentStorage
-import org.tty.dioc.core.declare.MutableComponentDeclares
-import org.tty.dioc.core.declare.ReadonlyComponentDeclares
+import org.tty.dioc.core.ApplicationContext
+import org.tty.dioc.core.ApplicationEntryPoint
+import org.tty.dioc.core.CoreModule
+import org.tty.dioc.core.declare.ComponentDeclareAware
 import org.tty.dioc.core.getComponent
 import org.tty.dioc.core.launcher.startKernel
-import org.tty.dioc.core.test.services.HelloService
+import org.tty.dioc.reflect.setWithPropertyChain
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LauncherTest {
     @Test
-    fun test() {
-        val applicationContext = startKernel(TestApplicationEntryPoint())
+    @Order(800)
+    fun testGetConfig() {
         val applicationConfig = applicationContext.getComponent<ApplicationConfig>()
         println(applicationConfig.useAnnotation)
         println(applicationConfig.useFile)
-        println(applicationConfig.get<ConfigMode>("org.tty.dioc.config.mode").test)
-        println(applicationContext)
-        val configSchemas = applicationContext.getComponent<ConfigSchemas>()
-        val componentStorage = applicationContext.getComponent<ComponentStorage>()
-        println(configSchemas)
-        println(componentStorage)
-
-        val configDeclares = applicationContext.getComponent<ReadonlyComponentDeclares>() as MutableComponentDeclares
-        println(configDeclares)
-
-        val helloService = applicationContext.getComponent<HelloService>()
-        println(helloService.hello())
+        println(applicationConfig.getList(ConfigModule.configSchema))
     }
+
+    @Test
+    @Order(1000)
+    fun testSetConfig() {
+        val applicationConfig = applicationContext.getComponent<ApplicationConfig>()
+        applicationConfig.useAnnotation = false
+        applicationConfig.useFile = false
+        println(applicationConfig.useAnnotation)
+        println(applicationConfig.useFile)
+    }
+
+
+    companion object {
+        lateinit var applicationContext: ApplicationContext
+
+        @JvmStatic
+        @BeforeAll
+        fun initialize() {
+            applicationContext = startKernel(EntryPoint())
+
+        }
+    }
+
+    class EntryPoint : ApplicationEntryPoint {
+        override fun onConfiguration(applicationConfig: ApplicationConfig) {
+
+        }
+
+        override fun onStartUp(componentDeclareAware: ComponentDeclareAware) {
+
+        }
+    }
+
+
 }

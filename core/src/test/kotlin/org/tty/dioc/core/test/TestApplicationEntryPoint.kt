@@ -8,7 +8,7 @@ import org.tty.dioc.core.declare.ComponentDeclareAware
 
 class TestApplicationEntryPoint: ApplicationEntryPoint {
     override fun onConfiguration(applicationConfig: ApplicationConfig) {
-
+        //applicationConfig.useAnnotation = false
     }
 
     override fun onStartUp(componentDeclareAware: ComponentDeclareAware) {

@@ -13,12 +13,20 @@ class ConfigSchemas {
     /**
      * storage for [ConfigSchema]
      */
-    private val schemaStore = HashMap<String, ConfigSchema>()
+    private val schemaStore = HashMap<String, ConfigSchema<*>>()
+
+    /**
+     * config the [ConfigSchema]
+     */
+    fun <T: Any> config(value: ConfigSchema<T>) {
+        schemaStore[value.name] = value
+    }
 
     /**
      * config the [ConfigSchema] and return itself
      */
-    fun <T: ConfigSchema> config(value: T): T {
+    @Deprecated("use config instead.")
+    fun <T: Any> configReturn(value: ConfigSchema<T>): ConfigSchema<T> {
         schemaStore[value.name] = value
         return value
     }
@@ -27,13 +35,13 @@ class ConfigSchemas {
      * get the [ConfigSchema] by [name]
      */
     @Suppress("UNCHECKED_CAST")
-    operator fun <T: ConfigSchema> get(name: String): T? {
+    operator fun <T: Any> get(name: String): ConfigSchema<T>? {
         val value = schemaStore[name]
 
         return if (value == null) {
             null
         } else {
-            value as T
+            value as ConfigSchema<T>
         }
     }
 

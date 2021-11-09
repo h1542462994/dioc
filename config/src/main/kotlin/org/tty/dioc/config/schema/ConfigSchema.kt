@@ -7,12 +7,12 @@ import kotlin.reflect.KClass
  * the declaration is registered in [ConfigSchemas]
  * @see ConfigSchemas
  */
-interface ConfigSchema {
+interface ConfigSchema<T: Any> {
     /**
      * the name of the schema
      */
     val name: String
-    val type: KClass<*>
+    val type: KClass<T>
     val tag: String
     /**
      * the rule of the schema

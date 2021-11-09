@@ -3,7 +3,7 @@ package org.tty.dioc.config.schema
 import kotlin.reflect.KClass
 
 /**
- * indirect visitor for schema.
+ * path visitation for [DataSchema]
  */
 class PathSchema<T: Any>(
     /**
@@ -14,10 +14,10 @@ class PathSchema<T: Any>(
     /**
      * referent [ConfigSchema]
      */
-    val referent: ConfigSchema,
+    val referent: ConfigSchema<*>,
 
     override val rule: ConfigRule
-): ConfigSchema {
+): ConfigSchema<T> {
     init {
         require(referent !is PathSchema<*>) {
             "couldn't use PathSchema as a reference, you could use ConfigSchema pathTo ... to use indirect reference."

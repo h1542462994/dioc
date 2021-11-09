@@ -10,10 +10,9 @@ import kotlin.reflect.KClass
 @InternalComponent
 @ConfigRuleApi(configRule = ConfigRule.Declare)
 interface ApplicationConfig {
-    operator fun <@NoInfer T: Any> get(name: String): T
-    operator fun <T: Any> set(name: String, value: T)
-    operator fun <@NoInfer T: Any> get(configSchema: ConfigSchema): T
-    operator fun <T: Any> set(configSchema: ConfigSchema, value: T)
-    operator fun <T: Any> get(type: KClass<T>): T
+    operator fun <T: Any> get(configSchema: ConfigSchema<T>): Any
+    operator fun <T: Any> set(configSchema: ConfigSchema<T>, value: Any)
+    fun <T: Any> getList(configSchema: ConfigSchema<T>): List<*>
+    fun <T: Any> setList(configSchema: ConfigSchema<T>, list: List<*>)
 }
 

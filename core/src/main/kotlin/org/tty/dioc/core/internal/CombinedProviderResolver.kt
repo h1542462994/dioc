@@ -1,10 +1,12 @@
 package org.tty.dioc.core.internal
 
 import org.tty.dioc.annotation.DebugOnly
+import org.tty.dioc.base.InitSuperComponent
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.basic.ProviderResolver
 import org.tty.dioc.core.launcher.configSchemas
+import org.tty.dioc.core.launcher.logger
 import org.tty.dioc.error.NotProvidedException
 import org.tty.dioc.error.notProvided
 import org.tty.dioc.reflect.kotlin
@@ -20,19 +22,31 @@ import kotlin.reflect.KClass
 class CombinedProviderResolver(
     private val componentStorage: ComponentStorage
 ): ProviderResolver {
+
     override fun <T : Any> resolveProvider(name: String): T {
-        val configSchema = componentStorage.configSchemas.get<ProvidersSchema<T>>(name)
+        val configSchema = componentStorage.configSchemas.get<T>(name)
+
+//        if (configSchema == null) {
+//            // WARNING: UNCHECKED_CAST.
+//            configSchema = autoPathSchema(componentStorage.configSchemas, name)
+//        }
 
         require(configSchema != null) {
             "configSchema is not defined."
         }
+        configSchema as ProvidersSchema<T>
+
 //        require(configSchema.rule == ConfigRule.Declare) {
 //            "basicProviderResolver could only resolve the $configSchema which has the rule declare."
 //        }
+
         val interfaceType = configSchema.type
         val providerTypes = configSchema.default
+        var superComponent: T? = null
+
         val providers = providerTypes.map {
-            createProvider(it)
+            superComponent = createProvider(it, superComponent)
+            superComponent as T
         }
         //componentStorage.addComponent(name, combinedProviderProxy)
         require(providers.isNotEmpty()) {
@@ -41,7 +55,7 @@ class CombinedProviderResolver(
 
 
         return if (providers.size > 1) {
-            // more than 1 providers will create a proxy
+            // more than 1 providers will create a proxy that reuse the provider
             createProxy(interfaceType, providers)
         } else {
             // else return the real provider
@@ -50,19 +64,27 @@ class CombinedProviderResolver(
 
     }
 
-    private fun <T: Any> createProvider(type: KClass<T>): T {
+
+
+    private fun <T: Any> createProvider(type: KClass<T>, superComponent: Any?): T {
         val constructors = type.constructors
         require(constructors.size == 1) {
             "provider $type has none or more than 1 constructor(s). so we couldn't which constructor to call."
         }
         val constructor = constructors.first()
 
-
         val parameterMap = constructor.parameters.associateWith {
             val parameterType = it.kotlin
             componentStorage.findComponent(parameterType)
         }
-        return constructor.callBy(parameterMap)
+        val component = constructor.callBy(parameterMap)
+
+        if (component is InitSuperComponent<*> && superComponent != null) {
+            @Suppress("UNCHECKED_CAST")
+            (component as InitSuperComponent<T>).initSuper(superComponent as T)
+        }
+
+        return component
     }
 
     /**
@@ -86,6 +108,7 @@ class CombinedProviderResolver(
                 } catch (e: InvocationTargetException) {
                     if (e.cause is NotProvidedException) {
                         // ignore if the cause is not provided exception
+                        componentStorage.logger.e("BasicProviderResolver", e.cause!!.message)
                     } else {
                         throw e
                     }
@@ -98,4 +121,5 @@ class CombinedProviderResolver(
         }
         return proxy as T
     }
+
 }

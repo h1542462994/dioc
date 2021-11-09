@@ -3,14 +3,16 @@ package org.tty.dioc.config.schema
 import kotlin.reflect.KClass
 
 /**
- * a provider schema, binds the schema between
+ * providers schema.
+ * the value will be provided by provides. which is order semitic.
  */
+@ConfigListable
 class ProvidersSchema<T: Any>(
     override val name: String,
     override val type: KClass<T>,
     val default: List<KClass<out T>> = listOf(),
     override val rule: ConfigRule
-): ConfigSchema {
+): ConfigSchema<T> {
     override fun info(): String {
         return "${type.simpleName} <--- ${default.map { it.simpleName }}"
     }

@@ -19,6 +19,7 @@ import org.tty.dioc.core.launcher.ComponentKeys.configSchemas
 import org.tty.dioc.core.launcher.ComponentKeys.coreModule
 import org.tty.dioc.core.launcher.ComponentKeys.providerResolver
 import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.util.Logger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
 
@@ -86,14 +87,13 @@ class KernelLoader {
         // ------------------ create informal suites -------------------
 
         replaceCombinedProviderResolver()
-
-        // call on configuration
-        entryPoint.onConfiguration(componentStorage.getInternalComponent(ConfigModule.configSchema))
+        addProvider<Logger>()
         addProvider<ScopeFactory>()
         addProvider<ScopeAbility>()
         addProvider<ReadonlyComponentDeclares>()
-
-        val componentDeclares = componentStorage.getInternalComponent<ReadonlyComponentDeclares>(CoreModule.componentDeclaresSchema)
+        // call on configuration
+        entryPoint.onConfiguration(componentStorage.getInternalComponent(ConfigModule.configSchema))
+        val componentDeclares = componentStorage.getInternalComponent(CoreModule.componentDeclaresSchema)
                 as MutableComponentDeclares
 
         // add root components
@@ -123,7 +123,7 @@ class KernelLoader {
                     }
                 } else {
                     componentStorage
-                        .getInternalComponent<ComponentResolver>(CoreModule.componentResolverSchema)
+                        .getInternalComponent(CoreModule.componentResolverSchema)
                         .resolve(declare = componentDeclares.singleDeclarationType(declarationType = declareType))
                 }
             }
