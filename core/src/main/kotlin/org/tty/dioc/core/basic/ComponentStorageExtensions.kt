@@ -3,8 +3,8 @@ package org.tty.dioc.core.basic
 import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.config.schema.ConfigSchema
 import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.core.declare.ServiceCreated
-import org.tty.dioc.core.key.NamedSingletonKey
+import org.tty.dioc.core.declare.ComponentRecord
+import org.tty.dioc.core.key.SingletonKey
 import kotlin.reflect.full.hasAnnotation
 
 inline fun <reified T: Any> ComponentStorage.findInternalComponent(configSchema: ConfigSchema<T>): T? {
@@ -15,7 +15,7 @@ inline fun <reified T: Any> ComponentStorage.findInternalComponent(name: String)
     require(T::class.hasAnnotation<InternalComponent>()) {
         "you could only get InternalComponent by this way."
     }
-    val component = this.findComponent(NamedSingletonKey(name, T::class))
+    val component = this.findComponent(SingletonKey(T::class, name))
     return component as T?
 }
 
@@ -53,8 +53,8 @@ inline fun <reified T: Any> ComponentStorage.addInternalComponent(name: String, 
     }
     this.withTransaction {
         addFull(
-            NamedSingletonKey(name, T::class),
-            ServiceCreated(component,
+            SingletonKey(T::class, name),
+            ComponentRecord(component,
                 ComponentDeclare.fromInternalComponentType(T::class, component::class)
             )
         )

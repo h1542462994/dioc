@@ -5,12 +5,10 @@ import org.tty.dioc.core.declare.ReadonlyComponentDeclares
 import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
-import org.tty.dioc.base.Builder
 import org.tty.dioc.base.FinishAware
 import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.basic.ScopeFactory
-import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -61,7 +59,7 @@ open class DefaultApplicationContext(
         entry = ComponentResolverImpl(declarations, storage, stackScopeTrace)
         declarations.forEach {
             if (!it.isLazyComponent && it.lifecycle == Lifecycle.Singleton) {
-                getComponent(it.declarationTypes[0])
+                getComponent(it.indexTypes[0])
             }
         }
 
@@ -78,7 +76,7 @@ open class DefaultApplicationContext(
     private fun onCreateScope(scope: Scope) {
         declarations.forEach {
             if (!it.isLazyComponent && it.lifecycle == Lifecycle.Scoped) {
-                getComponent(it.declarationTypes[0])
+                getComponent(it.indexTypes[0])
             }
         }
     }
@@ -87,10 +85,7 @@ open class DefaultApplicationContext(
         declarations.forEach {
             if (it.lifecycle == Lifecycle.Scoped) {
                 storage.remove(
-                    ComponentKey.ofDeclare(
-                        it,
-                        scope
-                    )
+                    it.createKey(scope)
                 )
             }
         }

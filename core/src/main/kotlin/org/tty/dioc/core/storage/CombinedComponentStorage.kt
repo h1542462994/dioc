@@ -1,25 +1,18 @@
 package org.tty.dioc.core.storage
 
-import org.tty.dioc.annotation.Component
-import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.annotation.Lifecycle
-import org.tty.dioc.core.declare.ServiceCreated
-import org.tty.dioc.core.declare.ComponentCreating
-import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.base.InitializeAware
-import org.tty.dioc.core.internal.BasicComponentStorageImpl
-import org.tty.dioc.core.key.*
+import org.tty.dioc.core.basic.ComponentStorage
+import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.declare.ComponentRecord
+import org.tty.dioc.core.key.ComponentKey
+import org.tty.dioc.core.key.TransientKey
 import org.tty.dioc.core.launcher.ComponentKeys
-import org.tty.dioc.core.launcher.componentStorage
 import org.tty.dioc.error.TransactionClosedException
-import org.tty.dioc.transaction.Transactional
 import org.tty.dioc.util.formatTable
 import org.tty.dioc.util.toTruncateString
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 
 /**
  * the storage for service
@@ -33,7 +26,7 @@ class CombinedComponentStorage: ComponentStorage {
     /**
      * the part storage, also the second level cache.
      */
-    private val partStorage = HashMap<ComponentKey, ComponentCreating>()
+    private val partStorage = HashMap<ComponentKey, ComponentRecord>()
 
     private var transactionCount = 0
 
@@ -59,32 +52,32 @@ class CombinedComponentStorage: ComponentStorage {
         }
 
         /**
-         * add the [serviceCreated] to [partStorage] and [marking].
+         * add the [componentRecord] to [partStorage] and [marking].
          */
         @Throws(TransactionClosedException::class)
-        override fun addFull(componentKey: ComponentKey, serviceCreated: ServiceCreated) {
+        override fun addFull(componentKey: ComponentKey, componentRecord: ComponentRecord) {
             requireNotClosed()
-            val (service, serviceDeclare) = serviceCreated
+            val (component, componentDeclare) = componentRecord
             val entry: Any = when(componentKey) {
                 is TransientKey -> {
-                    WeakReference(service)
+                    WeakReference(component)
                 }
                 else -> {
-                    service
+                    component
                 }
             }
             fullStorage[componentKey] = entry
-            marking[serviceDeclare] = entry
+            marking[componentDeclare] = entry
         }
 
         /**
-         * add the [serviceCreating] to [partStorage] and [marking]
+         * add the [componentRecord] to [partStorage] and [marking]
          */
         @Throws(TransactionClosedException::class)
-        override fun addPart(componentKey: ComponentKey, serviceCreating: ComponentCreating) {
+        override fun addPart(componentKey: ComponentKey, componentRecord: ComponentRecord) {
             requireNotClosed()
-            partStorage[componentKey] = serviceCreating
-            marking[serviceCreating.componentDeclare] = serviceCreating
+            partStorage[componentKey] = componentRecord
+            marking[componentRecord.componentDeclare] = componentRecord
         }
 
         /**
@@ -179,8 +172,8 @@ class CombinedComponentStorage: ComponentStorage {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> findComponent(type: KClass<T>): T? {
-        val keys = fullStorage.keys.filterIsInstance<TypedComponentKey>().filter {
-            it::class.findAnnotation<Component>()!!.lifecycle == Lifecycle.Singleton && it.indexType == type
+        val keys = fullStorage.keys.filter {
+            it.lifecycle == Lifecycle.Singleton && it.indexType == type
         }
         require(keys.isNotEmpty()) {
             return null
@@ -207,7 +200,7 @@ class CombinedComponentStorage: ComponentStorage {
     /**
      * the first service not injected.
      */
-    override val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentCreating>
+    override val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentRecord>
     get() {
         return partStorage.entries.first()
     }
@@ -239,29 +232,12 @@ class CombinedComponentStorage: ComponentStorage {
     override fun toString(): String {
 
         /**
-         * lifecycle | name? | type? | scope?
+         * lifecycle | name? | type | scope?
          */
         fun split(key: ComponentKey): Array<String?> {
-            return when (key) {
-                is TransientKey -> {
-                    arrayOf("transient", "<anonymous>", "?", "")
-                }
-                is SingletonKey -> {
-                    arrayOf("singleton", "<anonymous>", key.indexType.qualifiedName, "")
-                }
-                is ScopeKey -> {
-                    arrayOf("scoped", "<anonymous>", key.indexType.qualifiedName, key.scope.toTruncateString())
-                }
-                is NamedScopeKey -> {
-                    arrayOf("scoped", key.name, key.indexType.qualifiedName, key.scope.toTruncateString())
-                }
-                is NamedSingletonKey -> {
-                    arrayOf("singleton", key.name, key.indexType.qualifiedName, "")
-                }
-                else -> {
-                    arrayOf("<error/>", "", "", "")
-                }
-            }
+            return arrayOf(
+                "${key.lifecycle}", key.name ?: "<anonymous>", key.indexType.qualifiedName, key.scope.toTruncateString()
+            )
         }
 
         val realList = fullStorage.map {

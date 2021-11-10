@@ -1,8 +1,7 @@
 package org.tty.dioc.core.storage
 
-import org.tty.dioc.core.declare.ServiceCreated
-import org.tty.dioc.core.declare.ComponentCreating
 import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.declare.ComponentRecord
 import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.error.TransactionClosedException
 import org.tty.dioc.transaction.Transaction
@@ -10,16 +9,16 @@ import kotlin.jvm.Throws
 
 sealed interface IStorageTransaction: Transaction {
     /**
-     * add the [serviceCreated].
+     * add the [componentRecord].
      */
     @Throws(TransactionClosedException::class)
-    fun addFull(componentKey: ComponentKey, serviceCreated: ServiceCreated)
+    fun addFull(componentKey: ComponentKey, componentRecord: ComponentRecord)
 
     /**
-     * add the [serviceCreating].
+     * add the [componentRecord].
      */
     @Throws(TransactionClosedException::class)
-    fun addPart(componentKey: ComponentKey, serviceCreating: ComponentCreating)
+    fun addPart(componentKey: ComponentKey, componentRecord: ComponentRecord)
 
     /**
      * add the marking placeholder.
@@ -28,7 +27,7 @@ sealed interface IStorageTransaction: Transaction {
     fun addEmpty(componentDeclare: ComponentDeclare)
 
     /**
-     * move from [ComponentCreating] to [ServiceCreated]
+     * move from [ComponentCreating] to [ComponentCreated]
      */
     @Throws(TransactionClosedException::class)
     fun moveToFull(componentKey: ComponentKey)

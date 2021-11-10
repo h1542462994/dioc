@@ -2,6 +2,7 @@ package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Component
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.lifecycle.Scope
 import kotlin.reflect.KClass
 
 /**
@@ -9,4 +10,13 @@ import kotlin.reflect.KClass
  * @see [Lifecycle]
  */
 @Component(lifecycle = Lifecycle.Transient)
-class TransientKey: ComponentKey
+class TransientKey(
+    override val indexType: KClass<*>,
+    override val name: String?,
+): ComponentKey {
+    override val scope: Scope?
+        get() = null
+
+    override val lifecycle: Lifecycle
+        get() = Lifecycle.Transient
+}

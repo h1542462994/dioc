@@ -2,13 +2,19 @@ package org.tty.dioc.core.declare
 
 import org.tty.dioc.annotation.Component
 import org.tty.dioc.annotation.InjectPlace
+import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.basic.ScopeAbility
+import org.tty.dioc.core.key.ComponentKey
+import org.tty.dioc.core.key.ScopeKey
+import org.tty.dioc.core.key.SingletonKey
+import org.tty.dioc.core.key.TransientKey
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
+import org.tty.dioc.error.ServiceConstructException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -19,13 +25,17 @@ import kotlin.reflect.full.findAnnotation
  */
 class ComponentDeclare(
     /**
+     * name of the component
+     */
+    val name: String?,
+    /**
      * the real service type.
      */
     val implementationType: KClass<*>,
     /**
      * the declaration service types.
      */
-    val declarationTypes: List<KClass<*>>,
+    val indexTypes: List<KClass<*>>,
     /**
      * the lifecycle of the service.
      * @see [Component.lifecycle]
@@ -46,6 +56,23 @@ class ComponentDeclare(
     val components: List<PropertyComponent>
 
 ) {
+    fun createKey(scope: Scope?): ComponentKey {
+        return when (lifecycle) {
+            Lifecycle.Singleton -> {
+                SingletonKey(implementationType, null)
+            }
+            Lifecycle.Scoped -> {
+                if (scope == null) {
+                    throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
+                }
+                ScopeKey(implementationType, null, scope)
+            }
+            Lifecycle.Transient -> {
+                TransientKey(implementationType, null)
+            }
+        }
+    }
+
     /**
      * get the serviceProperties which the injectPlace is equal to [injectPlace], relies on [componentsOf].
      */
@@ -87,8 +114,9 @@ class ComponentDeclare(
             val components = ServiceUtil.getComponents(implementationType)
 
             return ComponentDeclare(
+                name = null,
                 implementationType = implementationType,
-                declarationTypes = declarationTypes,
+                indexTypes = declarationTypes,
                 lifecycle = componentAnnotation.lifecycle,
                 isLazyComponent = componentAnnotation.lazy,
                 constructor = constructor,
@@ -97,9 +125,11 @@ class ComponentDeclare(
         }
 
         fun fromInternalComponentType(declarationType: KClass<*>, implementationType: KClass<*>): ComponentDeclare {
+            val internalComponent = declarationType.findAnnotation<InternalComponent>()
             return ComponentDeclare(
+                name = null,
                 implementationType = implementationType,
-                declarationTypes = listOf(declarationType),
+                indexTypes = listOf(declarationType),
                 lifecycle = Lifecycle.Singleton,
                 isLazyComponent = false,
                 constructor = ServiceUtil.getInjectConstructor(implementationType),

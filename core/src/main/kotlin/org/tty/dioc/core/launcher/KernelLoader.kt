@@ -13,7 +13,7 @@ import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.internal.BasicProviderResolver
 import org.tty.dioc.core.internal.CombinedProviderResolver
 import org.tty.dioc.core.internal.ComponentDeclareResolver
-import org.tty.dioc.core.key.NamedSingletonKey
+import org.tty.dioc.core.key.SingletonKey
 import org.tty.dioc.core.launcher.ComponentKeys.configModule
 import org.tty.dioc.core.launcher.ComponentKeys.configSchemas
 import org.tty.dioc.core.launcher.ComponentKeys.coreModule
@@ -59,7 +59,7 @@ class KernelLoader {
     }
 
     private fun replaceCombinedProviderResolver(){
-        componentStorage.remove(NamedSingletonKey(providerResolver, ProviderResolver::class))
+        componentStorage.remove(SingletonKey(ProviderResolver::class, providerResolver))
         addComponent<ProviderResolver>(providerResolver, CombinedProviderResolver(componentStorage))
     }
 

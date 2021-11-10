@@ -22,7 +22,7 @@ class ComponentProperty(
      */
     val name: String,
     /**
-     * the inject place
+     * to inject place
      */
     private val injectPlace: InjectPlace
 ) {

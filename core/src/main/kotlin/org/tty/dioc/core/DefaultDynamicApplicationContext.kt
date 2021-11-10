@@ -7,9 +7,7 @@ import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.lifecycle.StackScopeTrace
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
-import org.tty.dioc.base.Builder
 import org.tty.dioc.core.basic.ScopeFactory
-import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.observable.channel.observe
 import kotlin.reflect.KClass
 
@@ -79,7 +77,7 @@ open class DefaultDynamicApplicationContext(
         entry = ComponentResolverImpl(declarations, storage, stackScopeTrace)
         declarations.forEach {
             if (!it.isLazyComponent && it.lifecycle == Lifecycle.Singleton) {
-                getComponent(it.declarationTypes[0])
+                getComponent(it.indexTypes[0])
             }
         }
 
@@ -127,7 +125,7 @@ open class DefaultDynamicApplicationContext(
     private fun onCreateScope(scope: Scope) {
         declarations.forEach {
             if (!it.isLazyComponent && it.lifecycle == Lifecycle.Scoped) {
-                getComponent(it.declarationTypes[0])
+                getComponent(it.indexTypes[0])
             }
         }
     }
@@ -139,10 +137,7 @@ open class DefaultDynamicApplicationContext(
         declarations.forEach {
             if (it.lifecycle == Lifecycle.Scoped) {
                 storage.remove(
-                    ComponentKey.ofDeclare(
-                        it,
-                        scope
-                    )
+                    it.createKey(scope)
                 )
             }
         }

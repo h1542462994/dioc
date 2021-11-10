@@ -74,14 +74,14 @@ class ComponentDeclares() : MutableComponentDeclares, ReadonlyComponentDeclares 
     }
 
     override fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ComponentDeclare? {
-        return this.singleOrNull { it.declarationTypes.contains(declarationType) }
+        return this.singleOrNull { it.indexTypes.contains(declarationType) }
     }
 
     /**
-     * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.indexTypes] contains [declarationType]
      */
     override fun singleDeclarationType(declarationType: KClass<*>): ComponentDeclare {
-        return this.single { it.declarationTypes.contains(declarationType) }
+        return this.single { it.indexTypes.contains(declarationType) }
     }
 
     /**
@@ -100,7 +100,7 @@ class ComponentDeclares() : MutableComponentDeclares, ReadonlyComponentDeclares 
         // remove the existed declaration
         if (l != null && forceReplaceEnabled) {
             container.removeIf {
-                it.declarationTypes.contains(declarationType)
+                it.indexTypes.contains(declarationType)
             }
         }
 
@@ -108,8 +108,9 @@ class ComponentDeclares() : MutableComponentDeclares, ReadonlyComponentDeclares 
         if (l == null || forceReplaceEnabled) {
             container.add(
                 ComponentDeclare(
+                    name = null,
                     implementationType = implementationType,
-                    declarationTypes = listOf(declarationType),
+                    indexTypes = listOf(declarationType),
                     lifecycle = lifecycle,
                     isLazyComponent = lazy,
                     constructor = ServiceUtil.getInjectConstructor(implementationType),
@@ -148,7 +149,7 @@ class ComponentDeclares() : MutableComponentDeclares, ReadonlyComponentDeclares 
             listOf(
                 it.lifecycle,
                 it.isLazyComponent,
-                it.declarationTypes,
+                it.indexTypes,
                 it.implementationType,
             )
         }.toString()

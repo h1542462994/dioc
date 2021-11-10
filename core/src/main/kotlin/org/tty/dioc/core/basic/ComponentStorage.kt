@@ -2,9 +2,9 @@ package org.tty.dioc.core.basic
 
 import org.tty.dioc.annotation.Component
 import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.core.declare.ComponentCreating
-import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.base.FinishAware
+import org.tty.dioc.core.declare.ComponentRecord
+import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.transaction.Transactional
 import kotlin.reflect.KClass
@@ -22,7 +22,7 @@ interface ComponentStorage : FinishAware, Transactional<CombinedComponentStorage
     /**
      * the first service not injected.
      */
-    val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentCreating>
+    val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentRecord>
 
     /**
      * find the component by [componentKey] in [CombinedComponentStorage]

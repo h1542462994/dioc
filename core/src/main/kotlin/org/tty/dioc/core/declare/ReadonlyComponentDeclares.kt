@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 interface ReadonlyComponentDeclares: Iterable<ComponentDeclare> {
 
     /**
-     * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.indexTypes] contains [declarationType]
      */
     fun singleDeclarationType(declarationType: KClass<*>): ComponentDeclare
 
@@ -23,7 +23,7 @@ interface ReadonlyComponentDeclares: Iterable<ComponentDeclare> {
     fun singleServiceType(implementationType: KClass<*>): ComponentDeclare
 
     /**
-     * find in collection where [ComponentDeclare.declarationTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.indexTypes] contains [declarationType]
      * @return null means not match.
      */
     fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ComponentDeclare?
