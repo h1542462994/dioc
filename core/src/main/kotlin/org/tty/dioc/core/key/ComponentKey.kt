@@ -1,6 +1,7 @@
 package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
@@ -15,12 +16,20 @@ interface ComponentKey {
     val lifecycle: Lifecycle
     val indexType: KClass<*>
 
+    /**
+     * whether has [InternalComponent]
+     */
+    val internal: Boolean
+
     companion object {
-        @Deprecated("use componentDeclare.createKey(scope) instead")
+        @Deprecated(
+            "use componentDeclare.createKey(scope) instead",
+            replaceWith = ReplaceWith("componentDeclare.createKey(scope)")
+        )
         fun ofDeclare(componentDeclare: ComponentDeclare, scope: Scope?): ComponentKey {
             return when (componentDeclare.lifecycle) {
                 Lifecycle.Singleton -> {
-                    SingletonKey(componentDeclare.implementationType, null)
+                    SingletonKey(componentDeclare.implementationType, null, componentDeclare.internal)
                 }
                 Lifecycle.Scoped -> {
                     if (scope == null) {

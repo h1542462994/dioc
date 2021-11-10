@@ -1,7 +1,7 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.annotation.Lifecycle
-import org.tty.dioc.core.declare.ReadonlyComponentDeclares
+import org.tty.dioc.core.declare.ComponentDeclares
 import org.tty.dioc.core.lifecycle.*
 import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
@@ -16,11 +16,12 @@ import kotlin.reflect.KClass
  * the default implementation for applicationContext
  * @see [ApplicationContext]
  */
+@Deprecated("DefaultApplicationContext is replaced with startKernel.")
 open class DefaultApplicationContext(
     /**
      * the declaration of the services.
      */
-    private val declarations: ReadonlyComponentDeclares,
+    private val declarations: ComponentDeclares,
     scopeFactory: ScopeFactory
     ) : ApplicationContext, InitializeAware, FinishAware {
 

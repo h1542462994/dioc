@@ -3,12 +3,15 @@ package org.tty.dioc.core.test
 import org.junit.jupiter.api.*
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.ConfigModule
+import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.useAnnotation
 import org.tty.dioc.config.useFile
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.ApplicationEntryPoint
 import org.tty.dioc.core.CoreModule
+import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.declare.ComponentDeclareAware
+import org.tty.dioc.core.declare.ComponentDeclares
 import org.tty.dioc.core.getComponent
 import org.tty.dioc.core.launcher.startKernel
 import org.tty.dioc.reflect.setWithPropertyChain
@@ -34,6 +37,23 @@ class LauncherTest {
         println(applicationConfig.useFile)
     }
 
+    @Test
+    @Order(2000)
+    fun testPrintConfigSchemas() {
+        println(applicationContext.getComponent<ConfigSchemas>())
+    }
+
+    @Test
+    @Order(3000)
+    fun testPrintComponentStorage() {
+        println(applicationContext.getComponent<ComponentStorage>())
+    }
+
+    @Test
+    @Order(4000)
+    fun testComponentDeclares() {
+        println(applicationContext.getComponent<ComponentDeclares>())
+    }
 
     companion object {
         lateinit var applicationContext: ApplicationContext
@@ -47,12 +67,11 @@ class LauncherTest {
     }
 
     class EntryPoint : ApplicationEntryPoint {
-        override fun onConfiguration(applicationConfig: ApplicationConfig) {
+        override fun onConfiguration(config: ApplicationConfig) {
 
         }
 
-        override fun onStartUp(componentDeclareAware: ComponentDeclareAware) {
-
+        override fun onStartUp(aware: ComponentDeclareAware) {
         }
     }
 

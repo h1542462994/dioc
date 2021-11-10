@@ -7,10 +7,10 @@ import org.tty.dioc.annotation.Component
 
 /**
  * mutable service declares
- * @see [ComponentDeclares]
+ * @see [ComponentDeclaresImpl]
  */
 
-interface MutableComponentDeclares: ReadonlyComponentDeclares, ComponentDeclareAware {
+interface MutableComponentDeclares: ComponentDeclares, ComponentDeclareAware {
     fun addAll(componentDeclares: List<ComponentDeclare>)
 
     data class CreateLazy(

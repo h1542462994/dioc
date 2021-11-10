@@ -12,7 +12,15 @@ interface ConfigSchema<T: Any> {
      * the name of the schema
      */
     val name: String
+
+    /**
+     * the present type
+     */
     val type: KClass<T>
+
+    /**
+     * tag value
+     */
     val tag: String
     /**
      * the rule of the schema

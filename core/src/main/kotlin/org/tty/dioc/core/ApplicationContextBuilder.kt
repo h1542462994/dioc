@@ -2,7 +2,6 @@ package org.tty.dioc.core
 
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
-import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.base.Builder
 import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.core.internal.ComponentDeclareResolver
@@ -12,6 +11,7 @@ import org.tty.dioc.core.internal.ComponentDeclareResolver
  * @see [ApplicationContext]
  * @see [ApplicationContextBuilder]
  */
+@Deprecated("ApplicationContextBuilder is replaced with startKernel.")
 class ApplicationContextBuilder: Builder<ApplicationContext> {
     private val jsonFiles: ArrayList<String> = ArrayList()
     private val scanPackages: ArrayList<PackageOption> = ArrayList()
@@ -24,7 +24,7 @@ class ApplicationContextBuilder: Builder<ApplicationContext> {
             jsonFiles, scanPackages
         )
         return DefaultApplicationContext(
-            ComponentDeclares().apply {
+            ComponentDeclaresImpl().apply {
                 addAll(serviceDeclareResolver.getDeclarations())
             },
             scopeFactory

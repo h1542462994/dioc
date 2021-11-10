@@ -15,6 +15,7 @@ import kotlin.reflect.KClass
  * the default implementation for dynamicApplication
  * @see [DynamicApplicationContext]
  */
+@Deprecated("")
 open class DefaultDynamicApplicationContext(
     /**
      * the declaration of the services.

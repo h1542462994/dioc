@@ -5,7 +5,6 @@ import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.lifecycle.ScopeAware
 
 /**
- * represents a container for ability of getting service.
- *
+ * context for application
  */
 interface ApplicationContext : ComponentAware, ScopeAware, InitializeAware

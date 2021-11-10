@@ -18,8 +18,10 @@ data class ScopeKey(
     /**
      * the scope
      */
-    override val scope: Scope
+    override val scope: Scope,
 ): ComponentKey {
     override val lifecycle: Lifecycle
         get() = Lifecycle.Scoped
+    override val internal: Boolean
+        get() = false
 }

@@ -37,6 +37,10 @@ class ComponentDeclare(
      */
     val indexTypes: List<KClass<*>>,
     /**
+     * whether [InternalComponent]
+     */
+    val internal: Boolean,
+    /**
      * the lifecycle of the service.
      * @see [Component.lifecycle]
      */
@@ -59,7 +63,7 @@ class ComponentDeclare(
     fun createKey(scope: Scope?): ComponentKey {
         return when (lifecycle) {
             Lifecycle.Singleton -> {
-                SingletonKey(implementationType, null)
+                SingletonKey(implementationType, null, internal)
             }
             Lifecycle.Scoped -> {
                 if (scope == null) {
@@ -117,6 +121,7 @@ class ComponentDeclare(
                 name = null,
                 implementationType = implementationType,
                 indexTypes = declarationTypes,
+                internal = false,
                 lifecycle = componentAnnotation.lifecycle,
                 isLazyComponent = componentAnnotation.lazy,
                 constructor = constructor,
@@ -125,11 +130,11 @@ class ComponentDeclare(
         }
 
         fun fromInternalComponentType(declarationType: KClass<*>, implementationType: KClass<*>): ComponentDeclare {
-            val internalComponent = declarationType.findAnnotation<InternalComponent>()
             return ComponentDeclare(
                 name = null,
                 implementationType = implementationType,
                 indexTypes = listOf(declarationType),
+                internal = true,
                 lifecycle = Lifecycle.Singleton,
                 isLazyComponent = false,
                 constructor = ServiceUtil.getInjectConstructor(implementationType),

@@ -171,6 +171,7 @@ class CombinedComponentStorage: ComponentStorage {
 
 
     @Suppress("UNCHECKED_CAST")
+    @Deprecated("not suggest to find component by type.")
     override fun <T : Any> findComponent(type: KClass<T>): T? {
         val keys = fullStorage.keys.filter {
             it.lifecycle == Lifecycle.Singleton && it.indexType == type

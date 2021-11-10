@@ -19,4 +19,7 @@ class TransientKey(
 
     override val lifecycle: Lifecycle
         get() = Lifecycle.Transient
+
+    override val internal: Boolean
+        get() = false
 }

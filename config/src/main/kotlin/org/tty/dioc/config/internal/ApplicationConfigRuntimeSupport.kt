@@ -11,8 +11,6 @@ import org.tty.dioc.reflect.setWithPropertyChain
 import kotlin.reflect.full.hasAnnotation
 
 class ApplicationConfigRuntimeSupport : ApplicationConfig, InitSuperComponent<ApplicationConfig>{
-
-
     /**
      * storage. **WARNING: UNSAFE TYPE CAST.**
      */
@@ -33,26 +31,13 @@ class ApplicationConfigRuntimeSupport : ApplicationConfig, InitSuperComponent<Ap
                 get(configSchema.referent).getWithPropertyChain(chain)!!
             }
             is ProvidersSchema<*> -> {
-                val value = getFromStorage(configSchema) as List<*>
-
-                if (value.isEmpty()) {
-                    notProvided("empty provider.")
-                } else if (value.size > 1) {
-                    notProvided("has more than 1 provider.")
-                }
-                value.first()!!
+                getFromStorage(configSchema)
             }
             else -> unSupported("unreachable code.")
         }
     }
 
-    private fun getFromStorage(configSchema: ConfigSchema<*>): Any {
-        if (!storage.containsKey(configSchema)) {
-            storage[configSchema] = superComponent.get(configSchema)
-        }
 
-        return storage.getValue(configSchema)
-    }
 
     override fun <T : Any> set(configSchema: ConfigSchema<T>, value: Any) {
         require(configSchema.rule != ConfigRule.Declare) {
@@ -79,7 +64,7 @@ class ApplicationConfigRuntimeSupport : ApplicationConfig, InitSuperComponent<Ap
         }
         return when(configSchema) {
             is ProvidersSchema<*> -> {
-                getFromStorage(configSchema) as List<*>
+                getListFromStorage(configSchema)
             }
             else -> unSupported("unreachable code.")
         }
@@ -104,5 +89,20 @@ class ApplicationConfigRuntimeSupport : ApplicationConfig, InitSuperComponent<Ap
         this.superComponent = superComponent
     }
 
+    private fun getFromStorage(configSchema: ConfigSchema<*>): Any {
+        if (!storage.containsKey(configSchema)) {
+            storage[configSchema] = superComponent[configSchema]
+        }
+
+        return storage.getValue(configSchema)
+    }
+
+    private fun getListFromStorage(configSchema: ConfigSchema<*>): List<*> {
+        if (!storage.containsKey(configSchema)) {
+            storage[configSchema] = superComponent.getList(configSchema)
+        }
+
+        return storage.getValue(configSchema) as List<*>
+    }
 
 }

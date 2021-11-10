@@ -15,6 +15,7 @@ data class SingletonKey(
      */
     override val indexType: KClass<*>,
     override val name: String?,
+    override val internal: Boolean
 ): ComponentKey {
     override val scope: Scope?
         get() = null

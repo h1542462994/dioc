@@ -34,6 +34,7 @@ interface ComponentStorage : FinishAware, Transactional<CombinedComponentStorage
      */
     fun remove(componentKey: ComponentKey)
 
+    @Deprecated("not suggest to find component by type.")
     fun <T: Any> findComponent(type: KClass<T>): T?
 
     /**

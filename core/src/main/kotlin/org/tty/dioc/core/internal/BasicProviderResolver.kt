@@ -19,6 +19,7 @@ import kotlin.reflect.KClass
  * create a combined provider based on [ProvidersSchema]
  * the resolver will only be valid on [ConfigRule.Declare]
  */
+@Deprecated("use CombinedProviderResolver instead.")
 class BasicProviderResolver(
     private val componentStorage: ComponentStorage
 ): ProviderResolver {

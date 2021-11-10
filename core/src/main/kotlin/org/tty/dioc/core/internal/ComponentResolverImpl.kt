@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.javaConstructor
  * the entry for create or get the service
  */
 class ComponentResolverImpl(
-    private val serviceDeclarations: ReadonlyComponentDeclares,
+    private val serviceDeclarations: ComponentDeclares,
     override val storage: ComponentStorage,
     val scopeAbility: ScopeAbility
 ): ComponentResolver {
