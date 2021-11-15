@@ -33,7 +33,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
 
     override fun <T : Any> addSingleton(type: KClass<T>, lazy: Boolean) {
         // use delegate.
-        addDeclareByType(type, type, lifecycle = Lifecycle.Singleton, lazy)
+        addDeclareByType("", type, type, lifecycle = Lifecycle.Singleton, lazy)
         onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
     }
 
@@ -47,7 +47,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         lazy: Boolean
     ) {
         // use delegate.
-        addDeclareByType(indexType, realType, lifecycle = Lifecycle.Singleton, lazy)
+        addDeclareByType("", indexType, realType, lifecycle = Lifecycle.Singleton, lazy)
         onCreateLazy(indexType, lifecycle = Lifecycle.Singleton, lazy)
     }
 
@@ -62,7 +62,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
 
     override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) {
         // use delegate.
-        addDeclareByType(type, type, lifecycle = Lifecycle.Scoped, lazy)
+        addDeclareByType("", type, type, lifecycle = Lifecycle.Scoped, lazy)
         onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
     }
 
@@ -72,7 +72,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
 
     override fun <TD : Any, TI : Any> addScoped(indexType: KClass<TD>, realType: KClass<TI>, lazy: Boolean) {
         // use delegate.
-        addDeclareByType(indexType, realType, lifecycle = Lifecycle.Scoped, lazy)
+        addDeclareByType("", indexType, realType, lifecycle = Lifecycle.Scoped, lazy)
         onCreateLazy(indexType, lifecycle = Lifecycle.Scoped, lazy)
     }
 
@@ -87,7 +87,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
 
     override fun <T : Any> addTransient(type: KClass<T>) {
         // use delegate.
-        addDeclareByType(type, type, lifecycle = Lifecycle.Transient, true)
+        addDeclareByType("", type, type, lifecycle = Lifecycle.Transient, true)
     }
 
     override fun <T : Any> addTransient(name: String, type: KClass<T>) {
@@ -96,7 +96,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
 
     override fun <TD : Any, TI : Any> addTransient(indexType: KClass<TD>, realType: KClass<TI>) {
         // use delegate.
-        addDeclareByType(indexType, realType, lifecycle = Lifecycle.Transient, true)
+        addDeclareByType("", indexType, realType, lifecycle = Lifecycle.Transient, true)
     }
 
     override fun <TD : Any, TI : Any> addTransient(name: String, indexType: KClass<TD>, realType: KClass<TI>) {
@@ -136,15 +136,15 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
     }
 
     /**
-     * add a [declarationType] with [implementationType] to [container].
-     * the structure is determined by [implementationType] itself.
+     * add a [indexType] with [realType] to [container].
+     * the structure is determined by [realType] itself.
      */
-    private fun addDeclareByType(declarationType: KClass<*>, implementationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean) {
-        val l = singleIndexTypeOrNull(declarationType)
+    private fun addDeclareByType(name: String, indexType: KClass<*>, realType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean) {
+        val l = singleIndexTypeOrNull(indexType)
         // remove the existed declaration
         if (l != null && forceReplaceEnabled) {
             container.removeIf {
-                it.indexTypes.contains(declarationType)
+                it.indexTypes.contains(indexType)
             }
         }
 
@@ -152,18 +152,18 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         if (l == null || forceReplaceEnabled) {
             container.add(
                 ComponentDeclare(
-                    name = null,
-                    realType = implementationType,
-                    indexTypes = listOf(declarationType),
+                    name = name,
+                    realType = realType,
+                    indexTypes = listOf(indexType),
                     internal = false,
                     lifecycle = lifecycle,
                     isLazyComponent = lazy,
-                    constructor = ServiceUtil.getInjectConstructor(implementationType),
-                    components = ServiceUtil.getComponents(implementationType)
+                    constructor = ServiceUtil.injectConstructor(realType),
+                    components = ServiceUtil.components(realType)
                 )
             )
         } else {
-            throw ServiceDeclarationException("the declaration of the type $declarationType is redundant.")
+            throw ServiceDeclarationException("the declaration of the type $indexType is redundant.")
         }
     }
 
@@ -183,9 +183,9 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         }
     }
 
-    private fun onCreateLazy(declarationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
+    private fun onCreateLazy(indexType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
         createLazyChannel.emit(
-            ComponentDeclares.CreateLazy(declarationType, lifecycle, lazy)
+            ComponentDeclares.CreateLazy(indexType, lifecycle, lazy)
         )
     }
 

@@ -3,7 +3,7 @@ package org.tty.dioc.core.internal
 import org.tty.dioc.core.basic.ComponentDeclareResolver
 import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.declare.PackageOption
-import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
+import org.tty.dioc.core.util.ServiceUtil.isComponent
 import org.tty.dioc.reflect.KClassScanner
 
 @Deprecated("use ComponentDeclareScanner instead")
@@ -48,7 +48,7 @@ class ComponentDeclareResolver(
         val kClassScanner = KClassScanner(name, inclusive, { true }, { true })
         val kClasses = kClassScanner.doScanAllClasses()
         return kClasses.filter {
-            it.hasComponentAnnotation
+            it.isComponent
         }.map {
             ComponentDeclare.fromType(it)
         }

@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  * the key for component
  */
 interface ComponentKey {
-    val name: String?
+    val name: String
     val scope: Scope?
     val lifecycle: Lifecycle
     val indexType: KClass<*>
@@ -20,27 +20,4 @@ interface ComponentKey {
      * whether has [InternalComponent]
      */
     val internal: Boolean
-
-    companion object {
-        @Deprecated(
-            "use componentDeclare.createKey(scope) instead",
-            replaceWith = ReplaceWith("componentDeclare.createKey(scope)")
-        )
-        fun ofDeclare(componentDeclare: ComponentDeclare, scope: Scope?): ComponentKey {
-            return when (componentDeclare.lifecycle) {
-                Lifecycle.Singleton -> {
-                    SingletonKey(componentDeclare.realType, null, componentDeclare.internal)
-                }
-                Lifecycle.Scoped -> {
-                    if (scope == null) {
-                        throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
-                    }
-                    ScopeKey(componentDeclare.realType, null, scope)
-                }
-                Lifecycle.Transient -> {
-                    TransientKey(componentDeclare.realType, null)
-                }
-            }
-        }
-    }
 }

@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 @Component(lifecycle = Lifecycle.Transient)
 class TransientKey(
     override val indexType: KClass<*>,
-    override val name: String?,
+    override val name: String,
 ): ComponentKey {
     override val scope: Scope?
         get() = null

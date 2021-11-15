@@ -8,13 +8,18 @@ package org.tty.dioc.annotation
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 annotation class Component(
+
+    /**
+     * name of the component
+     */
+    val name: String = "",
     /**
      * the lifecycle of the service.
      * @see [Lifecycle]
      */
     val lifecycle: Lifecycle = Lifecycle.Singleton,
     /**
-     * if true, the service will be created on boot.
+     * **true** means the service will be created unless be used.
      */
     val lazy: Boolean = true
 )

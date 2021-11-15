@@ -61,7 +61,7 @@ class ComponentResolverImpl(
 //                    val currentDeclare = serviceDeclarations.findByDeclare(current.injectComponent.declareType)
                     if (it.propertyComponent.injectLazy) {
                         val serviceProxy = ComponentProxyFactoryImpl(it.propertyComponentDeclare, this).createProxy()
-                        ServiceUtil.injectComponentToService(it, serviceProxy)
+                        ServiceUtil.inject(it, serviceProxy)
                     } else {
                         // get the service by declaration
                         var service = storage.findComponent(it.propertyComponentDeclare.createKey(scope))
@@ -72,7 +72,7 @@ class ComponentResolverImpl(
                             }
                             service = createStub(it.propertyComponentDeclare, transaction, scope)
                         }
-                        ServiceUtil.injectComponentToService(it, service)
+                        ServiceUtil.inject(it, service)
                     }
                 }
                 transaction.moveToFull(identifier)

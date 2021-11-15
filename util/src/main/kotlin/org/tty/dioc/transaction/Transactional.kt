@@ -28,6 +28,7 @@ interface Transactional<T: Transaction> {
             transaction.commit()
             true
         } catch (e: Exception) {
+            e.printStackTrace()
             transaction.rollback()
             false
         }

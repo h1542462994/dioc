@@ -13,20 +13,34 @@ import kotlin.reflect.full.superclasses
 
 object ServiceUtil {
     /**
-     * to detect whether a class is a service
+     * to detect whether class has [Component] annotation
      */
-    val KClass<*>.hasComponentAnnotation: Boolean
-    get() = try {
-        hasAnnotation<Component>()
-    } catch (e: UnsupportedOperationException) {
-        false
-    }
+    val KClass<*>.isComponent: Boolean
+        get() = try {
+            hasAnnotation<Component>()
+        } catch (e: UnsupportedOperationException) {
+            false
+        }
+
+    /**
+     * to detect whether class has [InternalComponent] annotation
+     */
+    val KClass<*>.isInternalComponent: Boolean
+        get() = try {
+            hasAnnotation<InternalComponent>()
+        } catch (e: UnsupportedOperationException) {
+            false
+        }
 
     /**
      * to detect whether a service is a proxy service
      */
-    fun <T: Any> detectProxy(service: T): Boolean {
+    fun <T : Any> detectProxy(service: T): Boolean {
         return service is Proxy
+    }
+
+    fun isValidName(name: String): Boolean {
+        return name.matches(Regex("^[A-Za-z0-9._-]+$"))
     }
 
     /**
@@ -34,43 +48,43 @@ object ServiceUtil {
      * if there's no interfaces and superclass, return itself
      * @param toExcept the expected interfaces on scan.
      */
-    fun declareTypes(serviceType: KClass<*>, toExcept: List<KClass<*>> = listOf()): List<KClass<*>> {
-        val list = serviceType.superclasses.filter { ! (it == Any::class || toExcept.contains(it)) }
+    fun indexTypes(realType: KClass<*>, toExcept: List<KClass<*>> = listOf()): List<KClass<*>> {
+        val list = realType.superclasses.filter { !(it == Any::class || toExcept.contains(it)) }
         return list.ifEmpty {
-            listOf(serviceType)
+            listOf(realType)
         }
     }
 
     /**
      * inject the component [component] to [ComponentProperty.service]
      */
-    fun injectComponentToService(serviceProperty: ComponentProperty, component: Any) {
-        val property = serviceProperty.service::class.getProperty<KMutableProperty<*>>(serviceProperty.name)!!
-        property.setter.call(serviceProperty.service, component)
+    fun inject(componentProperty: ComponentProperty, component: Any) {
+        val property = componentProperty.service::class.getProperty<KMutableProperty<*>>(componentProperty.name)!!
+        property.setter.call(componentProperty.service, component)
     }
 
     /**
-     * get the components of the [serviceType]
+     * get the components of the [realType]
      */
-    fun getComponents(serviceType: KClass<*>): List<PropertyComponent> {
-        return getComponentsOfConstructor(serviceType)
-            .plus(getComponentsOfProperties(serviceType))
+    fun components(realType: KClass<*>): List<PropertyComponent> {
+        return componentsOfConstructor(realType)
+            .plus(componentsOfProperties(realType))
     }
 
     /**
-     * get inject constructor of the [serviceType]
+     * get inject constructor of the [realType]
      * @see [InjectConstructor]
      */
-    fun getInjectConstructor(serviceType: KClass<*>): KFunction<*> {
+    fun injectConstructor(realType: KClass<*>): KFunction<*> {
         return when {
-            serviceType.constructors.isEmpty()  -> {
+            realType.constructors.isEmpty() -> {
                 throw ServiceConstructException("no public constructor.")
             }
-            serviceType.constructors.singleOrNull() != null -> {
-                serviceType.constructors.single()
+            realType.constructors.singleOrNull() != null -> {
+                realType.constructors.single()
             }
             else -> {
-                serviceType.constructors.singleOrNull { it2 -> it2.hasAnnotation<InjectConstructor>() }
+                realType.constructors.singleOrNull { it2 -> it2.hasAnnotation<InjectConstructor>() }
             }
         } ?: throw ServiceConstructException("there are more than one constructors has @InjectConstructor.")
     }
@@ -78,27 +92,29 @@ object ServiceUtil {
     /**
      * get the components on the constructor
      */
-    fun getComponentsOfConstructor(serviceType: KClass<*>): List<PropertyComponent> {
-        val constructor = getInjectConstructor(serviceType)
+    private fun componentsOfConstructor(realType: KClass<*>): List<PropertyComponent> {
+        val constructor = injectConstructor(realType)
 
         return constructor.parameters.map { parameter ->
-            PropertyComponent(parameter.name!!, parameter.kotlin, InjectPlace.Constructor, parameter.hasAnnotation<Lazy>())
+            PropertyComponent(
+                parameter.name!!,
+                parameter.kotlin,
+                InjectPlace.Constructor,
+                parameter.hasAnnotation<Lazy>()
+            )
         }
     }
 
     /**
      * get the components on the properties
      */
-    fun getComponentsOfProperties(serviceType: KClass<*>): List<PropertyComponent> {
-        val properties = serviceType.properties
-        return properties.map {
+    private fun componentsOfProperties(realType: KClass<*>): List<PropertyComponent> {
+        val properties = realType.properties
+        return properties.filter {
+            it.hasAnnotationOnPropertyOrSetter<Inject>()
+        }.map {
             val isLazy = it.hasAnnotationOnPropertyOrSetter<Lazy>()
-            val isInject = it.hasAnnotationOnPropertyOrSetter<Inject>()
-            if (isInject) {
-                PropertyComponent(it.name, it.returnTypeKotlin, injectPlace = InjectPlace.InjectProperty, isLazy)
-            } else {
-                PropertyComponent(it.name, it.returnTypeKotlin, injectPlace = InjectPlace.Property, isLazy)
-            }
+            PropertyComponent(it.name, it.returnTypeKotlin, injectPlace = InjectPlace.InjectProperty, isLazy)
         }
     }
 

@@ -14,7 +14,7 @@ data class ScopeKey(
      * the type of service (runtime)
      */
     override val indexType: KClass<*>,
-    override val name: String?,
+    override val name: String,
     /**
      * the scope
      */

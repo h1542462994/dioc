@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 /**
  * the storage for service
  */
-internal class CombinedComponentStorage: ComponentStorage {
+class CombinedComponentStorage: ComponentStorage {
     /**
      * the full storage, also the first level cache.
      */

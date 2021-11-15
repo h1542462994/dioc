@@ -59,7 +59,7 @@ interface ComponentDeclares: Iterable<ComponentDeclare>, ComponentDeclareAware {
     fun addAll(componentDeclares: List<ComponentDeclare>)
 
     data class CreateLazy(
-        val declarationType: KClass<*>,
+        val indexType: KClass<*>,
         val lifecycle: Lifecycle,
         val lazy: Boolean = true
     )

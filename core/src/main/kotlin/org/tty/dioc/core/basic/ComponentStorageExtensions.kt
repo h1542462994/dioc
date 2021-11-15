@@ -50,7 +50,7 @@ inline fun <reified T : Any> ComponentStorage.addInternalComponent(name: String,
             SingletonKey(T::class, name, internal = true),
             ComponentRecord(
                 component,
-                ComponentDeclare.fromInternalComponentType(T::class, component::class)
+                ComponentDeclare.fromInternalComponentType(name, T::class, component::class)
             )
         )
     }

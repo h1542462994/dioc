@@ -10,11 +10,6 @@ enum class InjectPlace {
     Constructor,
 
     /**
-     * inject on property
-     */
-    Property,
-
-    /**
      * inject on property with [Inject]
      */
     InjectProperty

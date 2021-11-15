@@ -24,7 +24,7 @@ class ComponentProxyFactoryImpl(
         /**
          * make the proxy implements service declarationTypes
          */
-        val interfaces = componentDeclare.indexTypes.plus(ProxyService::class)
+        val interfaces = componentDeclare.indexTypes
 
         /**
          * the realObject for proxy

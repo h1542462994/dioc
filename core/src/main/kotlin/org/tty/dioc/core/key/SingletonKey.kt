@@ -14,7 +14,7 @@ data class SingletonKey(
      * the type of the service (runtime)
      */
     override val indexType: KClass<*>,
-    override val name: String?,
+    override val name: String,
     override val internal: Boolean
 ): ComponentKey {
     override val scope: Scope?

@@ -1,11 +1,7 @@
 package org.tty.dioc.core.declare
 
-import org.tty.dioc.annotation.Component
-import org.tty.dioc.annotation.InjectPlace
-import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.annotation.*
 import org.tty.dioc.base.InitializeAware
-import org.tty.dioc.core.lifecycle.ProxyService
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.key.ComponentKey
@@ -13,7 +9,8 @@ import org.tty.dioc.core.key.ScopeKey
 import org.tty.dioc.core.key.SingletonKey
 import org.tty.dioc.core.key.TransientKey
 import org.tty.dioc.core.util.ServiceUtil
-import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
+import org.tty.dioc.core.util.ServiceUtil.isComponent
+import org.tty.dioc.core.util.ServiceUtil.isInternalComponent
 import org.tty.dioc.error.ServiceConstructException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -28,7 +25,7 @@ class ComponentDeclare(
     /**
      * identify of the component.
      */
-    val name: String?,
+    val name: String,
     /**
      * the real service type.
      */
@@ -61,19 +58,28 @@ class ComponentDeclare(
     val components: List<PropertyComponent>
 
 ) {
+    init {
+//        require(name == "" || ServiceUtil.isValidName(name)) {
+//            "invalid key. should use \"^[A-Za-z0-9._-]+$\""
+//        }
+    }
+
     fun createKey(scope: Scope?): ComponentKey {
+        require(name == "" || ServiceUtil.isValidName(name)) {
+            "invalid key. should use \"^[A-Za-z0-9._-]+$\""
+        }
         return when (lifecycle) {
             Lifecycle.Singleton -> {
-                SingletonKey(realType, null, internal)
+                SingletonKey(realType, name, internal)
             }
             Lifecycle.Scoped -> {
                 if (scope == null) {
                     throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
                 }
-                ScopeKey(realType, null, scope)
+                ScopeKey(realType, name, scope)
             }
             Lifecycle.Transient -> {
-                TransientKey(realType, null)
+                TransientKey(realType, name)
             }
         }
     }
@@ -103,25 +109,32 @@ class ComponentDeclare(
 
     companion object {
         /**
-         * to get the [ComponentDeclare] from [implementationType]
+         * get the [ComponentDeclare] from [realType]
          */
-        fun fromType(implementationType: KClass<*>): ComponentDeclare {
-            // you must annotate [@Service] on serviceType.
-            require(implementationType.hasComponentAnnotation) {
-                "serviceType $implementationType is not a service"
+        fun fromType(realType: KClass<*>): ComponentDeclare {
+            // you must annotate [@Component] on indexType.
+            require(realType.isComponent) {
+                "realType $realType is not a component."
             }
+
             val exceptInterfaces = listOf(
-                InitializeAware::class, ProxyService::class, Scope::class, ScopeAbility::class
+                InitializeAware::class, Scope::class, ScopeAbility::class,
+                Iterable::class,
             )
-            val declarationTypes = ServiceUtil.declareTypes(implementationType, exceptInterfaces)
-            val componentAnnotation = implementationType.findAnnotation<Component>()!!
-            val constructor = ServiceUtil.getInjectConstructor(implementationType)
-            val components = ServiceUtil.getComponents(implementationType)
+            val indexTypes = ServiceUtil.indexTypes(realType, exceptInterfaces)
+            val componentAnnotation = realType.findAnnotation<Component>()!!
+            val constructor = ServiceUtil.injectConstructor(realType)
+            val components = ServiceUtil.components(realType)
+            val name = componentAnnotation.name
+
+//            require(name == "" || ServiceUtil.isValidName(name)) {
+//                "invalid key. should use \"^[A-Za-z0-9._-]+$\""
+//            }
 
             return ComponentDeclare(
-                name = null,
-                realType = implementationType,
-                indexTypes = declarationTypes,
+                name = name,
+                realType = realType,
+                indexTypes = indexTypes,
                 internal = false,
                 lifecycle = componentAnnotation.lifecycle,
                 isLazyComponent = componentAnnotation.lazy,
@@ -130,16 +143,28 @@ class ComponentDeclare(
             )
         }
 
-        fun fromInternalComponentType(declarationType: KClass<*>, implementationType: KClass<*>): ComponentDeclare {
+        fun fromInternalComponentType(name: String, indexType: KClass<*>, realType: KClass<*>): ComponentDeclare {
+            require(indexType.isInternalComponent) {
+                "indexType $realType is not a component."
+            }
+            val constructor = ServiceUtil.injectConstructor(realType)
+            val components = ServiceUtil.components(realType)
+//            require(/*name == "" ||*/ ServiceUtil.isValidName(name)) {
+//                "invalid key. should use \"^[A-Za-z0-9._-]+$\""
+//            }
+            require(name != "") {
+                "key should not be empty."
+            }
+
             return ComponentDeclare(
-                name = null,
-                realType = implementationType,
-                indexTypes = listOf(declarationType),
+                name = name,
+                realType = realType,
+                indexTypes = listOf(indexType),
                 internal = true,
                 lifecycle = Lifecycle.Singleton,
                 isLazyComponent = false,
-                constructor = ServiceUtil.getInjectConstructor(implementationType),
-                components = ServiceUtil.getComponents(implementationType)
+                constructor = constructor,
+                components = components
             )
         }
 
