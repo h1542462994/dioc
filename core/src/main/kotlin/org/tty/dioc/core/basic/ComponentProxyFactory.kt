@@ -1,8 +1,6 @@
 package org.tty.dioc.core.basic
 
-import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.config.schema.ConfigRule
-import org.tty.dioc.config.schema.ConfigRuleApi
+import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
 
 /**
@@ -10,5 +8,8 @@ import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
  * @see ComponentProxyFactoryImpl
  */
 interface ComponentProxyFactory {
+    /**
+     * create the proxy for service inject with [Lazy]
+     */
     fun createProxy(): Any
 }

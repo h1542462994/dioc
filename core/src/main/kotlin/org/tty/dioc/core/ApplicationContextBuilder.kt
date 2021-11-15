@@ -1,10 +1,10 @@
 package org.tty.dioc.core
 
-import org.tty.dioc.core.declare.*
-import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 import org.tty.dioc.base.Builder
 import org.tty.dioc.core.basic.ScopeFactory
+import org.tty.dioc.core.declare.*
 import org.tty.dioc.core.internal.ComponentDeclareResolver
+import org.tty.dioc.core.lifecycle.DefaultScopeFactory
 
 /**
  * the builder for applicationContext

@@ -10,7 +10,7 @@ import org.tty.dioc.core.basic.EntryPointLoader
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.core.declare.ComponentDeclaresImpl
-import org.tty.dioc.core.declare.ComponentDeclares
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.core.internal.EntryPointLoaderImpl
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory

@@ -138,3 +138,6 @@ get() = this.type.jvmErasure
 
 val KProperty<*>.returnTypeKotlin: KClass<*>
 get() = this.returnType.jvmErasure
+
+val KClass<*>.packageName: String
+get() = this.java.`package`.name

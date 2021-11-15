@@ -1,9 +1,9 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.annotation.Lifecycle
-import org.tty.dioc.core.declare.ComponentDeclares
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.core.lifecycle.*
-import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.core.internal.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.base.FinishAware
 import org.tty.dioc.base.InitializeAware
@@ -41,11 +41,15 @@ open class DefaultApplicationContext(
     private val storage = CombinedComponentStorage()
 
     /**
-     * root function to get the service by [declareType]
+     * root function to get the service by [indexType]
      */
-    override fun <T: Any> getComponent(declareType: KClass<T>): T {
-        val serviceDeclare = declarations.singleDeclarationType(declareType)
+    override fun <T: Any> getComponent(indexType: KClass<T>): T {
+        val serviceDeclare = declarations.singleIndexType(indexType)
         return entry.resolve(serviceDeclare)
+    }
+
+    override fun <T : Any> getComponent(name: String, indexType: KClass<T>): T {
+        TODO("Not yet implemented")
     }
 
     /**

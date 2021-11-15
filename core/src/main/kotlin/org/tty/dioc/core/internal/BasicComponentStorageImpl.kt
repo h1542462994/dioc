@@ -17,11 +17,11 @@ class BasicComponentStorageImpl : BasicComponentStorage {
         addComponent(name, component::class, component = component)
     }
 
-    override fun <T : Any> addComponent(name: String, interfaceType: KClass<out T>, component: T) {
+    override fun <T : Any> addComponent(name: String, indexType: KClass<out T>, component: T) {
         require(!store.containsKey(name)) {
             "component $name is already added."
         }
-        require(interfaceType.hasAnnotation<InternalComponent>()) {
+        require(indexType.hasAnnotation<InternalComponent>()) {
             "you could only add InternalComponent to BasicComponentStorage"
         }
         // init the component with Init
@@ -30,7 +30,7 @@ class BasicComponentStorageImpl : BasicComponentStorage {
             component.onInit()
         }
         store[name] = component
-        nameTypeRef[interfaceType] = name
+        nameTypeRef[indexType] = name
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -41,11 +41,11 @@ class BasicComponentStorageImpl : BasicComponentStorage {
         return store[name] as T
     }
 
-    override fun <T : Any> getComponent(interfaceType: KClass<T>): T {
-        require (nameTypeRef.containsKey(interfaceType)) {
-            "component $interfaceType is not found."
+    override fun <T : Any> getComponent(indexType: KClass<T>): T {
+        require (nameTypeRef.containsKey(indexType)) {
+            "component $indexType is not found."
         }
-        return getComponent(nameTypeRef.getValue(interfaceType))
+        return getComponent(nameTypeRef.getValue(indexType))
     }
 
     override fun toString(): String {

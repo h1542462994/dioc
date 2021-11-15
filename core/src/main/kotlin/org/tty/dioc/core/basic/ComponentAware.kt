@@ -1,15 +1,26 @@
 package org.tty.dioc.core.basic
 
-import kotlin.reflect.KClass
 import org.tty.dioc.core.ApplicationContext
+import kotlin.reflect.KClass
+import org.tty.dioc.core.declare.ComponentDeclare
 
 /**
- * the ability to get the service
+ * aware for getting component
  * @see [ApplicationContext]
  */
 interface ComponentAware {
     /**
-     * to get the service by [declareType]
+     * get the anonymous component by [indexType]
+     * @param indexType **index type**, index type can be found by [ComponentAware].
+     * @see ComponentDeclare
      */
-    fun <T: Any> getComponent(declareType: KClass<T>): T
+    fun <T: Any> getComponent(indexType: KClass<T>): T
+
+    /**
+     * get the component by [name] and [indexType]
+     * @param name identify of the component.
+     * @param indexType **index type**, index type can be found by [ComponentAware].
+     * @see ComponentDeclare
+     */
+    fun <T: Any> getComponent(name: String, indexType: KClass<T>): T
 }

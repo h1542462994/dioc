@@ -1,4 +1,4 @@
-package org.tty.dioc.core.storage
+package org.tty.dioc.core.internal
 
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.base.InitializeAware
@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 /**
  * the storage for service
  */
-class CombinedComponentStorage: ComponentStorage {
+internal class CombinedComponentStorage: ComponentStorage {
     /**
      * the full storage, also the first level cache.
      */

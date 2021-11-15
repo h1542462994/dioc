@@ -2,6 +2,8 @@
 package org.tty.dioc.core.declare
 
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.basic.ComponentDeclareAware
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.observable.channel.Channels
@@ -9,9 +11,9 @@ import org.tty.dioc.util.formatTable
 import kotlin.reflect.KClass
 
 /**
- * a implementation of [MutableComponentDeclares] and [ComponentDeclares]
+ * a implementation of [ComponentDeclares]
  */
-class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
+internal class ComponentDeclaresImpl : ComponentDeclares {
 //    constructor(componentDeclares: List<ComponentDeclare>) : this() {
 //        container.addAll(componentDeclares)
 //    }
@@ -23,7 +25,7 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
         container.addAll(componentDeclares)
     }
 
-    override val createLazyChannel = Channels.create<MutableComponentDeclares.CreateLazy>()
+    override val createLazyChannel = Channels.create<ComponentDeclares.CreateLazy>()
 
     override fun iterator(): Iterator<ComponentDeclare> {
         return container.iterator()
@@ -35,14 +37,27 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
         onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
     }
 
+    override fun <T : Any> addSingleton(name: String, type: KClass<T>, lazy: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun <TD : Any, TI : Any> addSingleton(
-        declarationType: KClass<TD>,
-        implementationType: KClass<TI>,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
         lazy: Boolean
     ) {
         // use delegate.
-        addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Singleton, lazy)
-        onCreateLazy(declarationType, lifecycle = Lifecycle.Singleton, lazy)
+        addDeclareByType(indexType, realType, lifecycle = Lifecycle.Singleton, lazy)
+        onCreateLazy(indexType, lifecycle = Lifecycle.Singleton, lazy)
+    }
+
+    override fun <TD : Any, TI : Any> addSingleton(
+        name: String,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
+        lazy: Boolean
+    ) {
+        TODO("Not yet implemented")
     }
 
     override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) {
@@ -51,10 +66,23 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
         onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
     }
 
-    override fun <TD : Any, TI : Any> addScoped(declarationType: KClass<TD>, implementationType: KClass<TI>, lazy: Boolean) {
+    override fun <T : Any> addScoped(name: String, type: KClass<T>, lazy: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun <TD : Any, TI : Any> addScoped(indexType: KClass<TD>, realType: KClass<TI>, lazy: Boolean) {
         // use delegate.
-        addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Scoped, lazy)
-        onCreateLazy(declarationType, lifecycle = Lifecycle.Scoped, lazy)
+        addDeclareByType(indexType, realType, lifecycle = Lifecycle.Scoped, lazy)
+        onCreateLazy(indexType, lifecycle = Lifecycle.Scoped, lazy)
+    }
+
+    override fun <TD : Any, TI : Any> addScoped(
+        name: String,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
+        lazy: Boolean
+    ) {
+        TODO("Not yet implemented")
     }
 
     override fun <T : Any> addTransient(type: KClass<T>) {
@@ -62,9 +90,17 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
         addDeclareByType(type, type, lifecycle = Lifecycle.Transient, true)
     }
 
-    override fun <TD : Any, TI : Any> addTransient(declarationType: KClass<TD>, implementationType: KClass<TI>) {
+    override fun <T : Any> addTransient(name: String, type: KClass<T>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun <TD : Any, TI : Any> addTransient(indexType: KClass<TD>, realType: KClass<TI>) {
         // use delegate.
-        addDeclareByType(declarationType, implementationType, lifecycle = Lifecycle.Transient, true)
+        addDeclareByType(indexType, realType, lifecycle = Lifecycle.Transient, true)
+    }
+
+    override fun <TD : Any, TI : Any> addTransient(name: String, indexType: KClass<TD>, realType: KClass<TI>) {
+        TODO("Not yet implemented")
     }
 
     override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
@@ -73,22 +109,30 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
         forceReplaceEnabled = false
     }
 
-    override fun singleDeclarationTypeOrNull(declarationType: KClass<*>): ComponentDeclare? {
-        return this.singleOrNull { it.indexTypes.contains(declarationType) }
+    override fun singleIndexTypeOrNull(indexType: KClass<*>): ComponentDeclare? {
+        return this.singleOrNull { it.indexTypes.contains(indexType) }
+    }
+
+    override fun singleName(name: String): ComponentDeclare {
+        TODO("Not yet implemented")
+    }
+
+    override fun singleNameOrNull(name: String): ComponentDeclare? {
+        TODO("Not yet implemented")
     }
 
     /**
-     * find in collection where [ComponentDeclare.indexTypes] contains [declarationType]
+     * find in collection where [ComponentDeclare.indexTypes] contains [indexType]
      */
-    override fun singleDeclarationType(declarationType: KClass<*>): ComponentDeclare {
-        return this.single { it.indexTypes.contains(declarationType) }
+    override fun singleIndexType(indexType: KClass<*>): ComponentDeclare {
+        return this.single { it.indexTypes.contains(indexType) }
     }
 
     /**
-     * find in collection where [ComponentDeclare.implementationType] == [implementationType]
+     * find in collection where [ComponentDeclare.realType] == [realType]
      */
-    override fun singleServiceType(implementationType: KClass<*>): ComponentDeclare {
-        return this.single { it.implementationType == implementationType }
+    override fun singleServiceType(realType: KClass<*>): ComponentDeclare {
+        return this.single { it.realType == realType }
     }
 
     /**
@@ -96,7 +140,7 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
      * the structure is determined by [implementationType] itself.
      */
     private fun addDeclareByType(declarationType: KClass<*>, implementationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean) {
-        val l = singleDeclarationTypeOrNull(declarationType)
+        val l = singleIndexTypeOrNull(declarationType)
         // remove the existed declaration
         if (l != null && forceReplaceEnabled) {
             container.removeIf {
@@ -109,7 +153,7 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
             container.add(
                 ComponentDeclare(
                     name = null,
-                    implementationType = implementationType,
+                    realType = implementationType,
                     indexTypes = listOf(declarationType),
                     internal = false,
                     lifecycle = lifecycle,
@@ -131,7 +175,7 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
             throw ServiceDeclarationException("the transient service must be a lazy service.")
         } else {
             componentDeclare.components.forEach {
-                val aDeclare = this.singleDeclarationTypeOrNull(it.declareType)
+                val aDeclare = this.singleIndexTypeOrNull(it.declareType)
                 if (aDeclare != null && aDeclare.lifecycle == Lifecycle.Scoped && !it.injectLazy) {
                     throw ServiceDeclarationException("you must inject a scoped service by @Lazy")
                 }
@@ -141,7 +185,7 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
 
     private fun onCreateLazy(declarationType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
         createLazyChannel.emit(
-            MutableComponentDeclares.CreateLazy(declarationType, lifecycle, lazy)
+            ComponentDeclares.CreateLazy(declarationType, lifecycle, lazy)
         )
     }
 
@@ -151,7 +195,7 @@ class ComponentDeclaresImpl : MutableComponentDeclares, ComponentDeclares {
                 it.lifecycle,
                 it.isLazyComponent,
                 it.indexTypes,
-                it.implementationType,
+                it.realType,
             )
         }.toString()
     }

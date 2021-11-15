@@ -2,6 +2,7 @@ package org.tty.dioc.core.internal
 
 import org.tty.dioc.annotation.InjectPlace
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.declare.*
@@ -9,7 +10,6 @@ import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
-import org.tty.dioc.core.storage.CombinedComponentStorage
 import org.tty.dioc.core.util.ServiceUtil
 import kotlin.reflect.jvm.javaConstructor
 
@@ -68,7 +68,7 @@ class ComponentResolverImpl(
                         if (service == null) {
                             if (transaction.transientNotReady(it.propertyComponentDeclare)) {
 //                        if (partStorage.isCreating(it.propertyServiceDeclare)) {
-                                throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyComponentDeclare.implementationType} -> ... -> ${it.propertyComponentDeclare.implementationType}")
+                                throw ServiceConstructException("find a cycle dependency link on transient service, it will cause a dead lock, because dependency link ${it.propertyComponentDeclare.realType} -> ... -> ${it.propertyComponentDeclare.realType}")
                             }
                             service = createStub(it.propertyComponentDeclare, transaction, scope)
                         }
@@ -89,7 +89,7 @@ class ComponentResolverImpl(
      * create the stub service, means the service on constructor has been injected.
      */
     @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-    private fun createStub(declare: ComponentDeclare, transaction: CombinedComponentStorage.CreateTransaction, scope: Scope?): Any {
+    private fun createStub(declare: ComponentDeclare, transaction: IStorageTransaction, scope: Scope?): Any {
         // check.
         serviceDeclarations.check(declare)
 
@@ -103,7 +103,7 @@ class ComponentResolverImpl(
         val args = constructor.parameters.map {
             val parameter = declare.componentsOf(InjectPlace.Constructor).find { component -> component.name == it.name }!!
             // get declaration of the type
-            val parameterDeclare = serviceDeclarations.singleDeclarationType(parameter.declareType)
+            val parameterDeclare = serviceDeclarations.singleIndexType(parameter.declareType)
             // if is lazyInject then inject the proxy object.
             if (parameter.injectLazy) {
                 ComponentProxyFactoryImpl(parameterDeclare, this).createProxy()
@@ -112,7 +112,7 @@ class ComponentResolverImpl(
                 if (
                 // if the parameter is not created. then throw a exception
                     transaction.notReady(parameterDeclare)) {
-                    throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.implementationType} -> ... -> ${parameterDeclare.implementationType}")
+                    throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.realType} -> ... -> ${parameterDeclare.realType}")
                 }
                 // if the service is in the fullStorage, then return it.
                 storage.findComponent(parameterDeclare.createKey(scope)) ?:

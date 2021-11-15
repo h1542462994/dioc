@@ -5,8 +5,8 @@ import org.tty.dioc.annotation.InternalComponent
 
 /**
  * the resolver for declare of the component.
- *
  */
+@Deprecated("use ComponentDeclareScanner instead")
 interface ComponentDeclareResolver {
     fun getDeclarations(): List<ComponentDeclare>
 }

@@ -1,11 +1,12 @@
 package org.tty.dioc.core
 
 import org.tty.dioc.annotation.Lifecycle
-import org.tty.dioc.core.declare.*
+import org.tty.dioc.core.basic.ComponentDeclareAware
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.core.lifecycle.Scope
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.lifecycle.StackScopeTrace
-import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.core.internal.CombinedComponentStorage
 import org.tty.dioc.core.internal.ComponentResolverImpl
 import org.tty.dioc.core.basic.ScopeFactory
 import org.tty.dioc.observable.channel.observe
@@ -20,16 +21,20 @@ open class DefaultDynamicApplicationContext(
     /**
      * the declaration of the services.
      */
-    private val declarations: MutableComponentDeclares,
+    private val declarations: ComponentDeclares,
     scopeFactory: ScopeFactory
 ): DynamicApplicationContext {
 
-    override fun <T : Any> getComponent(declareType: KClass<T>): T {
+    override fun <T : Any> getComponent(indexType: KClass<T>): T {
         if (!initialized) {
             throw IllegalStateException("you must initialized it before getService.")
         }
-        val serviceDeclare = declarations.singleDeclarationType(declareType)
+        val serviceDeclare = declarations.singleIndexType(indexType)
         return entry.resolve(serviceDeclare)
+    }
+
+    override fun <T : Any> getComponent(name: String, indexType: KClass<T>): T {
+        TODO("Not yet implemented")
     }
 
     override fun scopeAbility(): ScopeAbility {
@@ -40,32 +45,66 @@ open class DefaultDynamicApplicationContext(
         declarations.addSingleton(type, lazy)
     }
 
+    override fun <T : Any> addSingleton(name: String, type: KClass<T>, lazy: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun <TD : Any, TI : Any> addSingleton(
-        declarationType: KClass<TD>,
-        implementationType: KClass<TI>,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
         lazy: Boolean
     ) {
-        declarations.addSingleton(declarationType, implementationType, lazy)
+        declarations.addSingleton(indexType, realType, lazy)
+    }
+
+    override fun <TD : Any, TI : Any> addSingleton(
+        name: String,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
+        lazy: Boolean
+    ) {
+        TODO("Not yet implemented")
     }
 
     override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) {
         declarations.addScoped(type, lazy)
     }
 
+    override fun <T : Any> addScoped(name: String, type: KClass<T>, lazy: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun <TD : Any, TI : Any> addScoped(
-        declarationType: KClass<TD>,
-        implementationType: KClass<TI>,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
         lazy: Boolean
     ) {
-        declarations.addScoped(declarationType, implementationType, lazy)
+        declarations.addScoped(indexType, realType, lazy)
+    }
+
+    override fun <TD : Any, TI : Any> addScoped(
+        name: String,
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
+        lazy: Boolean
+    ) {
+        TODO("Not yet implemented")
     }
 
     override fun <T : Any> addTransient(type: KClass<T>) {
         declarations.addTransient(type)
     }
 
-    override fun <TD : Any, TI : Any> addTransient(declarationType: KClass<TD>, implementationType: KClass<TI>) {
-        declarations.addTransient(declarationType, implementationType)
+    override fun <T : Any> addTransient(name: String, type: KClass<T>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun <TD : Any, TI : Any> addTransient(indexType: KClass<TD>, realType: KClass<TI>) {
+        declarations.addTransient(indexType, realType)
+    }
+
+    override fun <TD : Any, TI : Any> addTransient(name: String, indexType: KClass<TD>, realType: KClass<TI>) {
+        TODO("Not yet implemented")
     }
 
     override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
@@ -108,7 +147,7 @@ open class DefaultDynamicApplicationContext(
     /**
      * the function callback after create a lazy service.
      */
-    private fun onCreateLazy(createLazy: MutableComponentDeclares.CreateLazy) {
+    private fun onCreateLazy(createLazy: ComponentDeclares.CreateLazy) {
         val (declarationType, lifecycle, lazy) = createLazy
         if (!lazy) {
             if (lifecycle == Lifecycle.Singleton) {

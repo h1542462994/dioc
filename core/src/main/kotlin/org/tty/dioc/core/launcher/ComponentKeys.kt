@@ -5,11 +5,9 @@ import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.core.CoreModule
 import org.tty.dioc.core.basic.ComponentStorage
-import org.tty.dioc.core.basic.EntryPointLoader
 import org.tty.dioc.core.basic.ProviderResolver
 import org.tty.dioc.core.basic.getInternalComponent
-import org.tty.dioc.core.declare.ComponentDeclares
-import org.tty.dioc.core.declare.MutableComponentDeclares
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.util.Logger
 
 object ComponentKeys {
@@ -28,5 +26,6 @@ val ComponentStorage.logger: Logger get() = getInternalComponent(CoreModule.logg
 
 val ComponentStorage.applicationConfig: ApplicationConfig get() = getInternalComponent(ConfigModule.configSchema)
 
-val ComponentStorage.componentDeclares: MutableComponentDeclares get() =
-    getInternalComponent(CoreModule.componentDeclaresSchema) as MutableComponentDeclares
+val ComponentStorage.componentDeclares: ComponentDeclares
+    get() =
+    getInternalComponent(CoreModule.componentDeclaresSchema)

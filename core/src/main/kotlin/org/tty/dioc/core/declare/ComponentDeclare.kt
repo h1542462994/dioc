@@ -22,16 +22,17 @@ import kotlin.reflect.full.findAnnotation
 /**
  * declaration of the service
  * @see [Component]
+ * @see [InternalComponent]
  */
 class ComponentDeclare(
     /**
-     * name of the component
+     * identify of the component.
      */
     val name: String?,
     /**
      * the real service type.
      */
-    val implementationType: KClass<*>,
+    val realType: KClass<*>,
     /**
      * the declaration service types.
      */
@@ -63,16 +64,16 @@ class ComponentDeclare(
     fun createKey(scope: Scope?): ComponentKey {
         return when (lifecycle) {
             Lifecycle.Singleton -> {
-                SingletonKey(implementationType, null, internal)
+                SingletonKey(realType, null, internal)
             }
             Lifecycle.Scoped -> {
                 if (scope == null) {
                     throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
                 }
-                ScopeKey(implementationType, null, scope)
+                ScopeKey(realType, null, scope)
             }
             Lifecycle.Transient -> {
-                TransientKey(implementationType, null)
+                TransientKey(realType, null)
             }
         }
     }
@@ -97,7 +98,7 @@ class ComponentDeclare(
      * a short description of the service.
      */
     override fun toString(): String {
-        return "${implementationType},${lifecycle},${if (isLazyComponent) "lazy" else "not lazy"}"
+        return "${realType},${lifecycle},${if (isLazyComponent) "lazy" else "not lazy"}"
     }
 
     companion object {
@@ -119,7 +120,7 @@ class ComponentDeclare(
 
             return ComponentDeclare(
                 name = null,
-                implementationType = implementationType,
+                realType = implementationType,
                 indexTypes = declarationTypes,
                 internal = false,
                 lifecycle = componentAnnotation.lifecycle,
@@ -132,7 +133,7 @@ class ComponentDeclare(
         fun fromInternalComponentType(declarationType: KClass<*>, implementationType: KClass<*>): ComponentDeclare {
             return ComponentDeclare(
                 name = null,
-                implementationType = implementationType,
+                realType = implementationType,
                 indexTypes = listOf(declarationType),
                 internal = true,
                 lifecycle = Lifecycle.Singleton,

@@ -1,4 +1,4 @@
-package org.tty.dioc.core.storage
+package org.tty.dioc.core.internal
 
 import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.declare.ComponentRecord

@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
 @InternalComponent
 interface BasicComponentStorage {
     fun <T : Any> addComponent(name: String, component: T)
-    fun <T : Any> addComponent(name: String, interfaceType: KClass<out T>, component: T)
+    fun <T : Any> addComponent(name: String, indexType: KClass<out T>, component: T)
     fun <@NoInfer T : Any> getComponent(name: String): T
-    fun <T : Any> getComponent(interfaceType: KClass<T>): T
+    fun <T : Any> getComponent(indexType: KClass<T>): T
 }

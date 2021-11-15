@@ -1,13 +1,13 @@
 package org.tty.dioc.core
 
+import org.tty.dioc.core.basic.ScopeFactory
+import org.tty.dioc.core.declare.ComponentDeclaresImpl
 import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.internal.ComponentDeclareResolver
-import org.tty.dioc.core.declare.ComponentDeclaresImpl
 import org.tty.dioc.core.lifecycle.DefaultScopeFactory
-import org.tty.dioc.core.basic.ScopeFactory
 
 /**
- * a implementation of [ApplicationContext]
+ * implementation of [ApplicationContext]
  * @see ApplicationContext
  * @see DefaultApplicationContext
  */

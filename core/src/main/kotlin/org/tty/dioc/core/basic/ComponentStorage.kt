@@ -5,7 +5,8 @@ import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.base.FinishAware
 import org.tty.dioc.core.declare.ComponentRecord
 import org.tty.dioc.core.key.ComponentKey
-import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.core.internal.CombinedComponentStorage
+import org.tty.dioc.core.internal.IStorageTransaction
 import org.tty.dioc.transaction.Transactional
 import kotlin.reflect.KClass
 
@@ -13,7 +14,7 @@ import kotlin.reflect.KClass
  * the storage for [Component]
  */
 @InternalComponent
-interface ComponentStorage : FinishAware, Transactional<CombinedComponentStorage.CreateTransaction> {
+interface ComponentStorage : FinishAware, Transactional<IStorageTransaction> {
     /**
      * whether the partStorage is empty.
      */

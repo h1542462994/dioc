@@ -4,8 +4,8 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.core.DynamicApplicationContext
 import org.tty.dioc.core.LocalDynamicApplicationContext
-import org.tty.dioc.core.addScoped2
-import org.tty.dioc.core.addSingleton2
+import org.tty.dioc.core.basic.addScoped2
+import org.tty.dioc.core.basic.addSingleton2
 import org.tty.dioc.error.ServiceConstructException
 import org.tty.dioc.error.ServiceDeclarationException
 import org.tty.dioc.core.local.ComponentContext

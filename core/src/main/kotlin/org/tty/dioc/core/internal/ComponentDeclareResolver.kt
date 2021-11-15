@@ -6,6 +6,7 @@ import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.util.ServiceUtil.hasComponentAnnotation
 import org.tty.dioc.reflect.KClassScanner
 
+@Deprecated("use ComponentDeclareScanner instead")
 class ComponentDeclareResolver(
     private val jsonFiles: ArrayList<String> = ArrayList(),
     private val scanPackages: ArrayList<PackageOption> = ArrayList()

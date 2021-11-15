@@ -29,16 +29,16 @@ interface ComponentKey {
         fun ofDeclare(componentDeclare: ComponentDeclare, scope: Scope?): ComponentKey {
             return when (componentDeclare.lifecycle) {
                 Lifecycle.Singleton -> {
-                    SingletonKey(componentDeclare.implementationType, null, componentDeclare.internal)
+                    SingletonKey(componentDeclare.realType, null, componentDeclare.internal)
                 }
                 Lifecycle.Scoped -> {
                     if (scope == null) {
                         throw ServiceConstructException("you couldn't get a scoped service out of a scope.")
                     }
-                    ScopeKey(componentDeclare.implementationType, null, scope)
+                    ScopeKey(componentDeclare.realType, null, scope)
                 }
                 Lifecycle.Transient -> {
-                    TransientKey(componentDeclare.implementationType, null)
+                    TransientKey(componentDeclare.realType, null)
                 }
             }
         }

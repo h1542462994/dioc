@@ -6,7 +6,7 @@ import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.error.ServiceConstructException
-import org.tty.dioc.core.getComponent
+import org.tty.dioc.core.basic.getComponent
 import org.tty.dioc.core.local.ComponentContext
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel

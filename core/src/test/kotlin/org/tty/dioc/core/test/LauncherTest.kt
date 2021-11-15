@@ -8,13 +8,11 @@ import org.tty.dioc.config.useAnnotation
 import org.tty.dioc.config.useFile
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.ApplicationEntryPoint
-import org.tty.dioc.core.CoreModule
 import org.tty.dioc.core.basic.ComponentStorage
-import org.tty.dioc.core.declare.ComponentDeclareAware
-import org.tty.dioc.core.declare.ComponentDeclares
-import org.tty.dioc.core.getComponent
+import org.tty.dioc.core.basic.ComponentDeclareAware
+import org.tty.dioc.core.basic.ComponentDeclares
+import org.tty.dioc.core.basic.getComponent
 import org.tty.dioc.core.launcher.startKernel
-import org.tty.dioc.reflect.setWithPropertyChain
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LauncherTest {

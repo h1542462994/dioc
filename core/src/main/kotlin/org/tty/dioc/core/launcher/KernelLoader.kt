@@ -10,11 +10,9 @@ import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.ApplicationEntryPoint
 import org.tty.dioc.core.CoreModule
 import org.tty.dioc.core.basic.*
-import org.tty.dioc.core.declare.ComponentDeclares
-import org.tty.dioc.core.declare.PackageOption
+import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.core.internal.CombinedProviderResolver
-import org.tty.dioc.core.internal.ComponentDeclareResolver
-import org.tty.dioc.core.storage.CombinedComponentStorage
+import org.tty.dioc.core.internal.CombinedComponentStorage
 import org.tty.dioc.util.Logger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
@@ -130,17 +128,21 @@ class KernelLoader {
         return object: ApplicationContext {
             val componentStorage = this@KernelLoader.componentStorage
 
-            override fun <T : Any> getComponent(declareType: KClass<T>): T {
-                return if (declareType.hasAnnotation<InternalComponent>()) {
+            override fun <T : Any> getComponent(indexType: KClass<T>): T {
+                return if (indexType.hasAnnotation<InternalComponent>()) {
                     // TODO("当前通过ComponentResolver去创建InternalComponent.")
-                    requireNotNull(componentStorage.findComponent(declareType)) {
-                        "internalComponent $declareType is not existed."
+                    requireNotNull(componentStorage.findComponent(indexType)) {
+                        "internalComponent $indexType is not existed."
                     }
                 } else {
                     componentStorage
                         .getInternalComponent(CoreModule.componentResolverSchema)
-                        .resolve(declare = componentDeclares.singleDeclarationType(declarationType = declareType))
+                        .resolve(declare = componentDeclares.singleIndexType(indexType = indexType))
                 }
+            }
+
+            override fun <T : Any> getComponent(name: String, indexType: KClass<T>): T {
+                TODO("Not yet implemented")
             }
 
             override fun scopeAbility(): ScopeAbility {

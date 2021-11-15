@@ -1,6 +1,7 @@
 package org.tty.dioc.core.declare
 
 import org.tty.dioc.annotation.InjectPlace
+import org.tty.dioc.core.basic.ComponentDeclares
 
 /**
  * the property of the service
@@ -35,7 +36,7 @@ class ComponentProperty(
      * initialize the [propertyComponentDeclare] on by [serviceDeclares], then call [check] to check the structure
      */
     fun fill(serviceDeclares: ComponentDeclares) {
-        propertyComponentDeclare = serviceDeclares.singleDeclarationType(propertyComponent.declareType)
+        propertyComponentDeclare = serviceDeclares.singleIndexType(propertyComponent.declareType)
         //check(serviceDeclares)
     }
 

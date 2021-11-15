@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
 /**
  * create a combined provider based on [ProvidersSchema]
  */
-class CombinedProviderResolver(
+internal class CombinedProviderResolver(
     private val componentStorage: ComponentStorage
 ): ProviderResolver {
 
