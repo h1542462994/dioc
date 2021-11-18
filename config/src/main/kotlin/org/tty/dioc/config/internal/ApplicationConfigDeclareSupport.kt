@@ -9,8 +9,8 @@ import org.tty.dioc.reflect.getWithPropertyChain
 import kotlin.reflect.full.hasAnnotation
 
 /**
- * basic [ApplicationConfig]
- * only get the config from [ConfigSchemas]
+ * declare support for [ApplicationConfig],
+ * only get the config from [ConfigSchemas].
  */
 @InternalComponent
 class ApplicationConfigDeclareSupport : ApplicationConfig {

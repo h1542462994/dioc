@@ -2,11 +2,11 @@ package org.tty.dioc.core.test
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.LocalApplicationContext
 import org.tty.dioc.annotation.Lazy
-import org.tty.dioc.error.ServiceConstructException
+import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.basic.getComponent
+import org.tty.dioc.core.internal.EmptyApplicationStartup
+import org.tty.dioc.core.launcher.runKernel
 import org.tty.dioc.core.local.ComponentContext
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
@@ -14,13 +14,11 @@ import org.tty.dioc.core.test.model.LogToken
 import org.tty.dioc.core.test.services.*
 import org.tty.dioc.core.test.services.circle.*
 import org.tty.dioc.core.util.ServiceUtil
+import org.tty.dioc.error.ServiceConstructException
 import java.lang.reflect.InvocationTargetException
 
-/**
- * to test one implementation [LocalApplicationContext] of [ApplicationContext]
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class LocalApplicationContextTest {
+class ApplicationContextGetTest {
 
 //    /**
 //     * test service with javaClass.
@@ -263,13 +261,7 @@ class LocalApplicationContextTest {
         @BeforeAll
         @JvmStatic
         fun initialize() {
-            context = LocalApplicationContext("org.tty.dioc.core.test.services")
-            ComponentContext provides context
-            // or you can write will this
-//            LocalContext provides HolderCall(Companion) {
-//                it.context
-//            }
-
+            context = runKernel(EmptyApplicationStartup("org.tty.dioc.core.test.services"))
         }
     }
 }

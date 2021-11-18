@@ -26,16 +26,25 @@ inline fun <reified T: Any> getRuleByType(configRule: ConfigRule): ConfigRule {
     return rule
 }
 
+/**
+ * create a [ProvidersSchema], the [configRule] will be inferred if is [ConfigRule.NoAssigned].
+ */
 inline fun <reified T: Any> providerSchema(name: String, providers: List<KClass<out T>>, configRule: ConfigRule = ConfigRule.NoAssigned): ProvidersSchema<T> {
     return ProvidersSchema(name, T::class, providers, getRuleByType<T>(configRule))
 }
 
+/**
+ * create a [DataSchema], the [configRule] will be inferred if is [ConfigRule.NoAssigned].
+ */
 inline fun <reified T: Any> dataSchema(name: String, default: T, configRule: ConfigRule = ConfigRule.NoAssigned): DataSchema<T> {
     return DataSchema(name, T::class, default, getRuleByType<T>(configRule))
 }
 
+/**
+ * create a [PathSchema], the [configRule] will be inferred if is [ConfigRule.NoAssigned].
+ */
 @Suppress("UNCHECKED_CAST")
-fun <@NoInfer T: Any> ConfigSchema<*>.pathTo(path: String, resultType: KClass<T>? = null): PathSchema<T> {
+fun <@NoInfer T: Any> ConfigSchema<*>.pathTo(path: String, resultType: KClass<T>? = null, configRule: ConfigRule = ConfigRule.NoAssigned): PathSchema<T> {
     // relevant visit path to root.
     var relevantPath = path
     // currentSlot to visit.
@@ -60,6 +69,7 @@ fun <@NoInfer T: Any> ConfigSchema<*>.pathTo(path: String, resultType: KClass<T>
         // pathSchema is only valid to pathSchema/dataSchema
         else -> error("the root schema must be dataSchema")
     }
+
     for (visit in properties) {
         val p = currentType.getProperty<KProperty<*>>(visit)
         requireNotNull(p) {
@@ -81,13 +91,23 @@ fun <@NoInfer T: Any> ConfigSchema<*>.pathTo(path: String, resultType: KClass<T>
         }
     }
 
+    if (configRule != ConfigRule.NoAssigned) {
+        currentRule = configRule
+    }
+
     return PathSchema(relevantPath, currentType as KClass<T>, currentSlot, currentRule)
 }
 
+/**
+ * create a [PathSchema], the configRule will be inferred if is [ConfigRule.NoAssigned].
+ */
 inline infix fun <reified T: Any> ConfigSchema<*>.pathTo(path: String): PathSchema<T> {
-    return pathTo(path, T::class)
+    return pathTo(path, T::class, ConfigRule.NoAssigned)
 }
 
+/**
+ * get the path schema.
+ */
 fun <T: Any> autoPathSchema(configSchemas: ConfigSchemas, name: String): PathSchema<T>? {
     // name like org.tty.dioc.config.mode.text
     val tokens = name.split(".")
@@ -103,6 +123,10 @@ fun <T: Any> autoPathSchema(configSchemas: ConfigSchemas, name: String): PathSch
     return null
 }
 
+/**
+ * get the auto schema,
+ * [ConfigSchema] will be inferred by [ConfigSchemas] and [autoPathSchema]
+ */
 fun <T: Any> autoSchema(configSchemas: ConfigSchemas, name: String): ConfigSchema<T>? {
     var configSchema: ConfigSchema<T>? = configSchemas[name]
     if (configSchema == null) {
@@ -118,6 +142,9 @@ fun <@NoInfer T: Any> delegateForSchema(configSchema: ConfigSchema<T>): ReadWrit
     return ApplicationConfigDelegate(configSchema)
 }
 
+/**
+ * create a property delegate by [ApplicationConfigDelegate] if present type and real type are different.
+ */
 fun <T: Any, @NoInfer TR: Any> delegateForSchema2(configSchema: ConfigSchema<T>): ReadWriteProperty<ApplicationConfig, TR> {
     return ApplicationConfigDelegate(configSchema)
 }

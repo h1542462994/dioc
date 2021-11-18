@@ -76,11 +76,12 @@ class PrinterLocation {
 
 ```kotlin
 enum class ConfigRule {
+    NoAssigned,
     Declare,
-    Runtime,
-    RuntimeMutable,
-    Soft,
-    SoftMutable,
+    CodeReadOnly,
+    CodeMutable,
+    ReadOnly,
+    Mutable,
 }
 ```
 
@@ -92,4 +93,19 @@ enum class ConfigRule {
 ]
 
 .provider = "text"
+```
+
+component定义。
+
+```xml
+<component>
+    <constuctor signature="2/*,signature">
+        <param index="0" ref="service"/>
+        <param index="1" value="testSignature"/>
+    </constuctor>
+</component>
+```
+
+```json
+
 ```

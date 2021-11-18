@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 /**
  * the storage for service
  */
-class CombinedComponentStorage: ComponentStorage {
+class ComponentStorageImpl: ComponentStorage {
     /**
      * the full storage, also the first level cache.
      */
@@ -157,12 +157,12 @@ class CombinedComponentStorage: ComponentStorage {
     }
 
     /**
-     * find the service by [componentKey] in [CombinedComponentStorage]
+     * find the service by [componentKey] in [ComponentStorageImpl]
      */
     override fun findComponent(componentKey: ComponentKey): Any? {
         return when(componentKey) {
             is TransientKey -> {
-                throw IllegalArgumentException("you couldn't find transient component.")
+               return null
             } else ->
                 fullStorage[componentKey]
         }

@@ -1,31 +1,29 @@
 package org.tty.dioc.core.test
 
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
-import org.tty.dioc.core.DynamicApplicationContext
-import org.tty.dioc.core.LocalDynamicApplicationContext
-import org.tty.dioc.core.basic.addScoped2
-import org.tty.dioc.core.basic.addSingleton2
-import org.tty.dioc.error.ServiceConstructException
-import org.tty.dioc.error.ServiceDeclarationException
-import org.tty.dioc.core.local.ComponentContext
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.tty.dioc.core.ApplicationContext
+import org.tty.dioc.core.ApplicationStartup
+import org.tty.dioc.core.basic.*
+import org.tty.dioc.core.launcher.runKernel
 import org.tty.dioc.core.local.resolve
 import org.tty.dioc.core.test.model.LogLevel
 import org.tty.dioc.core.test.model.LogToken
 import org.tty.dioc.core.test.services.Logger
-import org.tty.dioc.core.test.services.SeqLogger
-import org.tty.dioc.core.test.services.dynamic.*
+import org.tty.dioc.core.test.services.dynamic.AddService
+import org.tty.dioc.core.test.services.dynamic.AddServiceStep1
+import org.tty.dioc.core.test.services.dynamic.AddServiceStep2
+import org.tty.dioc.error.ServiceConstructException
+import org.tty.dioc.error.ServiceDeclarationException
 
-/**
- * to test one implementation [LocalDynamicApplicationContext] of [DynamicApplicationContext]
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class LocalDynamicApplicationContextTest {
 
     @Test
     @Order(0)
     fun testSingleton() {
-        context.addSingleton2<AddService, AddServiceStep1>()
+        aware.addSingleton2<AddService, AddServiceStep1>()
         val addService = resolve<AddService>()
         assertEquals(0, addService.current())
     }
@@ -34,7 +32,7 @@ class LocalDynamicApplicationContextTest {
     @Order(1)
     fun testRepeatSingletonDeclare() {
         val e = assertThrows<ServiceDeclarationException> {
-            context.addSingleton2<AddService, AddServiceStep2>()
+            aware.addSingleton2<AddService, AddServiceStep2>()
         }
         assertEquals(addServiceRedundantMessage, e.message)
     }
@@ -44,7 +42,7 @@ class LocalDynamicApplicationContextTest {
     fun testForceReplaceSingletonToScoped() {
         // you can change the existed declaration in forceReplace.
         assertDoesNotThrow {
-            context.forceReplace {
+            aware.forceReplace {
                 it.addScoped2<AddService, AddServiceStep2>()
             }
         }
@@ -66,14 +64,14 @@ class LocalDynamicApplicationContextTest {
     @Test
     @Order(3)
     fun testScoped() {
-        context.forceReplace {
+        aware.forceReplace {
             it.addScoped2<AddService, AddServiceStep2>(lazy = false)
         }
 
         context.withScope {
             val logger = resolve<Logger>()
             assertEquals(log2, logger.top())
-            context.forceReplace {
+            aware.forceReplace {
                 it.addScoped2<AddService, AddServiceStep1>(lazy = false)
                 assertEquals(log1, logger.top())
             }
@@ -82,7 +80,8 @@ class LocalDynamicApplicationContextTest {
     }
 
     companion object {
-        private lateinit var context: DynamicApplicationContext
+        private lateinit var context: ApplicationContext
+        private lateinit var aware: ComponentDeclareAware
         private const val addServiceRedundantMessage = "the declaration of the type class org.tty.dioc.core.test.services.dynamic.AddService is redundant."
         private val log1 = LogToken(LogLevel.Debug, "AddServiceStep1", "init")
         private val log2 = LogToken(LogLevel.Debug, "AddServiceStep2", "init")
@@ -90,11 +89,14 @@ class LocalDynamicApplicationContextTest {
         @JvmStatic
         @BeforeAll
         fun initialize() {
-            context = LocalDynamicApplicationContext()
-            context.addSingleton2<Logger, SeqLogger>()
-            context.onInit()
+            context = runKernel(StartUp())
+            aware = context.getComponent<ComponentDeclares>()
+        }
 
-            ComponentContext provides context
+    }
+
+    class StartUp: ApplicationStartup {
+        override fun onStartUp(aware: ComponentDeclareAware) {
 
         }
     }

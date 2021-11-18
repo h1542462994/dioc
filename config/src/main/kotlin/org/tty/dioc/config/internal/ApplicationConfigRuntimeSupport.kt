@@ -1,18 +1,19 @@
 package org.tty.dioc.config.internal
 
-import org.tty.dioc.base.Init1
 import org.tty.dioc.base.InitSuperComponent
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.schema.*
-import org.tty.dioc.error.notProvided
 import org.tty.dioc.error.unSupported
 import org.tty.dioc.reflect.getWithPropertyChain
 import org.tty.dioc.reflect.setWithPropertyChain
 import kotlin.reflect.full.hasAnnotation
 
+/**
+ * runtime support for [ApplicationConfig]
+ */
 class ApplicationConfigRuntimeSupport : ApplicationConfig, InitSuperComponent<ApplicationConfig>{
     /**
-     * storage. **WARNING: UNSAFE TYPE CAST.**
+     * storage. *Type NoInfer*
      */
     private val storage = HashMap<ConfigSchema<*>, Any>()
 

@@ -1,10 +1,12 @@
 package org.tty.dioc.core.internal
 
 import org.tty.dioc.base.InitSuperComponent
-import org.tty.dioc.config.schema.ConfigRule
+import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.schema.ProvidersSchema
+import org.tty.dioc.config.schema.autoSchema
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.basic.ProviderResolver
+import org.tty.dioc.core.basic.findInternalComponent
 import org.tty.dioc.core.launcher.configSchemas
 import org.tty.dioc.core.launcher.logger
 import org.tty.dioc.error.NotProvidedException
@@ -17,32 +19,30 @@ import kotlin.reflect.KClass
 
 /**
  * create a combined provider based on [ProvidersSchema]
- * the resolver will only be valid on [ConfigRule.Declare]
  */
-@Deprecated("use CombinedProviderResolver instead.")
-class BasicProviderResolver(
+internal class ProviderResolverImpl(
     private val componentStorage: ComponentStorage
 ): ProviderResolver {
 
-
+    @Suppress("UNCHECKED_CAST")
     override fun <T : Any> resolveProvider(name: String): T {
-        val configSchema = componentStorage.configSchemas.get<T>(name)
-
-//        if (configSchema == null) {
-//            // WARNING: UNCHECKED_CAST.
-//            configSchema = autoPathSchema(componentStorage.configSchemas, name)
-//        }
+        val configSchema = autoSchema<T>(componentStorage.configSchemas, name)
 
         require(configSchema != null) {
             "configSchema is not defined."
         }
+        // warning: T is not checked.
         configSchema as ProvidersSchema<T>
 
-        require(configSchema.rule == ConfigRule.Declare) {
-            "basicProviderResolver could only resolve the $configSchema which has the rule declare."
-        }
         val interfaceType = configSchema.type
-        val providerTypes = configSchema.default
+
+        var providerTypes = configSchema.default
+
+        val applicationConfig = componentStorage.findInternalComponent(ConfigModule.configSchema)
+        if (applicationConfig != null) {
+            providerTypes = applicationConfig.getList(configSchema) as List<KClass<out T>>
+        }
+
         var superComponent: T? = null
 
         val providers = providerTypes.map {
@@ -53,7 +53,6 @@ class BasicProviderResolver(
         require(providers.isNotEmpty()) {
             "no provider(s) found"
         }
-
 
         return if (providers.size > 1) {
             // more than 1 providers will create a proxy that reuse the provider

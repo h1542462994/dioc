@@ -7,10 +7,8 @@ import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.useAnnotation
 import org.tty.dioc.config.useFile
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.ApplicationEntryPoint
-import org.tty.dioc.core.basic.ComponentStorage
-import org.tty.dioc.core.basic.ComponentDeclareAware
 import org.tty.dioc.core.basic.ComponentDeclares
+import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.basic.getComponent
 import org.tty.dioc.core.launcher.startKernel
 
@@ -59,19 +57,11 @@ class LauncherTest {
         @JvmStatic
         @BeforeAll
         fun initialize() {
-            applicationContext = startKernel(EntryPoint())
+            applicationContext = startKernel()
 
         }
     }
 
-    class EntryPoint : ApplicationEntryPoint {
-        override fun onConfiguration(config: ApplicationConfig) {
-
-        }
-
-        override fun onStartUp(aware: ComponentDeclareAware) {
-        }
-    }
 
 
 }

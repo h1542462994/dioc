@@ -2,16 +2,17 @@ package org.tty.dioc.core.launcher
 
 import org.tty.dioc.annotation.DebugOnly
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.ApplicationEntryPoint
+import org.tty.dioc.core.ApplicationStartup
+import org.tty.dioc.core.internal.EmptyApplicationStartup
 import org.tty.dioc.core.local.ComponentContext
 
 
 /**
  * to start the kernel and return the applicationContext
  */
-fun startKernel(entryPoint: ApplicationEntryPoint): ApplicationContext {
+fun startKernel(startup: ApplicationStartup = EmptyApplicationStartup()): ApplicationContext {
     return KernelLoader()
-        .setApplicationEntryPoint(entryPoint)
+        .setApplicationEntryPoint(startup)
         .load()
 }
 
@@ -26,6 +27,8 @@ fun startConsole(): ApplicationContext {
  * to start the kernel and bind the [ApplicationContext] to [ComponentContext]
  */
 @DebugOnly
-fun runKernel(entryPoint: ApplicationEntryPoint) {
-    ComponentContext.provides(startKernel(entryPoint))
+fun runKernel(startup: ApplicationStartup = EmptyApplicationStartup()): ApplicationContext {
+    val applicationContext = startKernel(startup)
+    ComponentContext.provides(applicationContext)
+    return applicationContext
 }

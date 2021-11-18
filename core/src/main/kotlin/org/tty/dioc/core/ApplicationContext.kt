@@ -8,3 +8,4 @@ import org.tty.dioc.core.lifecycle.ScopeAware
  * context for application
  */
 interface ApplicationContext : ComponentAware, ScopeAware, InitializeAware
+

@@ -1,37 +1,39 @@
 package org.tty.dioc.core.launcher
 
 import org.tty.dioc.annotation.InternalComponent
+import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.ConfigModule
 import org.tty.dioc.config.schema.ConfigSchema
 import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.ApplicationEntryPoint
+import org.tty.dioc.core.ApplicationStartup
 import org.tty.dioc.core.CoreModule
 import org.tty.dioc.core.basic.*
-import org.tty.dioc.core.basic.ComponentDeclares
-import org.tty.dioc.core.internal.CombinedProviderResolver
-import org.tty.dioc.core.internal.CombinedComponentStorage
+import org.tty.dioc.core.internal.ComponentStorageImpl
+import org.tty.dioc.core.internal.ProviderResolverImpl
+import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.observable.channel.observe
 import org.tty.dioc.util.Logger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
 
 /**
- * provide the basic
+ * kernel loader for constructing [ApplicationContext]
  */
 class KernelLoader {
     /**
-     * use [CombinedComponentStorage] as the [ComponentStorage]
+     * use [ComponentStorageImpl] as the [ComponentStorage]
      */
-    private val componentStorage: ComponentStorage = CombinedComponentStorage()
+    private val componentStorage: ComponentStorage = ComponentStorageImpl()
 
-    private val providerResolver: ProviderResolver = CombinedProviderResolver(componentStorage)
+    private val providerResolver: ProviderResolver = ProviderResolverImpl(componentStorage)
 
     /**
      * entry point to the [ApplicationContext]
      */
-    private lateinit var entryPoint: ApplicationEntryPoint
+    lateinit var entryPoint: ApplicationStartup
 
     /**
      * add internal component to [ComponentStorage]
@@ -80,10 +82,10 @@ class KernelLoader {
     }
 
     /**
-     * set [ApplicationEntryPoint]
+     * set [ApplicationStartup]
      */
-    fun setApplicationEntryPoint(applicationEntryPoint: ApplicationEntryPoint): KernelLoader {
-        this.entryPoint = applicationEntryPoint
+    fun setApplicationEntryPoint(applicationStartup: ApplicationStartup): KernelLoader {
+        this.entryPoint = applicationStartup
         add(ComponentKeys.entryPoint, entryPoint)
         return this
     }
@@ -116,6 +118,7 @@ class KernelLoader {
         entryPoint.onConfiguration(componentStorage.applicationConfig)
         val componentDeclares = componentStorage.componentDeclares
 
+        addProvider<ComponentDeclareScanner>()
         addProvider<EntryPointLoader>()
 
         // add root components
@@ -126,16 +129,18 @@ class KernelLoader {
 
 
         return object: ApplicationContext {
-            val componentStorage = this@KernelLoader.componentStorage
+            val storage = this@KernelLoader.componentStorage
+            val declares = storage.componentDeclares
+            val scopeAbility = storage.getInternalComponent(CoreModule.scopeAbilitySchema)
 
             override fun <T : Any> getComponent(indexType: KClass<T>): T {
                 return if (indexType.hasAnnotation<InternalComponent>()) {
                     // TODO("当前通过ComponentResolver去创建InternalComponent.")
-                    requireNotNull(componentStorage.findComponent(indexType)) {
+                    requireNotNull(storage.findComponent(indexType)) {
                         "internalComponent $indexType is not existed."
                     }
                 } else {
-                    componentStorage
+                    storage
                         .getInternalComponent(CoreModule.componentResolverSchema)
                         .resolve(declare = componentDeclares.singleIndexType(indexType = indexType))
                 }
@@ -146,11 +151,58 @@ class KernelLoader {
             }
 
             override fun scopeAbility(): ScopeAbility {
-                return componentStorage.getInternalComponent(CoreModule.scopeAbilitySchema)
+                return scopeAbility
             }
 
             override fun onInit() {
+                declares.forEach {
+                    if (!it.isLazyComponent && it.lifecycle == Lifecycle.Singleton) {
+                        getComponent(it.indexTypes[0])
+                    }
+                }
 
+                scopeAbility.createChannel.observe(this::onCreateScope)
+                scopeAbility.removeChannel.observe(this::onRemoveScope)
+                declares.createLazyChannel.observe(this::onCreateLazy)
+            }
+
+            /**
+             * the function callback after create a lazy service.
+             */
+            private fun onCreateLazy(createLazy: ComponentDeclares.CreateLazy) {
+                val (declarationType, lifecycle, lazy) = createLazy
+                if (!lazy) {
+                    if (lifecycle == Lifecycle.Singleton) {
+                        getComponent(declarationType)
+                    } else if (scopeAbility.currentScope() != null && lifecycle == Lifecycle.Scoped) {
+                        getComponent(declarationType)
+                    }
+                }
+            }
+
+            /**
+             * the function callback after create a scope.
+             */
+            @Suppress("UNUSED_PARAMETER")
+            private fun onCreateScope(scope: Scope) {
+                declares.forEach {
+                    if (!it.isLazyComponent && it.lifecycle == Lifecycle.Scoped) {
+                        getComponent(it.indexTypes[0])
+                    }
+                }
+            }
+
+            /**
+             * the function callback after remove a scope.
+             */
+            private fun onRemoveScope(scope: Scope) {
+                declares.forEach {
+                    if (it.lifecycle == Lifecycle.Scoped) {
+                        storage.remove(
+                            it.createKey(scope)
+                        )
+                    }
+                }
             }
         }.apply { onInit() }
     }

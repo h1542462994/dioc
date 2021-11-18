@@ -5,7 +5,7 @@ import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.base.FinishAware
 import org.tty.dioc.core.declare.ComponentRecord
 import org.tty.dioc.core.key.ComponentKey
-import org.tty.dioc.core.internal.CombinedComponentStorage
+import org.tty.dioc.core.internal.ComponentStorageImpl
 import org.tty.dioc.core.internal.IStorageTransaction
 import org.tty.dioc.transaction.Transactional
 import kotlin.reflect.KClass
@@ -26,12 +26,12 @@ interface ComponentStorage : FinishAware, Transactional<IStorageTransaction> {
     val partFirst: MutableMap.MutableEntry<ComponentKey, ComponentRecord>
 
     /**
-     * find the component by [componentKey] in [CombinedComponentStorage]
+     * find the component by [componentKey] in [ComponentStorageImpl]
      */
     fun findComponent(componentKey: ComponentKey): Any?
 
     /**
-     * remove the component by [ComponentKey] in [CombinedComponentStorage]
+     * remove the component by [ComponentKey] in [ComponentStorageImpl]
      */
     fun remove(componentKey: ComponentKey)
 

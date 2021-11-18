@@ -1,7 +1,7 @@
 package org.tty.dioc.core.basic
 
 import org.tty.dioc.annotation.Lazy
-import org.tty.dioc.core.lifecycle.ComponentProxyFactoryImpl
+import org.tty.dioc.core.internal.ComponentProxyFactoryImpl
 
 /**
  * factory for creating proxy object.

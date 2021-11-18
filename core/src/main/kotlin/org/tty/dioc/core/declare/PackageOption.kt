@@ -2,7 +2,6 @@ package org.tty.dioc.core.declare
 
 /**
  * the option of the scanning on package.
- * @see [org.tty.dioc.core.ApplicationContextBuilder]
  */
 data class PackageOption(
     /**

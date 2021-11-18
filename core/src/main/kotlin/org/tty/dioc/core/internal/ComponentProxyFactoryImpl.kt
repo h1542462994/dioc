@@ -1,4 +1,4 @@
-package org.tty.dioc.core.lifecycle
+package org.tty.dioc.core.internal
 
 import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.basic.ComponentProxyFactory

@@ -32,11 +32,13 @@ fun Any?.toTruncateString(): String {
  * to print [Collection] as a table
  */
 fun <T> formatTable(tableName: String, collection: Collection<T>, indent: Int = 4, space: Int = 5, title: List<String>? = null, selector: (T) -> List<*>): CharSequence {
-    require(collection.isNotEmpty()) {
-        "collection is empty."
+    if (collection.isEmpty() && title == null) {
+        return "(empty table)"
     }
-    val columnLength = selector(collection.first()).size
+
+    val columnLength = title.optional { size } ?: selector(collection.first()).size
     val sizeList = Array(columnLength) { 0 }
+
     collection.forEach {
         val v = selector(it)
         require(columnLength == v.size) { "columnSize is not equal." }

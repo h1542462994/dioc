@@ -1,9 +1,10 @@
 package org.tty.dioc.config.schema
 
 import kotlin.reflect.KClass
+import org.tty.dioc.config.ApplicationConfig
 
 /**
- * [ConfigSchema] for data. the data can be used by configuration and path visitation.
+ * [ConfigSchema] for data. the data can be used by [ApplicationConfig] and [PathSchema].
  */
 class DataSchema<T: Any> (
     override val name: String,

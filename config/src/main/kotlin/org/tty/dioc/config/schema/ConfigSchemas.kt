@@ -1,8 +1,8 @@
 package org.tty.dioc.config.schema
 
 import org.tty.dioc.annotation.InternalComponent
+import org.tty.dioc.annotation.NoInfer
 import org.tty.dioc.util.formatTable
-import org.tty.dioc.util.withLeft
 import kotlin.reflect.KClass
 
 /**
@@ -35,7 +35,7 @@ class ConfigSchemas {
      * get the [ConfigSchema] by [name]
      */
     @Suppress("UNCHECKED_CAST")
-    operator fun <T: Any> get(name: String): ConfigSchema<T>? {
+    operator fun <@NoInfer T: Any> get(name: String): ConfigSchema<T>? {
         val value = schemaStore[name]
 
         return if (value == null) {

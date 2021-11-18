@@ -22,6 +22,7 @@ interface ConfigSchema<T: Any> {
      * tag value
      */
     val tag: String
+
     /**
      * the rule of the schema
      */
