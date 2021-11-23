@@ -6,7 +6,7 @@
 
 ### code
 
-```kotlin
+```
 import kotlin.reflect.KClass
 
 /**
@@ -14,32 +14,22 @@ import kotlin.reflect.KClass
  */
 
 interface ApplicationConfig {
-    fun <T: Any> getConfig(name: String): T
-    fun <T: Any> getAnonymous(type: KClass<*>): T 
+    fun <T : Any> getConfig(name: String): T
+    fun <T : Any> getAnonymous(type: KClass<*>): T
 }
 
-class NotProvidedException(): Exception() {
-    
-}
+class NotProvidedException : Exception()
 
-class ApplicationConfigDeclareSupport : ApplicationConfig {
+class ApplicationConfigDeclareSupport : ApplicationConfig
 
-}
+class FileApplicationConfigSupport : ApplicationConfig
 
-class FileApplicationConfigSupport : ApplicationConfig {
-    
-}
+class AnnotationApplicationConfigSupport : ApplicationConfig
 
-class AnnotationApplicationConfigSupport : ApplicationConfig {
-    
-}
-
-class ApplicationConfigRuntimeSupport : ApplicationConfig {
-    
-}
+class ApplicationConfigRuntimeSupport : ApplicationConfig
 
 fun main() {
-    
+
 }
 
 ```
@@ -51,7 +41,7 @@ fun main() {
 
 
 
-```kotlin
+```
 package a.b.c
 
 annotation class Config(
@@ -74,7 +64,7 @@ class PrinterLocation {
 2. 仅使用默认值和运行时，可以更改。
 3. 使用文件、注解等，可以更改
 
-```kotlin
+```
 enum class ConfigRule {
     NoAssigned,
     Declare,

@@ -5,7 +5,7 @@ import org.tty.dioc.annotation.Component
 
 @Component(lifecycle = Lifecycle.Transient)
 class TransientAddServiceImpl: TransientAddService {
-    var value: Int = 0
+    private var value: Int = 0
 
     override fun add() {
         value += 1

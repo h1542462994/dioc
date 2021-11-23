@@ -18,7 +18,7 @@ interface ApplicationConfig {
     operator fun <T: Any> get(configSchema: ConfigSchema<T>): Any
 
     /**
-     * set the value, or set the only one list value.if you want to set the config by name, you should use [autoSchema]
+     * set the value, or set the only one list value. If you want to set the config by name, you should use [autoSchema]
      */
     operator fun <T: Any> set(configSchema: ConfigSchema<T>, value: Any)
 

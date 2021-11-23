@@ -1,4 +1,4 @@
-package org.tty.dioc.core.lifecycle
+package org.tty.dioc.core.scope
 
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.basic.ScopeFactory
@@ -6,12 +6,11 @@ import org.tty.dioc.observable.channel.Channels
 
 /**
  * the trace of the [Scope],
- * the scope is placed by stack.
+ * the scope is placed by singleton.
  */
-class StackScopeTrace(private val scopeFactory: ScopeFactory): ScopeAbility {
-
+class SingletonScopeTrace(private val scopeFactory: ScopeFactory): ScopeAbility {
     private val currentScope: ThreadLocal<Scope?> = ThreadLocal()
-    private val scopeRecords: ThreadLocal<ArrayList<Scope>?> = ThreadLocal<ArrayList<Scope>?>()
+    private val scopeRecords: ThreadLocal<ArrayList<Scope>?> = ThreadLocal()
     override val createChannel = Channels.create<Scope>()
     override val removeChannel = Channels.create<Scope>()
     override val currentChannel = Channels.create<Scope?>()
@@ -27,17 +26,13 @@ class StackScopeTrace(private val scopeFactory: ScopeFactory): ScopeAbility {
     }
 
     override fun beginScope(scope: Scope) {
-        val records = fetchRecords()
         var existed = true
 
+        val records = fetchRecords()
         if (!records.contains(scope)) {
             existed = false
             records.add(scope)
-        } else {
-            records.remove(scope)
-            records.add(scope)
         }
-
         currentScope.set(scope)
 
         if (!existed) {
@@ -52,28 +47,36 @@ class StackScopeTrace(private val scopeFactory: ScopeFactory): ScopeAbility {
         if (records.isEmpty()) {
             throw IllegalStateException("the scope is empty.")
         } else {
-            val scope = records.last()
-            records.removeLast()
-            currentScope.set(records.lastOrNull())
+            val scope = records.removeLast()
+            currentScope.set(null)
 
-            if (!records.contains(scope)) {
-                removeChannel.emit(scope)
-            }
+            removeChannel.emit(scope)
+            currentChannel.emit(null)
         }
     }
 
     override fun endScope(scope: Scope) {
-        throw IllegalStateException("function not supported.")
+        val records = fetchRecords()
+        var removed = false
+        if (records.contains(scope)) {
+            removed = true
+            records.remove(scope)
+        }
+        currentScope.set(null)
+
+        if (removed) {
+            removeChannel.emit(scope)
+        }
+        currentChannel.emit(null)
     }
 
     private fun ensureInitialized() {
-        if (scopeRecords.get() == null) {
+        if (scopeRecords.get() != null) {
             scopeRecords.set(arrayListOf())
         }
     }
 
     private fun fetchRecords(): ArrayList<Scope> {
-        ensureInitialized()
         return scopeRecords.get()!!
     }
 }

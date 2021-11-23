@@ -5,7 +5,7 @@ import org.tty.dioc.base.InitializeAware
 import org.tty.dioc.core.test.services.Logger
 
 class AddServiceStep1: AddService, InitializeAware {
-    var value: Int = 0
+    private var value: Int = 0
 
     @Inject
     lateinit var logger: Logger

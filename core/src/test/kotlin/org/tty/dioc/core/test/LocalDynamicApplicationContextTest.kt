@@ -4,7 +4,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.ApplicationStartup
+import org.tty.dioc.core.startup.ApplicationStartup
 import org.tty.dioc.core.basic.*
 import org.tty.dioc.core.launcher.runKernel
 import org.tty.dioc.core.local.resolve

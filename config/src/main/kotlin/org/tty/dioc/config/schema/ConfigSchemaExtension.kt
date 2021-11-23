@@ -1,17 +1,20 @@
+
+
 package org.tty.dioc.config.schema
 
 import org.tty.dioc.annotation.NoInfer
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.internal.ApplicationConfigDelegate
-import org.tty.dioc.error.notProvided
 import org.tty.dioc.reflect.getProperty
 import org.tty.dioc.reflect.returnTypeKotlin
+import kotlin.contracts.contract
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 
 inline fun <reified T: Any> getRuleByType(configRule: ConfigRule): ConfigRule {
+
     var rule = configRule
     if (rule == ConfigRule.NoAssigned) {
         val ruleApi = T::class.findAnnotation<ConfigRuleApi>()
@@ -145,6 +148,7 @@ fun <@NoInfer T: Any> delegateForSchema(configSchema: ConfigSchema<T>): ReadWrit
 /**
  * create a property delegate by [ApplicationConfigDelegate] if present type and real type are different.
  */
+@Suppress("unused")
 fun <T: Any, @NoInfer TR: Any> delegateForSchema2(configSchema: ConfigSchema<T>): ReadWriteProperty<ApplicationConfig, TR> {
     return ApplicationConfigDelegate(configSchema)
 }

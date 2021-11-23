@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.annotation.Lazy
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.basic.getComponent
-import org.tty.dioc.core.internal.EmptyApplicationStartup
+import org.tty.dioc.core.startup.EmptyApplicationStartup
 import org.tty.dioc.core.launcher.runKernel
 import org.tty.dioc.core.local.ComponentContext
 import org.tty.dioc.core.local.resolve
@@ -61,6 +61,7 @@ class ApplicationContextGetTest {
         assertEquals(helloServiceNotLazyLog, logger.top())
     }
 
+    @Suppress("unused")
     fun testNotLazyTransient() {
         // because it will cause the fail on initializing container, so it could not be tested.
     }

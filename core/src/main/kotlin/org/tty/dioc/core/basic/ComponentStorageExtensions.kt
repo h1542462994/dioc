@@ -23,24 +23,6 @@ inline fun <reified T : Any> ComponentStorage.getInternalComponent(name: String)
     return component
 }
 
-@Deprecated("not suggest to find component by type.")
-inline fun <reified T : Any> ComponentStorage.findInternalComponent(): T? {
-    require(T::class.hasAnnotation<InternalComponent>()) {
-        "you could only get InternalComponent by this way."
-    }
-
-    return findComponent(T::class)
-}
-
-@Deprecated("not suggest to find component by type.")
-inline fun <reified T : Any> ComponentStorage.getInternalComponent(): T {
-    val component: T? = findInternalComponent()
-    require(component != null) {
-        "component is not found"
-    }
-    return component
-}
-
 inline fun <reified T : Any> ComponentStorage.addInternalComponent(name: String, component: T) {
     require(T::class.hasAnnotation<InternalComponent>()) {
         "you could only add InternalComponent by this way."

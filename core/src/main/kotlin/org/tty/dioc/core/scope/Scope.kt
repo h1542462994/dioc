@@ -1,4 +1,4 @@
-package org.tty.dioc.core.lifecycle
+package org.tty.dioc.core.scope
 
 /**
  * to declare the scope

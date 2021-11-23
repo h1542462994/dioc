@@ -1,9 +1,9 @@
-
-package org.tty.dioc.core.declare
+package org.tty.dioc.core.internal
 
 import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.core.basic.ComponentDeclareAware
 import org.tty.dioc.core.basic.ComponentDeclares
+import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.observable.channel.Channels
@@ -11,13 +11,9 @@ import org.tty.dioc.util.formatTable
 import kotlin.reflect.KClass
 
 /**
- * a implementation of [ComponentDeclares]
+ * an implementation of [ComponentDeclares]
  */
 internal class ComponentDeclaresImpl : ComponentDeclares {
-//    constructor(componentDeclares: List<ComponentDeclare>) : this() {
-//        container.addAll(componentDeclares)
-//    }
-
     private val container = ArrayList<ComponentDeclare>()
     private var forceReplaceEnabled = false
 
@@ -25,83 +21,109 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         container.addAll(componentDeclares)
     }
 
-    override val createLazyChannel = Channels.create<ComponentDeclares.CreateLazy>()
+    override val createEvent = Channels.create<ComponentDeclare>()
+    override val removeEvent = Channels.create<ComponentDeclare>()
 
     override fun iterator(): Iterator<ComponentDeclare> {
         return container.iterator()
     }
 
-    override fun <T : Any> addSingleton(type: KClass<T>, lazy: Boolean) {
-        // use delegate.
+    override fun <T : Any> addSingleton(type: KClass<T>, lazy: Boolean) = // use delegate.
         addDeclareByType("", type, type, lifecycle = Lifecycle.Singleton, lazy)
-        onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
-    }
 
-    override fun <T : Any> addSingleton(name: String, type: KClass<T>, lazy: Boolean) {
-        TODO("Not yet implemented")
-    }
+    override fun <T : Any> addSingleton(
+        name: String,
+        type: KClass<T>,
+        lazy: Boolean
+    ) = // use delegate.
+        require(name.isNotEmpty()) {
+            "name could not be empty."
+        }.apply {
+            addDeclareByType(name, type, type, lifecycle = Lifecycle.Singleton, lazy)
+        }
 
     override fun <TD : Any, TI : Any> addSingleton(
         indexType: KClass<TD>,
         realType: KClass<TI>,
         lazy: Boolean
-    ) {
-        // use delegate.
+    ) = // use delegate.
         addDeclareByType("", indexType, realType, lifecycle = Lifecycle.Singleton, lazy)
-        onCreateLazy(indexType, lifecycle = Lifecycle.Singleton, lazy)
-    }
 
     override fun <TD : Any, TI : Any> addSingleton(
         name: String,
         indexType: KClass<TD>,
         realType: KClass<TI>,
         lazy: Boolean
-    ) {
-        TODO("Not yet implemented")
-    }
+    ) = // use delegate.
+        require(name.isNotEmpty()) {
+            "name could not be empty."
+        }.apply {
+            addDeclareByType(name, indexType, realType, lifecycle = Lifecycle.Singleton, lazy)
+        }
 
-    override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) {
-        // use delegate.
+    override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) = // use delegate.
         addDeclareByType("", type, type, lifecycle = Lifecycle.Scoped, lazy)
-        onCreateLazy(type, lifecycle = Lifecycle.Singleton, lazy)
-    }
 
-    override fun <T : Any> addScoped(name: String, type: KClass<T>, lazy: Boolean) {
-        TODO("Not yet implemented")
-    }
+    override fun <T : Any> addScoped(
+        name: String,
+        type: KClass<T>,
+        lazy: Boolean
+    ) = // use delegate.
+        require(name.isNotEmpty()) {
+            "name could not be empty."
+        }.apply {
+            addDeclareByType(name, type, type, lifecycle = Lifecycle.Scoped, lazy)
+        }
 
-    override fun <TD : Any, TI : Any> addScoped(indexType: KClass<TD>, realType: KClass<TI>, lazy: Boolean) {
+    override fun <TD : Any, TI : Any> addScoped(
+        indexType: KClass<TD>,
+        realType: KClass<TI>,
+        lazy: Boolean
+    ) =
         // use delegate.
         addDeclareByType("", indexType, realType, lifecycle = Lifecycle.Scoped, lazy)
-        onCreateLazy(indexType, lifecycle = Lifecycle.Scoped, lazy)
-    }
 
     override fun <TD : Any, TI : Any> addScoped(
         name: String,
         indexType: KClass<TD>,
         realType: KClass<TI>,
         lazy: Boolean
-    ) {
-        TODO("Not yet implemented")
-    }
+    ) = // use delegate.
+        require(name.isNotEmpty()) {
+            "name could not be empty."
+        }.apply {
+            addDeclareByType(name, indexType, realType, lifecycle = Lifecycle.Scoped, lazy)
+        }
 
-    override fun <T : Any> addTransient(type: KClass<T>) {
-        // use delegate.
+    override fun <T : Any> addTransient(type: KClass<T>) = // use delegate.
         addDeclareByType("", type, type, lifecycle = Lifecycle.Transient, true)
-    }
 
-    override fun <T : Any> addTransient(name: String, type: KClass<T>) {
-        TODO("Not yet implemented")
-    }
+    override fun <T : Any> addTransient(
+        name: String,
+        type: KClass<T>
+    ) = // use delegate.
+        require(name.isNotEmpty()) {
+            "name could not be empty."
+        }.apply {
+            addDeclareByType(name, type, type, lifecycle = Lifecycle.Transient, true)
+        }
 
-    override fun <TD : Any, TI : Any> addTransient(indexType: KClass<TD>, realType: KClass<TI>) {
-        // use delegate.
+    override fun <TD : Any, TI : Any> addTransient(
+        indexType: KClass<TD>,
+        realType: KClass<TI>
+    ) = // use delegate.
         addDeclareByType("", indexType, realType, lifecycle = Lifecycle.Transient, true)
-    }
 
-    override fun <TD : Any, TI : Any> addTransient(name: String, indexType: KClass<TD>, realType: KClass<TI>) {
-        TODO("Not yet implemented")
-    }
+    override fun <TD : Any, TI : Any> addTransient(
+        name: String,
+        indexType: KClass<TD>,
+        realType: KClass<TI>
+    ) = // use delegate.
+        require(name.isNotEmpty()) {
+            "name could not be empty."
+        }.apply {
+            addDeclareByType(name, indexType, realType, lifecycle = Lifecycle.Transient, true)
+        }
 
     override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
         forceReplaceEnabled = true
@@ -114,11 +136,11 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
     }
 
     override fun singleName(name: String): ComponentDeclare {
-        TODO("Not yet implemented")
+        return this.single { it.name == name }
     }
 
     override fun singleNameOrNull(name: String): ComponentDeclare? {
-        TODO("Not yet implemented")
+        return this.singleOrNull { it.name == name }
     }
 
     /**
@@ -139,29 +161,36 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
      * add a [indexType] with [realType] to [container].
      * the structure is determined by [realType] itself.
      */
-    private fun addDeclareByType(name: String, indexType: KClass<*>, realType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean) {
-        val l = singleIndexTypeOrNull(indexType)
+    private fun addDeclareByType(
+        name: String,
+        indexType: KClass<*>,
+        realType: KClass<*>,
+        lifecycle: Lifecycle,
+        lazy: Boolean
+    ) {
+        val e = singleIndexTypeOrNull(indexType)
         // remove the existed declaration
-        if (l != null && forceReplaceEnabled) {
+        if (e != null && forceReplaceEnabled) {
             container.removeIf {
                 it.indexTypes.contains(indexType)
             }
+            removeEvent.emit(e)
         }
 
+        val d = ComponentDeclare(
+            name = name,
+            realType = realType,
+            indexTypes = listOf(indexType),
+            internal = false,
+            lifecycle = lifecycle,
+            isLazyComponent = lazy,
+            constructor = ServiceUtil.injectConstructor(realType),
+            components = ServiceUtil.components(realType)
+        )
 
-        if (l == null || forceReplaceEnabled) {
-            container.add(
-                ComponentDeclare(
-                    name = name,
-                    realType = realType,
-                    indexTypes = listOf(indexType),
-                    internal = false,
-                    lifecycle = lifecycle,
-                    isLazyComponent = lazy,
-                    constructor = ServiceUtil.injectConstructor(realType),
-                    components = ServiceUtil.components(realType)
-                )
-            )
+        if (e == null || forceReplaceEnabled) {
+            container.add(d)
+            createEvent.emit(d)
         } else {
             throw ServiceDeclarationException("the declaration of the type $indexType is redundant.")
         }
@@ -183,14 +212,12 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         }
     }
 
-    private fun onCreateLazy(indexType: KClass<*>, lifecycle: Lifecycle, lazy: Boolean = true) {
-        createLazyChannel.emit(
-            ComponentDeclares.CreateLazy(indexType, lifecycle, lazy)
-        )
-    }
-
     override fun toString(): String {
-        return formatTable("componentDeclares", container, title = listOf("lifecycle", "isLazyComponent", "declarationTypes", "implementationType")) {
+        return formatTable(
+            "componentDeclares",
+            container,
+            title = listOf("lifecycle", "isLazyComponent", "declarationTypes", "implementationType")
+        ) {
             listOf(
                 it.lifecycle,
                 it.isLazyComponent,

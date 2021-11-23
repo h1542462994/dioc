@@ -2,7 +2,7 @@ package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Component
 import org.tty.dioc.annotation.Lifecycle
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.scope.Scope
 import kotlin.reflect.KClass
 
 /**

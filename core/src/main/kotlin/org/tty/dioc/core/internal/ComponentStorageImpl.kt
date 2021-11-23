@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 /**
  * the storage for service
  */
-class ComponentStorageImpl: ComponentStorage {
+internal class ComponentStorageImpl: ComponentStorage {
     /**
      * the full storage, also the first level cache.
      */
@@ -237,7 +237,7 @@ class ComponentStorageImpl: ComponentStorage {
          */
         fun split(key: ComponentKey): Array<String?> {
             return arrayOf(
-                "${key.lifecycle}", key.name ?: "<anonymous>", key.indexType.qualifiedName, key.scope.toTruncateString()
+                "${key.lifecycle}", key.name.ifEmpty { "<anonymous>" }, key.indexType.qualifiedName, key.scope.toTruncateString()
             )
         }
 

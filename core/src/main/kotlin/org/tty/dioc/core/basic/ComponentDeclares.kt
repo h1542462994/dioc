@@ -58,15 +58,14 @@ interface ComponentDeclares: Iterable<ComponentDeclare>, ComponentDeclareAware {
      */
     fun addAll(componentDeclares: List<ComponentDeclare>)
 
-    data class CreateLazy(
-        val indexType: KClass<*>,
-        val lifecycle: Lifecycle,
-        val lazy: Boolean = true
-    )
-
     /**
-     * the channel for create a lazy service
+     * the channel for create a [ComponentDeclare]
      * @see Component
      */
-    val createLazyChannel: Channel<CreateLazy>
+    val createEvent: Channel<ComponentDeclare>
+
+    /**
+     * the channel for remove a [ComponentDeclare]
+     */
+    val removeEvent: Channel<ComponentDeclare>
 }

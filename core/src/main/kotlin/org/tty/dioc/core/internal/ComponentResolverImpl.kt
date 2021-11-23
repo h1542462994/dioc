@@ -7,7 +7,7 @@ import org.tty.dioc.core.basic.ComponentResolver
 import org.tty.dioc.core.basic.ComponentStorage
 import org.tty.dioc.core.declare.*
 import org.tty.dioc.error.ServiceConstructException
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.scope.Scope
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.util.ServiceUtil
 import kotlin.reflect.jvm.javaConstructor
@@ -15,7 +15,7 @@ import kotlin.reflect.jvm.javaConstructor
 /**
  * the entry for create or get the service
  */
-class ComponentResolverImpl(
+internal class ComponentResolverImpl(
     private val serviceDeclarations: ComponentDeclares,
     override val storage: ComponentStorage,
     val scopeAbility: ScopeAbility
@@ -109,7 +109,7 @@ class ComponentResolverImpl(
             } else {
                 // the circle link check.
                 if (
-                // if the parameter is not created. then throw a exception
+                // if the parameter is not created. then throw an exception
                     transaction.notReady(parameterDeclare)) {
                     throw ServiceConstructException("you want to inject a service not created, it will cause dead lock, because dependency link ${parameterDeclare.realType} -> ... -> ${parameterDeclare.realType}")
                 }

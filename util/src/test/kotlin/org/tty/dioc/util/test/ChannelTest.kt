@@ -1,6 +1,5 @@
 package org.tty.dioc.util.test
 
-import kotlinx.coroutines.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
@@ -9,8 +8,6 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.tty.dioc.observable.channel.Channels
 import org.tty.dioc.observable.channel.intercept
 import org.tty.dioc.observable.channel.observe
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * test [Channels]

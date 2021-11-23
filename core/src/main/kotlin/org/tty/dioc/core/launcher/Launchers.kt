@@ -2,8 +2,8 @@ package org.tty.dioc.core.launcher
 
 import org.tty.dioc.annotation.DebugOnly
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.ApplicationStartup
-import org.tty.dioc.core.internal.EmptyApplicationStartup
+import org.tty.dioc.core.startup.ApplicationStartup
+import org.tty.dioc.core.startup.EmptyApplicationStartup
 import org.tty.dioc.core.local.ComponentContext
 
 

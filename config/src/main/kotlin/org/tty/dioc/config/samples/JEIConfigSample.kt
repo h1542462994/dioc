@@ -3,13 +3,14 @@ package org.tty.dioc.config.samples
 import org.tty.dioc.config.ApplicationConfig
 import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.schema.autoSchema
+import org.tty.dioc.error.unSupported
 
 /**
  * **JEI** config samples
  */
 class JEIConfigSample {
     private fun <T> slot(): T {
-        TODO("slot value")
+        unSupported("slot value")
     }
 
     fun useDelegateForSchema() {
@@ -17,6 +18,7 @@ class JEIConfigSample {
         // var ApplicationConfig.useAnnotation by delegateForSchema<Boolean>(configModeAnnotationSchema)
     }
 
+    @Suppress("UNUSED_VARIABLE")
     fun useApplicationConfigGet() {
         val configSchemas = slot<ConfigSchemas>()
         val applicationConfig = slot<ApplicationConfig>()

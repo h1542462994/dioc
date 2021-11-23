@@ -12,7 +12,7 @@ import java.lang.reflect.Proxy
 /**
  * service proxy. it means the service will only be created after invoke.
  */
-class ComponentProxyFactoryImpl(
+internal class ComponentProxyFactoryImpl(
     private val componentDeclare: ComponentDeclare,
     private val serviceEntry: ComponentResolver
 ): ComponentProxyFactory {

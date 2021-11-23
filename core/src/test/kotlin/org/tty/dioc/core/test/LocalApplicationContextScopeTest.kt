@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.tty.dioc.core.ApplicationContext
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.basic.getComponent
-import org.tty.dioc.core.internal.EmptyApplicationStartup
+import org.tty.dioc.core.startup.EmptyApplicationStartup
 import org.tty.dioc.core.launcher.startKernel
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.scope.Scope
 import org.tty.dioc.core.test.services.scope.ScopedAddService
 import kotlin.concurrent.thread
 

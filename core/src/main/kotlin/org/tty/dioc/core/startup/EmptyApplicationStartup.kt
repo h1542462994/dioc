@@ -1,7 +1,7 @@
-package org.tty.dioc.core.internal
+package org.tty.dioc.core.startup
 
 import org.tty.dioc.config.ApplicationConfig
-import org.tty.dioc.core.ApplicationStartup
+import org.tty.dioc.core.startup.ApplicationStartup
 import org.tty.dioc.core.CoreModule.Companion.rootPackageNameSchema
 import org.tty.dioc.core.basic.ComponentDeclareAware
 

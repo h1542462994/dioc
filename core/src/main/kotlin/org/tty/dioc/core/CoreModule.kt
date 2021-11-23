@@ -7,12 +7,10 @@ import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.schema.dataSchema
 import org.tty.dioc.config.schema.providerSchema
 import org.tty.dioc.core.basic.*
-import org.tty.dioc.core.declare.ComponentDeclaresImpl
-import org.tty.dioc.core.internal.ComponentDeclareScannerAnnotationSupport
-import org.tty.dioc.core.internal.ComponentResolverImpl
-import org.tty.dioc.core.internal.EntryPointLoaderImpl
-import org.tty.dioc.core.lifecycle.DefaultScopeFactory
-import org.tty.dioc.core.lifecycle.StackScopeTrace
+import org.tty.dioc.core.internal.*
+import org.tty.dioc.core.internal.ComponentDeclaresImpl
+import org.tty.dioc.core.scope.DefaultScopeFactory
+import org.tty.dioc.core.scope.StackScopeTrace
 import org.tty.dioc.util.Logger
 import org.tty.dioc.util.SimpleConsoleLogger
 
@@ -42,7 +40,13 @@ class CoreModule(
         private const val componentDeclareScanner = "org.tty.dioc.core.declareScanner"
         val scopeSchema = providerSchema<ScopeFactory>(scopeProvider, listOf(DefaultScopeFactory::class))
         val scopeAbilitySchema = providerSchema<ScopeAbility>(scopeAbilityProvider, listOf(StackScopeTrace::class))
-        val componentDeclaresSchema = providerSchema<ComponentDeclares>(componentDeclares, listOf(ComponentDeclaresImpl::class))
+        @Suppress("RemoveExplicitTypeArguments")
+        val componentDeclaresSchema = providerSchema<ComponentDeclares>(componentDeclares,
+            listOf(
+                ComponentDeclaresImpl::class,
+                ComponentDeclaresInternalImpl::class
+            )
+        )
         val componentResolverSchema = providerSchema<ComponentResolver>(componentResolver, listOf(ComponentResolverImpl::class))
         val loggerSchema = providerSchema<Logger>(logger, listOf(SimpleConsoleLogger::class), ConfigRule.Mutable)
         val entryPointLoaderSchema = providerSchema<EntryPointLoader>(entryPointLoader, listOf(EntryPointLoaderImpl::class))

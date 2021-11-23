@@ -2,12 +2,12 @@ package org.tty.dioc.util
 
 import kotlin.math.max
 
-fun formatLeft(value: Any?, length: Int): String {
-    return String.format("%-${length}s", value)
+fun leftBlock(value: Any?, length: Int): String {
+    return String.format("%-${length}s", value.toString())
 }
 
 fun space(length: Int): String {
-    return formatLeft("", length)
+    return leftBlock("", length)
 }
 
 fun Any?.toTruncateString(): String {
@@ -54,7 +54,7 @@ fun <T> formatTable(tableName: String, collection: Collection<T>, indent: Int = 
         require(value.size == columnLength) { "titleSize is not equal to columnSize." }
         sb.append(space(indent))
         value.forEachIndexed { index, v ->
-            sb.append(withLeft(v.toTruncateString(), sizeList[index]))
+            sb.append(leftBlock(v.toTruncateString(), sizeList[index]))
         }
     }
 

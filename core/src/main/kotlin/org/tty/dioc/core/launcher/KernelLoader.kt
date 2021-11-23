@@ -8,12 +8,13 @@ import org.tty.dioc.config.schema.ConfigSchema
 import org.tty.dioc.config.schema.ConfigSchemas
 import org.tty.dioc.config.schema.ProvidersSchema
 import org.tty.dioc.core.ApplicationContext
-import org.tty.dioc.core.ApplicationStartup
+import org.tty.dioc.core.startup.ApplicationStartup
 import org.tty.dioc.core.CoreModule
 import org.tty.dioc.core.basic.*
+import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.core.internal.ComponentStorageImpl
 import org.tty.dioc.core.internal.ProviderResolverImpl
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.scope.Scope
 import org.tty.dioc.observable.channel.observe
 import org.tty.dioc.util.Logger
 import kotlin.reflect.KClass
@@ -33,7 +34,7 @@ class KernelLoader {
     /**
      * entry point to the [ApplicationContext]
      */
-    lateinit var entryPoint: ApplicationStartup
+    private lateinit var entryPoint: ApplicationStartup
 
     /**
      * add internal component to [ComponentStorage]
@@ -163,19 +164,22 @@ class KernelLoader {
 
                 scopeAbility.createChannel.observe(this::onCreateScope)
                 scopeAbility.removeChannel.observe(this::onRemoveScope)
-                declares.createLazyChannel.observe(this::onCreateLazy)
+                declares.createEvent.observe(this::onCreateLazy)
             }
 
             /**
              * the function callback after create a lazy service.
              */
-            private fun onCreateLazy(createLazy: ComponentDeclares.CreateLazy) {
-                val (declarationType, lifecycle, lazy) = createLazy
+            private fun onCreateLazy(declareEvent: ComponentDeclare) {
+                // FIXME: first is not appropriate to use.
+                val indexType = declareEvent.indexTypes.first()
+                val lifecycle = declareEvent.lifecycle
+                val lazy = declareEvent.isLazyComponent
                 if (!lazy) {
                     if (lifecycle == Lifecycle.Singleton) {
-                        getComponent(declarationType)
+                        getComponent(indexType)
                     } else if (scopeAbility.currentScope() != null && lifecycle == Lifecycle.Scoped) {
-                        getComponent(declarationType)
+                        getComponent(indexType)
                     }
                 }
             }

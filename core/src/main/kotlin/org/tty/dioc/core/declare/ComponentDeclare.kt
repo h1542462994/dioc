@@ -2,7 +2,7 @@ package org.tty.dioc.core.declare
 
 import org.tty.dioc.annotation.*
 import org.tty.dioc.base.InitializeAware
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.scope.Scope
 import org.tty.dioc.core.basic.ScopeAbility
 import org.tty.dioc.core.key.ComponentKey
 import org.tty.dioc.core.key.ScopeKey
@@ -58,14 +58,9 @@ class ComponentDeclare(
     val components: List<PropertyComponent>
 
 ) {
-    init {
-//        require(name == "" || ServiceUtil.isValidName(name)) {
-//            "invalid key. should use \"^[A-Za-z0-9._-]+$\""
-//        }
-    }
 
     fun createKey(scope: Scope?): ComponentKey {
-        require(name == "" || ServiceUtil.isValidName(name)) {
+        require(name.isEmpty() || ServiceUtil.isValidName(name)) {
             "invalid key. should use \"^[A-Za-z0-9._-]+$\""
         }
         return when (lifecycle) {
@@ -152,7 +147,7 @@ class ComponentDeclare(
 //            require(/*name == "" ||*/ ServiceUtil.isValidName(name)) {
 //                "invalid key. should use \"^[A-Za-z0-9._-]+$\""
 //            }
-            require(name != "") {
+            require(name.isNotEmpty()) {
                 "key should not be empty."
             }
 

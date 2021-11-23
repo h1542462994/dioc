@@ -6,7 +6,7 @@ import org.tty.dioc.core.declare.PackageOption
 import org.tty.dioc.core.util.ServiceUtil.isComponent
 import org.tty.dioc.reflect.KClassScanner
 
-class ComponentDeclareScannerAnnotationSupport : ComponentDeclareScanner {
+internal class ComponentDeclareScannerAnnotationSupport : ComponentDeclareScanner {
 
     /**
      * get the declaration of the service from the package

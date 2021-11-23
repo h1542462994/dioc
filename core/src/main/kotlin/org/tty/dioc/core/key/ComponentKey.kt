@@ -1,10 +1,8 @@
 package org.tty.dioc.core.key
 
-import org.tty.dioc.annotation.Lifecycle
 import org.tty.dioc.annotation.InternalComponent
-import org.tty.dioc.core.declare.ComponentDeclare
-import org.tty.dioc.error.ServiceConstructException
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.scope.Scope
 import kotlin.reflect.KClass
 
 /**

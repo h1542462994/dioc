@@ -4,7 +4,7 @@ import org.tty.dioc.base.Builder
 import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.config.schema.ConfigRule
 import org.tty.dioc.config.schema.ConfigRuleApi
-import org.tty.dioc.core.lifecycle.Scope
+import org.tty.dioc.core.scope.Scope
 
 /**
  * factory of [Scope]

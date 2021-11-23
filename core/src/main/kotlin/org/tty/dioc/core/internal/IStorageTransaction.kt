@@ -27,7 +27,7 @@ sealed interface IStorageTransaction: Transaction {
     fun addEmpty(componentDeclare: ComponentDeclare)
 
     /**
-     * move from [ComponentCreating] to [ComponentCreated]
+     * move from creating to "created".
      */
     @Throws(TransactionClosedException::class)
     fun moveToFull(componentKey: ComponentKey)

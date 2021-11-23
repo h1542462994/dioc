@@ -21,7 +21,6 @@ object ComponentKeys {
 
 val ComponentStorage.configSchemas: ConfigSchemas get() = getInternalComponent(ComponentKeys.configSchemas)
 val ComponentStorage.providerResolver: ProviderResolver get() = getInternalComponent(ComponentKeys.providerResolver)
-val ComponentStorage.componentStorage: ComponentStorage get() = getInternalComponent(ComponentKeys.componentStorage)
 val ComponentStorage.logger: Logger get() = getInternalComponent(CoreModule.loggerSchema.name)
 
 val ComponentStorage.applicationConfig: ApplicationConfig get() = getInternalComponent(ConfigModule.configSchema)
