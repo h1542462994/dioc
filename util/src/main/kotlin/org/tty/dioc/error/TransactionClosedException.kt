@@ -1,6 +1,6 @@
 package org.tty.dioc.error
 
-class TransactionClosedException: Exception {
+class TransactionClosedException: RuntimeException {
     constructor() : super("transaction is closed.")
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

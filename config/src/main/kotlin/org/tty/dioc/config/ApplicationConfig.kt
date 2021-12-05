@@ -32,6 +32,5 @@ interface ApplicationConfig {
      */
     fun <T: Any> setList(configSchema: ConfigSchema<T>, list: List<*>)
 
-
 }
 

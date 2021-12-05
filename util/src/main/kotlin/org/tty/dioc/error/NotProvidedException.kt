@@ -3,7 +3,7 @@ package org.tty.dioc.error
 /**
  * the value is not provided
  */
-class NotProvidedException: Exception {
+class NotProvidedException: RuntimeException {
     constructor(): super("not provided")
     constructor(message: String): super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

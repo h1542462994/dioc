@@ -6,12 +6,12 @@ package org.tty.dioc.config.schema
 @Suppress("unused")
 enum class ConfigRule {
     /**
-     * not assigned config rule.
+     * not assigned config rule. a placeholder for padding.
+     * real configRule **must be assigned**.
      */
     NoAssigned,
-
     /**
-     * config can only write on declare.
+     * config can only initialize on [ConfigSchema].
      */
     Declare,
 

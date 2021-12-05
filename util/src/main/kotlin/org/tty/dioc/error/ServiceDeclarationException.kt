@@ -3,7 +3,7 @@ package org.tty.dioc.error
 /**
  * the service declaration exception
  */
-open class ServiceDeclarationException : Exception {
+open class ServiceDeclarationException : RuntimeException{
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)
