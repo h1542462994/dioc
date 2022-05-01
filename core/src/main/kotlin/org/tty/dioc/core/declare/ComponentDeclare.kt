@@ -35,9 +35,9 @@ class ComponentDeclare(
      */
     val indexTypes: List<KClass<*>>,
     /**
-     * whether [InternalComponent]
+     * the type of the declaration.
      */
-    val internal: Boolean,
+    val declareType: ComponentDeclareType,
     /**
      * the lifecycle of the service.
      * @see [Component.lifecycle]
@@ -55,8 +55,11 @@ class ComponentDeclare(
     /**
      * the components find in scan
      */
-    val components: List<PropertyComponent>
-
+    val components: List<PropertyComponent>,
+    /*
+     * the type of the factory.
+     */
+    val factoryType: KClass<*>?,
 ) {
 
     fun createKey(scope: Scope?): ComponentKey {
@@ -65,7 +68,7 @@ class ComponentDeclare(
         }
         return when (lifecycle) {
             Lifecycle.Singleton -> {
-                SingletonKey(realType, name, internal)
+                SingletonKey(realType, name, declareType)
             }
             Lifecycle.Scoped -> {
                 if (scope == null) {
@@ -130,11 +133,12 @@ class ComponentDeclare(
                 name = name,
                 realType = realType,
                 indexTypes = indexTypes,
-                internal = false,
+                declareType = ComponentDeclareType.TypeDeclare,
                 lifecycle = componentAnnotation.lifecycle,
                 isLazyComponent = componentAnnotation.lazy,
                 constructor = constructor,
-                components = components
+                components = components,
+                factoryType = null,
             )
         }
 
@@ -155,11 +159,12 @@ class ComponentDeclare(
                 name = name,
                 realType = realType,
                 indexTypes = listOf(indexType),
-                internal = true,
+                declareType = ComponentDeclareType.Internal,
                 lifecycle = Lifecycle.Singleton,
                 isLazyComponent = false,
                 constructor = constructor,
-                components = components
+                components = components,
+                factoryType = null
             )
         }
 

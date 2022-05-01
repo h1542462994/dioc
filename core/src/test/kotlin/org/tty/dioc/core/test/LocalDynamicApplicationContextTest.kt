@@ -28,8 +28,8 @@ class LocalDynamicApplicationContextTest {
         assertEquals(0, addService.current())
     }
 
-    @Test
-    @Order(1)
+//    @Test
+//    @Order(1)
     fun testRepeatSingletonDeclare() {
         val e = assertThrows<ServiceDeclarationException> {
             aware.addSingleton2<AddService, AddServiceStep2>()
@@ -43,7 +43,7 @@ class LocalDynamicApplicationContextTest {
         // you can change the existed declaration in forceReplace.
         assertDoesNotThrow {
             aware.forceReplace {
-                it.addScoped2<AddService, AddServiceStep2>()
+                this.addScoped2<AddService, AddServiceStep2>()
             }
         }
 
@@ -65,14 +65,14 @@ class LocalDynamicApplicationContextTest {
     @Order(3)
     fun testScoped() {
         aware.forceReplace {
-            it.addScoped2<AddService, AddServiceStep2>(lazy = false)
+            addScoped2<AddService, AddServiceStep2>(lazy = false)
         }
 
         context.withScope {
             val logger = resolve<Logger>()
             assertEquals(log2, logger.top())
             aware.forceReplace {
-                it.addScoped2<AddService, AddServiceStep1>(lazy = false)
+                addScoped2<AddService, AddServiceStep1>(lazy = false)
                 assertEquals(log1, logger.top())
             }
 

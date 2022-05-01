@@ -1,6 +1,7 @@
 package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.declare.ComponentDeclareType
 import org.tty.dioc.core.scope.Scope
 import kotlin.reflect.KClass
 
@@ -14,7 +15,7 @@ data class SingletonKey(
      */
     override val indexType: KClass<*>,
     override val name: String,
-    override val internal: Boolean
+    override val declareType: ComponentDeclareType
 ): ComponentKey {
     override val scope: Scope?
         get() = null

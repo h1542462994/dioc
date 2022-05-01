@@ -104,7 +104,7 @@ class ApplicationContextGetTest {
             context.getComponent<LazyInjectHelloServiceByConstructor2>()
         }
         assertNotNull(e.cause)
-        val real = e.cause!!.cause!!
+        val real = e.cause!!
         assert(real is ServiceConstructException)
 
     }

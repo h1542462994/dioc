@@ -1,6 +1,7 @@
 package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.declare.ComponentDeclareType
 import org.tty.dioc.core.scope.Scope
 import kotlin.reflect.KClass
 
@@ -18,9 +19,10 @@ data class ScopeKey(
      * the scope
      */
     override val scope: Scope,
+
 ): ComponentKey {
     override val lifecycle: Lifecycle
         get() = Lifecycle.Scoped
-    override val internal: Boolean
-        get() = false
+    override val declareType: ComponentDeclareType
+        get() = ComponentDeclareType.TypeDeclare
 }

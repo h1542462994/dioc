@@ -6,6 +6,8 @@
 /util/out/
 /core/build/
 /core/out/
+/config/build/
+/config/out/
 
 *.class
 

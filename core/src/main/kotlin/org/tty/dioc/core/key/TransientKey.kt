@@ -2,6 +2,7 @@ package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.Component
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.declare.ComponentDeclareType
 import org.tty.dioc.core.scope.Scope
 import kotlin.reflect.KClass
 
@@ -20,6 +21,6 @@ class TransientKey(
     override val lifecycle: Lifecycle
         get() = Lifecycle.Transient
 
-    override val internal: Boolean
-        get() = false
+    override val declareType: ComponentDeclareType
+        get() = ComponentDeclareType.TypeDeclare
 }

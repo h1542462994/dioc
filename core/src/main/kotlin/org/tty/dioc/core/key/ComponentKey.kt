@@ -2,6 +2,7 @@ package org.tty.dioc.core.key
 
 import org.tty.dioc.annotation.InternalComponent
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.core.declare.ComponentDeclareType
 import org.tty.dioc.core.scope.Scope
 import kotlin.reflect.KClass
 
@@ -17,5 +18,5 @@ interface ComponentKey {
     /**
      * whether has [InternalComponent]
      */
-    val internal: Boolean
+    val declareType: ComponentDeclareType
 }

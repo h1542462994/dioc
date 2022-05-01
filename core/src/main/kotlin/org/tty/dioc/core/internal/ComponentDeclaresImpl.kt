@@ -1,9 +1,11 @@
 package org.tty.dioc.core.internal
 
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.base.Builder
 import org.tty.dioc.core.basic.ComponentDeclareAware
 import org.tty.dioc.core.basic.ComponentDeclares
 import org.tty.dioc.core.declare.ComponentDeclare
+import org.tty.dioc.core.declare.ComponentDeclareType
 import org.tty.dioc.error.ServiceDeclarationException
 import org.tty.dioc.core.util.ServiceUtil
 import org.tty.dioc.observable.channel.Channels
@@ -60,6 +62,19 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         }.apply {
             addDeclareByType(name, indexType, realType, lifecycle = Lifecycle.Singleton, lazy)
         }
+
+    override fun <TD : Any> addSingletonProvided(name: String, indexType: KClass<TD>, provided: TD) {
+        TODO("Not yet implemented")
+    }
+
+    override fun <TD : Any> addSingletonProvided(
+        name: String,
+        indexType: KClass<TD>,
+        providedBuilder: Builder<TD>,
+        lazy: Boolean
+    ) {
+        TODO("Not yet implemented")
+    }
 
     override fun <T : Any> addScoped(type: KClass<T>, lazy: Boolean) = // use delegate.
         addDeclareByType("", type, type, lifecycle = Lifecycle.Scoped, lazy)
@@ -125,7 +140,7 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
             addDeclareByType(name, indexType, realType, lifecycle = Lifecycle.Transient, true)
         }
 
-    override fun forceReplace(action: (ComponentDeclareAware) -> Unit) {
+    override fun forceReplace(action: ComponentDeclareAware.() -> Unit) {
         forceReplaceEnabled = true
         action.invoke(this)
         forceReplaceEnabled = false
@@ -181,11 +196,12 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
             name = name,
             realType = realType,
             indexTypes = listOf(indexType),
-            internal = false,
+            declareType = ComponentDeclareType.TypeDeclare,
             lifecycle = lifecycle,
             isLazyComponent = lazy,
             constructor = ServiceUtil.injectConstructor(realType),
-            components = ServiceUtil.components(realType)
+            components = ServiceUtil.components(realType),
+            factoryType = null
         )
 
         if (e == null || forceReplaceEnabled) {
@@ -194,6 +210,10 @@ internal class ComponentDeclaresImpl : ComponentDeclares {
         } else {
             throw ServiceDeclarationException("the declaration of the type $indexType is redundant.")
         }
+    }
+
+    private fun addDeclareByProvided() {
+
     }
 
     /**

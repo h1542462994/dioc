@@ -3,6 +3,7 @@ package org.tty.dioc.core.basic
 import kotlin.reflect.KClass
 import org.tty.dioc.core.declare.ComponentDeclare
 import org.tty.dioc.annotation.Lifecycle
+import org.tty.dioc.base.Builder
 
 /**
  * aware for adding [ComponentDeclare]
@@ -40,6 +41,24 @@ interface ComponentDeclareAware {
      * @param lazy whether to start on boot. **true** means not to start on boot.
      */
     fun <TD: Any, TI: Any> addSingleton(name: String, indexType: KClass<TD>, realType: KClass<TI>, lazy: Boolean = true)
+
+
+    /**
+     * add a [Lifecycle.Singleton] component. **inline available**.
+     * @param name identify of the component.
+     * @param indexType **index type**, index type can be found by [ComponentAware].
+     * @param provided the provided value.
+     */
+    fun <TD: Any> addSingletonProvided(name: String, indexType: KClass<TD>, provided: TD)
+
+    /**
+     * add a [Lifecycle.Singleton] component. **inline available**.
+     * @param name identify of the component.
+     * @param indexType **index type**, index type can be found by [ComponentAware].
+     * @param providedBuilder the provided builder for the component.
+     * @param lazy whether to start on boot. **true** means not to start on boot.
+     */
+    fun <TD: Any> addSingletonProvided(name: String, indexType: KClass<TD>, providedBuilder: Builder<TD>, lazy: Boolean = true)
 
     /**
      * add a [Lifecycle.Scoped] component. **inline available.**
@@ -105,5 +124,5 @@ interface ComponentDeclareAware {
     /**
      * the [action] can replace [ComponentDeclare] by force.
      */
-    fun forceReplace(action: (ComponentDeclareAware) -> Unit)
+    fun forceReplace(action: ComponentDeclareAware.() -> Unit)
 }
