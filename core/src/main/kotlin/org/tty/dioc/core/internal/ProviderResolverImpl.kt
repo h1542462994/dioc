@@ -108,7 +108,7 @@ internal class ProviderResolverImpl(
                 } catch (e: InvocationTargetException) {
                     if (e.cause is NotProvidedException) {
                         // ignore if the cause is not provided exception
-                        componentStorage.logger.e("BasicProviderResolver", e.cause!!.message)
+                        //componentStorage.logger.e("BasicProviderResolver", e.cause!!.message)
                     } else {
                         throw e
                     }

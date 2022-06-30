@@ -1,4 +1,4 @@
-# dynamic ion container
+# dynamic ioc container
 
 ## 模块
 
